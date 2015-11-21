@@ -296,12 +296,17 @@
             frame: true,
             resizable: true,
             center: true,
+            title: 'Emby Theater',
             'skip-taskbar': false,
 
             'web-preferences': {
                 'web-security': false,
                 "webgl": true,
-                'node-integration': false
+                'node-integration': false,
+                'plugins': false,
+                'directWrite': true,
+                'webaudio': true,
+                'java': false
             }
 
         });
@@ -309,7 +314,7 @@
         mainWindow.webContents.on('dom-ready', setStartInfo);
 
         // and load the index.html of the app.
-        mainWindow.loadUrl('http://localhost:8088/index.html?autostart=0');
+        mainWindow.loadUrl('http://mediabrowser.github.io/Emby.Web/index.html');
 
         // Emitted when the window is closed.
         mainWindow.on('closed', function () {
