@@ -306,7 +306,9 @@
                 'plugins': false,
                 'directWrite': true,
                 'webaudio': true,
-                'java': false
+                'java': false,
+                'allowDisplayingInsecureContent': true,
+                'allowRunningInsecureContent': true
             }
 
         });
