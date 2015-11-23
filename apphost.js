@@ -48,9 +48,7 @@
 
             return [
 
-                'minimize',
-                'maximize',
-                'fullscreenexit',
+                'windowstate',
                 'exit'
                 //'sleep',
                 //'restart',
