@@ -293,11 +293,10 @@
             width: 1280,
             height: 720,
             transparent: true,
-            frame: true,
-            resizable: true,
+            frame: false,
+            resizable: false,
             center: true,
             title: 'Emby Theater',
-            'skip-taskbar': false,
 
             'web-preferences': {
                 'web-security': false,
@@ -317,6 +316,7 @@
 
         // and load the index.html of the app.
         mainWindow.loadUrl('http://mediabrowser.github.io/Emby.Web/index.html');
+        //mainWindow.loadUrl('http://localhost:8088/index.html');
 
         // Emitted when the window is closed.
         mainWindow.on('closed', function () {
