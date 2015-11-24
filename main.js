@@ -35,19 +35,19 @@
         if (!windowEventsEnabled) {
             return;
         }
-        if (mainWindow.isFullScreen()) {
+        if (isFullScreen()) {
             sendWindowState('Maximized');
         }
         else if (mainWindow.isMaximized()) {
-            mainWindow.setFullScreen(true);
+            setFullScreen(true);
             sendWindowState('Maximized');
         }
         else if (mainWindow.isMinimized()) {
-            mainWindow.setFullScreen(false);
+            setFullScreen(false);
             sendWindowState('Minimized');
         }
         else {
-            mainWindow.setFullScreen(false);
+            setFullScreen(false);
             sendWindowState('Normal');
         }
     }
@@ -85,6 +85,38 @@
         });
     }
 
+    var isBrowserFullScreen = false;
+
+    function isFullScreen() {
+        return isBrowserFullScreen;
+        //return mainWindow.isFullScreen();
+    }
+    function setFullScreen(fullscreen) {
+        //mainWindow.setFullScreen(fullscreen);
+
+        if (fullscreen) {
+
+            var electron = require('electron');
+            var electronScreen = electron.screen;
+            var size = electronScreen.getPrimaryDisplay().bounds;
+
+            mainWindow.setBounds({
+                x: 0,
+                y: 0,
+                width: size.width,
+                height: size.height
+            });
+            mainWindow.setContentSize(size.width, size.height);
+            isBrowserFullScreen = true;
+
+        } else {
+
+            mainWindow.setSize(1280, 720);
+            mainWindow.center();
+            isBrowserFullScreen = false;
+        }
+    }
+
     function registerAppHost() {
 
         var protocol = require('protocol');
@@ -100,8 +132,8 @@
                 case 'windowstate-Normal':
 
                     disableWindowEvents();
-                    if (mainWindow.isFullScreen()) {
-                        mainWindow.setFullScreen(false);
+                    if (isFullScreen()) {
+                        setFullScreen(false);
                     }
                     if (mainWindow.isMaximized()) {
                         mainWindow.unmaximize();
@@ -117,7 +149,7 @@
                 case 'windowstate-Maximized':
                     disableWindowEvents();
                     mainWindow.maximize();
-                    mainWindow.setFullScreen(true);
+                    setFullScreen(true);
                     sendWindowState('Maximized');
                     enableWindowEvents();
                     break;
@@ -342,6 +374,7 @@
             resizable: true,
             center: true,
             title: 'Emby Theater',
+            //alwaysOnTop: true,
 
             'web-preferences': {
                 'web-security': false,
@@ -352,7 +385,8 @@
                 'webaudio': true,
                 'java': false,
                 'allowDisplayingInsecureContent': true,
-                'allowRunningInsecureContent': true
+                'allowRunningInsecureContent': true,
+                'overlayFullscreenVideo': true
             }
 
         });
@@ -361,6 +395,8 @@
 
         var url = 'http://mediabrowser.github.io/Emby.Web/index.html';
         //url = 'http://localhost:8088/index.html';
+
+        url += '?v=' + new Date().getTime();
 
         // and load the index.html of the app.
         mainWindow.loadUrl(url);
