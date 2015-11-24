@@ -363,7 +363,7 @@
         //url = 'http://localhost:8088/index.html';
 
         // and load the index.html of the app.
-        //mainWindow.loadUrl(url);
+        mainWindow.loadUrl(url);
 
         // Emitted when the window is closed.
         mainWindow.on('closed', function () {
