@@ -130,9 +130,53 @@
                 case 'exit':
                     app.quit();
                     break;
+                case 'video-on':
+                    mainWindow.setResizable(false);
+                    break;
+                case 'video-off':
+                    mainWindow.setResizable(true);
+                    break;
             }
             callback("");
         });
+    }
+
+    function registerFileSystem() {
+
+        var protocol = require('protocol');
+        var customProtocol = 'electronfs';
+
+        protocol.registerStringProtocol(customProtocol, function (request, callback) {
+
+            // Add 3 to account for ://
+            var url = request.url.substr(customProtocol.length + 3).split('?')[0];
+            var fs = require('fs');
+
+            switch (url) {
+
+                case 'fileexists':
+                case 'directoryexists':
+
+                    var path = request.url.split('=')[1];
+
+                    fs.exists(path, function (exists) {
+                        callback(exists.toString());
+                    });
+                    break;
+                default:
+                    callback("");
+                    break;
+            }
+        });
+    }
+
+    function addVideoHandler() {
+
+        var js = 'document.addEventListener("appready", function(){ Events.on(Emby.PlaybackManager, "playbackstart", function(){ if (Emby.PlaybackManager.isPlayingVideo()){ var xhr = new XMLHttpRequest();xhr.open("POST", "electronapphost://video-on", true);xhr.send(); } }); });';
+        mainWindow.webContents.executeJavaScript(js);
+
+        js = 'document.addEventListener("appready", function(){ Events.on(Emby.PlaybackManager, "playbackstop", function(){ var xhr = new XMLHttpRequest();xhr.open("POST", "electronapphost://video-off", true);xhr.send(); });';
+        mainWindow.webContents.executeJavaScript(js);
     }
 
     function alert(text) {
@@ -161,7 +205,8 @@
 
                 var startInfo = {
                     paths: {
-                        apphost: customFileProtocol + '://apphost'
+                        apphost: customFileProtocol + '://apphost',
+                        filesystem: customFileProtocol + '://filesystem'
                     },
                     name: app.getName(),
                     version: app.getVersion(),
@@ -294,7 +339,7 @@
             height: 720,
             transparent: true,
             frame: false,
-            resizable: false,
+            resizable: true,
             center: true,
             title: 'Emby Theater',
 
@@ -314,9 +359,11 @@
 
         mainWindow.webContents.on('dom-ready', setStartInfo);
 
+        var url = 'http://mediabrowser.github.io/Emby.Web/index.html';
+        //url = 'http://localhost:8088/index.html';
+
         // and load the index.html of the app.
-        mainWindow.loadUrl('http://mediabrowser.github.io/Emby.Web/index.html');
-        //mainWindow.loadUrl('http://localhost:8088/index.html');
+        //mainWindow.loadUrl(url);
 
         // Emitted when the window is closed.
         mainWindow.on('closed', function () {
@@ -333,6 +380,8 @@
 
         addPathIntercepts();
         registerAppHost();
+        registerFileSystem();
+        addVideoHandler();
     });
 
 })();

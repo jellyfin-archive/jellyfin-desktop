@@ -35,10 +35,10 @@
 
     function sendCommand(name) {
 
-        HttpClient.send({
-            type: 'GET',
-            url: 'electronapphost://' + name
-        });
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'electronapphost://' + name, true);
+
+        xhr.send();
     }
 
     return {
