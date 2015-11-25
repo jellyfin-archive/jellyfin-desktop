@@ -16,52 +16,13 @@
         }
     });
 
-    var windowEventsEnabled = false;
-    function enableWindowEvents() {
-        windowEventsEnabled = true;
-        mainWindow.on('maximize', onWindowStateChanged);
-        mainWindow.on('unmaximize', onWindowStateChanged);
-        mainWindow.on('minimize', onWindowStateChanged);
-        mainWindow.on('restore', onWindowStateChanged);
-        mainWindow.on('move', onWindowMoved);
-    }
-
-    function disableWindowEvents() {
-        windowEventsEnabled = false;
-    }
-
-    function onWindowStateChanged() {
-
-        if (!windowEventsEnabled) {
-            return;
-        }
-        if (isFullScreen()) {
-            sendWindowState('Maximized');
-        }
-        else if (mainWindow.isMaximized()) {
-            setFullScreen(true);
-            sendWindowState('Maximized');
-        }
-        else if (mainWindow.isMinimized()) {
-            setFullScreen(false);
-            sendWindowState('Minimized');
-        }
-        else {
-            setFullScreen(false);
-            sendWindowState('Normal');
-        }
-    }
-
     function onWindowMoved() {
-
-        if (!windowEventsEnabled) {
-            return;
-        }
 
         mainWindow.webContents.executeJavaScript('window.dispatchEvent(new CustomEvent("move", {}));');
     }
 
-    function sendWindowState(state) {
+    function setWindowState(state) {
+
         mainWindow.webContents.executeJavaScript('document.windowState="' + state + '";document.dispatchEvent(new CustomEvent("windowstatechanged", {detail:{windowState:"' + state + '"}}));');
     }
 
@@ -85,38 +46,7 @@
         });
     }
 
-    var isBrowserFullScreen = false;
-
-    function isFullScreen() {
-        return isBrowserFullScreen;
-        //return mainWindow.isFullScreen();
-    }
-    function setFullScreen(fullscreen) {
-        //mainWindow.setFullScreen(fullscreen);
-
-        if (fullscreen) {
-
-            var electron = require('electron');
-            var electronScreen = electron.screen;
-            var size = electronScreen.getPrimaryDisplay().bounds;
-
-            mainWindow.setBounds({
-                x: 0,
-                y: 0,
-                width: size.width,
-                height: size.height
-            });
-            mainWindow.setContentSize(size.width, size.height);
-            isBrowserFullScreen = true;
-
-        } else {
-
-            mainWindow.setSize(1280, 720);
-            mainWindow.center();
-            isBrowserFullScreen = false;
-        }
-    }
-
+    var isTransparencyRequired = false;
     function registerAppHost() {
 
         var protocol = require('protocol');
@@ -131,41 +61,26 @@
 
                 case 'windowstate-Normal':
 
-                    disableWindowEvents();
-                    if (isFullScreen()) {
-                        setFullScreen(false);
-                    }
-                    if (mainWindow.isMaximized()) {
-                        mainWindow.unmaximize();
-                    }
-                    else if (mainWindow.isMinimized()) {
-                        mainWindow.restore();
-                    }
-
-                    sendWindowState('Normal');
-                    enableWindowEvents();
+                    mainWindow.setResizable(!isTransparencyRequired);
+                    setWindowState('Normal');
 
                     break;
                 case 'windowstate-Maximized':
-                    disableWindowEvents();
-                    mainWindow.maximize();
-                    setFullScreen(true);
-                    sendWindowState('Maximized');
-                    enableWindowEvents();
+                    mainWindow.setResizable(false);
+                    setWindowState('Maximized');
                     break;
                 case 'windowstate-Minimized':
-                    disableWindowEvents();
-                    mainWindow.minimize();
-                    sendWindowState('Minimized');
-                    enableWindowEvents();
+                    setWindowState('Minimized');
                     break;
                 case 'exit':
                     app.quit();
                     break;
                 case 'video-on':
+                    isTransparencyRequired = true;
                     mainWindow.setResizable(false);
                     break;
                 case 'video-off':
+                    isTransparencyRequired = false;
                     mainWindow.setResizable(true);
                     break;
             }
@@ -360,6 +275,8 @@
         }
     }
 
+    app.commandLine.appendSwitch('enable-transparent-visuals');
+
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     app.on('ready', function () {
@@ -385,8 +302,7 @@
                 'webaudio': true,
                 'java': false,
                 'allowDisplayingInsecureContent': true,
-                'allowRunningInsecureContent': true,
-                'overlayFullscreenVideo': true
+                'allowRunningInsecureContent': true
             }
 
         });
@@ -410,7 +326,7 @@
         });
 
         mainWindow.setMenu(null);
-        enableWindowEvents();
+        mainWindow.on('move', onWindowMoved);
 
         mainWindow.on('app-command', onAppCommand);
 
