@@ -56,17 +56,18 @@
 
             ].indexOf(command.toLowerCase()) != -1;
         },
-        appName: function () {
-            return appStartInfo.name;
-        },
-        appVersion: function () {
-            return appStartInfo.version;
-        },
-        deviceName: function () {
-            return appStartInfo.deviceName;
-        },
-        deviceId: function () {
-            return appStartInfo.deviceId;
+        appInfo: function () {
+
+            return new Promise(function (resolve, reject) {
+
+                resolve({
+                    deviceId: appStartInfo.deviceId,
+                    deviceName: appStartInfo.deviceName,
+                    appName: appStartInfo.name,
+                    appVersion: appStartInfo.version
+                });
+            });
+
         },
         capabilities: getCapabilities,
         exit: function () {
