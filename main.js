@@ -21,8 +21,10 @@
         mainWindow.webContents.executeJavaScript('window.dispatchEvent(new CustomEvent("move", {}));');
     }
 
+    var currentWindowState = 'Normal';
     function setWindowState(state) {
 
+        currentWindowState = state;
         mainWindow.webContents.executeJavaScript('document.windowState="' + state + '";document.dispatchEvent(new CustomEvent("windowstatechanged", {detail:{windowState:"' + state + '"}}));');
     }
 
@@ -47,6 +49,8 @@
     }
 
     var isTransparencyRequired = false;
+    var maximizeOnStart = false;
+
     function registerAppHost() {
 
         var protocol = require('protocol');
@@ -82,6 +86,14 @@
                 case 'video-off':
                     isTransparencyRequired = false;
                     mainWindow.setResizable(true);
+                    break;
+                case 'loaded':
+
+                    if (maximizeOnStart) {
+
+                        mainWindow.setResizable(false);
+                        setWindowState('Maximized');
+                    }
                     break;
             }
             callback("");
@@ -281,15 +293,21 @@
     // initialization and is ready to create browser windows.
     app.on('ready', function () {
 
-        // Create the browser window.
-        mainWindow = new BrowserWindow({
+        var path = require("path");
+        var windowStatePath = path.join(app.getDataPath(), "windowstate.json");
 
-            width: 1280,
-            height: 720,
+        var previousWindowBounds;
+        try {
+            previousWindowBounds = JSON.parse(require("fs").readFileSync(windowStatePath, 'utf8'));
+        }
+        catch (e) {
+            previousWindowBounds = {};
+        }
+
+        var windowOptions = {
             transparent: true,
             frame: false,
             resizable: true,
-            center: true,
             title: 'Emby Theater',
             //alwaysOnTop: true,
 
@@ -305,8 +323,29 @@
                 'allowRunningInsecureContent': true
             }
 
-        });
+        };
 
+        windowOptions.center = true;
+
+        maximizeOnStart = previousWindowBounds.state == 'Maximized';
+
+        if (maximizeOnStart) {
+
+            windowOptions.width = previousWindowBounds.width || 1280;
+            windowOptions.height = previousWindowBounds.height || 720;
+            windowOptions.width = 1280;
+            windowOptions.height = 720;
+            //windowOptions.alwaysOnTop = true;
+            //windowOptions.x = 0;
+            //windowOptions.y = 0;
+
+        } else {
+            windowOptions.width = previousWindowBounds.width || 1280;
+            windowOptions.height = previousWindowBounds.height || 720;
+        }
+
+        // Create the browser window.
+        mainWindow = new BrowserWindow(windowOptions);
         mainWindow.webContents.on('dom-ready', setStartInfo);
 
         var url = 'http://mediabrowser.github.io/Emby.Web/index.html';
@@ -329,6 +368,13 @@
         mainWindow.on('move', onWindowMoved);
 
         mainWindow.on('app-command', onAppCommand);
+
+        mainWindow.on("close", function () {
+
+            var data = mainWindow.getBounds();
+            data.state = currentWindowState;
+            require("fs").writeFileSync(windowStatePath, JSON.stringify(data));
+        });
 
         addPathIntercepts();
         registerAppHost();
