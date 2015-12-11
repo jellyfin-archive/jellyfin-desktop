@@ -188,7 +188,7 @@
 
     function sendCommand(cmd) {
 
-        var script = "require(['inputreceiver'], function(inputreceiver){inputreceiver.handle('" + cmd + "');});";
+        var script = "require(['inputmanager'], function(inputmanager){inputmanager.handle('" + cmd + "');});";
         mainWindow.webContents.executeJavaScript(script);
     }
 

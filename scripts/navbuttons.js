@@ -1,8 +1,8 @@
-require(['inputreceiver'], function (inputreceiver) {
+require(['inputmanager'], function (inputmanager) {
 
     function sendCommand(name) {
 
-        inputreceiver.handle(name);
+        inputmanager.handle(name);
     }
 
     window.addEventListener('keydown', function (e) {
