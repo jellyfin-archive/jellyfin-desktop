@@ -165,6 +165,7 @@
                 var startInfo = {
                     paths: {
                         apphost: customFileProtocol + '://apphost',
+                        serverdiscovery: customFileProtocol + '://serverdiscovery',
                         filesystem: customFileProtocol + '://filesystem'
                     },
                     name: app.getName(),
