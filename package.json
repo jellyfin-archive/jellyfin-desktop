@@ -1,5 +1,5 @@
 {
-  "name": "Emby Theater",
+  "name": "Emby.Theater",
   "version": "1.0.0",
   "description": "Emby Theater for Electron",
   "main": "main.js",
