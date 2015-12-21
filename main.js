@@ -158,6 +158,7 @@
                                 // Name, Id, Address, EndpointAddress (optional)
                                 console.log('Server discovery json: ' + message.toString());
                                 var server = JSON.parse(message.toString());
+                                server.EndpointAddress = info.address;
                                 servers.push(server);
                             }
 
