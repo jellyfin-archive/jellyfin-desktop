@@ -369,7 +369,7 @@
         }
 
         var windowOptions = {
-            transparent: false,
+            transparent: true,
             frame: false,
             resizable: true,
             title: 'Emby Theater',
@@ -377,7 +377,7 @@
 
             'web-preferences': {
                 'web-security': false,
-                "webgl": false,
+                "webgl": true,
                 'node-integration': false,
                 'plugins': false,
                 'directWrite': true,
