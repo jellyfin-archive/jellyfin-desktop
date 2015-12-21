@@ -9,7 +9,13 @@
                 xhr.open('POST', 'electronserverdiscovery://findservers?timeout=' + timeoutMs, true);
                 xhr.onload = function () {
                     if (this.response) {
-                        resolve(JSON.parse(this.response));
+                        var data = this.response;
+                        try {
+                            var servers = JSON.parse(data);
+                            resolve(servers);
+                        } catch (e){
+                            reject();
+                        }
                     } else {
                         reject();
                     }
