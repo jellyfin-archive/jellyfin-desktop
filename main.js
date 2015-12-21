@@ -7,6 +7,7 @@
     // be closed automatically when the JavaScript object is garbage collected.
     var mainWindow = null;
 
+
     // Quit when all windows are closed.
     app.on('window-all-closed', function () {
         // On OS X it is common for applications and their menu bar
@@ -22,6 +23,7 @@
     }
 
     var currentWindowState = 'Normal';
+
     function setWindowState(state) {
 
         currentWindowState = state;
@@ -121,6 +123,69 @@
                     fs.exists(path, function (exists) {
                         callback(exists.toString());
                     });
+                    break;
+                default:
+                    callback("");
+                    break;
+            }
+        });
+    }
+
+    function registerServerdiscovery() {
+        var protocol = require('protocol');
+        var customProtocol = 'electronserverdiscovery';
+
+        protocol.registerStringProtocol(customProtocol, function (request, callback) {
+            var dgram = require('dgram');
+
+            // Add 3 to account for ://
+            var url = request.url.substr(customProtocol.length + 3).split('?')[0];
+
+            switch (url) {
+
+                case 'findservers':
+                    var timeoutMs = request.url.split('=')[1];
+                    var PORT = 7359;
+                    var MULTICAST_ADDR = "255.255.255.255";
+                    var client = dgram.createSocket({type: 'udp4', reuseAddr: true});
+                    var servers = [];
+                    function onReceive(message, info) {
+                        console.log('Message from: ' + info.address + ':' + info.port);
+                        console.log('ServerDiscovery message received');
+                        try {
+                            if (info != null) {
+                                // Expected server properties
+                                // Name, Id, Address, EndpointAddress (optional)
+                                console.log('Server discovery json: ' + message.toString());
+                                var server = JSON.parse(message.toString());
+                                server.EndpointAddress = server.Address;
+                                server.Address = info.address;
+                                servers.push(server);
+                            }
+
+                        } catch (err) {
+                            console.log('Error receiving server info: ' + err);
+                        }
+                    }
+                    function onTimerExpired() {
+                        console.log('timer expired', servers.length, 'servers received');
+                        console.log(servers);
+                        callback(JSON.stringify(servers));
+                        client.close();
+                    }
+                    client.on('message', onReceive);
+                    client.on('listening', function () {
+                        var address = client.address();
+                        client.setBroadcast(true);
+                        var message = new Buffer("who is EmbyServer?");
+                        client.send(message, 0, message.length, PORT, MULTICAST_ADDR, function(err) {
+                            if(err) console.error(err);
+                        });
+                        console.log('UDP Client listening on ' + address.address + ":" + address.port);
+                        console.log('starting udp receive timer with timeout ms: ' + timeoutMs);
+                        timeoutMs = setTimeout(onTimerExpired, timeoutMs);
+                    });
+                    client.bind();
                     break;
                 default:
                     callback("");
@@ -306,7 +371,7 @@
         }
 
         var windowOptions = {
-            transparent: true,
+            transparent: false,
             frame: false,
             resizable: true,
             title: 'Emby Theater',
@@ -314,7 +379,7 @@
 
             'web-preferences': {
                 'web-security': false,
-                "webgl": true,
+                "webgl": false,
                 'node-integration': false,
                 'plugins': false,
                 'directWrite': true,
@@ -350,7 +415,7 @@
         mainWindow.webContents.on('dom-ready', setStartInfo);
 
         var url = 'http://mediabrowser.github.io/Emby.Web/index.html';
-        //url = 'http://localhost:8088/index.html';
+        url = 'http://localhost:8088/index.html';
 
         url += '?v=' + new Date().getTime();
 
@@ -380,7 +445,10 @@
         addPathIntercepts();
         registerAppHost();
         registerFileSystem();
+        registerServerdiscovery();
         addVideoHandler();
     });
-
+    require('electron-debug')({
+        showDevTools: true
+    });
 })();

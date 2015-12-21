@@ -5,12 +5,19 @@
         findServers: function (timeoutMs) {
 
             return new Promise(function (resolve, reject) {
-
-                var servers = [];
-
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'electronserverdiscovery://findservers?timeout=' + timeoutMs, true);
+                xhr.onload = function () {
+                    if (this.response) {
+                        resolve(JSON.parse(this.response));
+                    } else {
+                        reject();
+                    }
+                };
+                xhr.onerror = reject;
+                xhr.send();
                 // Expected server properties
                 // Name, Id, Address, EndpointAddress (optional)
-                resolve(servers);
             });
         }
     };
