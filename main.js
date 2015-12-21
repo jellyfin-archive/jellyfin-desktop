@@ -448,7 +448,4 @@
         registerServerdiscovery();
         addVideoHandler();
     });
-    require('electron-debug')({
-        showDevTools: true
-    });
 })();
