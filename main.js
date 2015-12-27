@@ -197,7 +197,11 @@
                     version: app.getVersion(),
                     deviceName: os.hostname(),
                     deviceId: os.hostname(),
-                    plugins: pluginFiles.map(function (f) {
+                    plugins: pluginFiles.filter(function (f) {
+
+                        return f.indexOf('.js') != -1;
+
+                    }).map(function (f) {
 
                         return 'file://' + path.normalize(pluginDirectory + '/' + f);
                     }),
