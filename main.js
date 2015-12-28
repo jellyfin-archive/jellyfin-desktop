@@ -170,6 +170,11 @@
         });
     }
 
+    function replaceAll(str, find, replace) {
+
+        return str.split(find).join(replace);
+    }
+
     function setStartInfo() {
 
         var os = require("os");
@@ -203,11 +208,11 @@
 
                     }).map(function (f) {
 
-                        return 'file://' + path.normalize(pluginDirectory + '/' + f);
+                        return 'file://' + replaceAll(path.normalize(pluginDirectory + '/' + f), '\\', '/');
                     }),
                     scripts: scriptFiles.map(function (f) {
 
-                        return 'file://' + path.normalize(scriptsDirectory + '/' + f);
+                        return 'file://' + replaceAll(path.normalize(scriptsDirectory + '/' + f), '\\', '/');
                     })
                 };
 
