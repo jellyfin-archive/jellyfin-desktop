@@ -346,16 +346,17 @@
             title: 'Emby Theater',
             //alwaysOnTop: true,
 
-            'web-preferences': {
-                'web-security': false,
+            webPreferences: {
+                webSecurity: false,
                 "webgl": true,
-                'node-integration': false,
+                nodeIntegration: false,
                 'plugins': false,
                 'directWrite': true,
                 'webaudio': true,
-                'java': false,
-                'allowDisplayingInsecureContent': true,
-                'allowRunningInsecureContent': true
+                java: false,
+                allowDisplayingInsecureContent: true,
+                allowRunningInsecureContent: true,
+                experimentalFeatures: true
             }
 
         };
