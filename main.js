@@ -412,6 +412,8 @@
             require("fs").writeFileSync(windowStatePath, JSON.stringify(data));
         });
 
+        //mainWindow.openDevTools();
+
         addPathIntercepts();
         registerAppHost();
         registerFileSystem();
