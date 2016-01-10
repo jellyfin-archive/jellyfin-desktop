@@ -62,8 +62,9 @@
 
             // Add 3 to account for ://
             var url = request.url.substr(customProtocol.length + 3);
+            var command = url.split('?')[0];
 
-            switch (url) {
+            switch (command) {
 
                 case 'windowstate-Normal':
 
@@ -80,6 +81,9 @@
                     break;
                 case 'exit':
                     app.quit();
+                    break;
+                case 'openurl':
+                    require('shell').openExternal(url.substring(url.indexOf('url=') + 4));
                     break;
                 case 'video-on':
                     isTransparencyRequired = true;
@@ -195,6 +199,7 @@
                 var startInfo = {
                     paths: {
                         apphost: customFileProtocol + '://apphost',
+                        shell: customFileProtocol + '://shell',
                         serverdiscovery: customFileProtocol + '://serverdiscovery/serverdiscovery',
                         filesystem: customFileProtocol + '://filesystem'
                     },
