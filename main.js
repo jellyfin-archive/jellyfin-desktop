@@ -76,6 +76,10 @@
                     mainWindow.setResizable(false);
                     setWindowState('Maximized');
                     break;
+                case 'windowstate-Fullscreen':
+                    mainWindow.setResizable(false);
+                    setWindowState('Fullscreen');
+                    break;
                 case 'windowstate-Minimized':
                     setWindowState('Minimized');
                     break;
@@ -349,6 +353,8 @@
             frame: false,
             resizable: true,
             title: 'Emby Theater',
+            minWidth: 720,
+            minHeight: 480,
             //alwaysOnTop: true,
 
             webPreferences: {
