@@ -5,6 +5,11 @@ require(['inputmanager'], function (inputmanager) {
         inputmanager.handle(name);
     }
 
+    function isEditable(elem) {
+
+        return elem.tagName == 'INPUT';
+    }
+
     window.addEventListener('keydown', function (e) {
 
         switch (e.keyCode) {
@@ -29,8 +34,10 @@ require(['inputmanager'], function (inputmanager) {
                 break;
             case 8:
                 // backspace
-                e.preventDefault();
-                sendCommand('back');
+                if (!isEditable(e.target)) {
+                    e.preventDefault();
+                    sendCommand('back');
+                }
                 break;
             default:
                 break;
