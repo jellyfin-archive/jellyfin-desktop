@@ -4,9 +4,16 @@ var MULTICAST_ADDR = "255.255.255.255";
 
 
 
-function findServers(timeoutMs, callback){
-    var client = dgram.createSocket({type: 'udp4', reuseAddr: true});
+function findServers(timeoutMs, callback) {
     var servers = [];
+    var client;
+
+    try {
+        client = dgram.createSocket({ type: 'udp4', reuseAddr: true });
+    } catch (err) {
+        callback(JSON.stringify(servers));
+        return;
+    }
 
     function onReceive(message, info) {
         console.log('Message from: ' + info.address + ':' + info.port);
@@ -30,23 +37,41 @@ function findServers(timeoutMs, callback){
         console.log('timer expired', servers.length, 'servers received');
         console.log(servers);
         callback(JSON.stringify(servers));
-        client.close();
+
+        try {
+            client.close();
+        }
+        catch (err) {
+
+        }
     }
 
     client.on('message', onReceive);
 
     client.on('listening', function () {
-        var address = client.address();
-        client.setBroadcast(true);
-        var message = new Buffer("who is EmbyServer?");
-        client.send(message, 0, message.length, PORT, MULTICAST_ADDR, function(err) {
-            if(err) console.error(err);
-        });
-        console.log('UDP Client listening on ' + address.address + ":" + address.port);
-        console.log('starting udp receive timer with timeout ms: ' + timeoutMs);
-        timeoutMs = setTimeout(onTimerExpired, timeoutMs);
+
+        try {
+            var address = client.address();
+            client.setBroadcast(true);
+            var message = new Buffer("who is EmbyServer?");
+            client.send(message, 0, message.length, PORT, MULTICAST_ADDR, function (err) {
+                if (err) console.error(err);
+            });
+            console.log('UDP Client listening on ' + address.address + ":" + address.port);
+            console.log('starting udp receive timer with timeout ms: ' + timeoutMs);
+            timeoutMs = setTimeout(onTimerExpired, timeoutMs);
+        }
+        catch (err) {
+            onTimerExpired();
+        }
     });
-    client.bind();
+
+    try {
+        client.bind();
+    }
+    catch (err) {
+        onTimerExpired();
+    }
 
 }
 
