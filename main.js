@@ -296,7 +296,7 @@
             case 'media-rewind':
                 sendCommand("rewind");
                 break;
-            case 'media-play-pause':
+            case 'media-play_pause':
                 sendCommand("playpause");
                 break;
             case 'channel-up':
