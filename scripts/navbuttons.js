@@ -7,6 +7,9 @@ require(['inputmanager'], function (inputmanager) {
 
     function isEditable(elem) {
 
+        if (elem.readonly) {
+            return false;
+        }
         return elem.tagName == 'INPUT';
     }
 
