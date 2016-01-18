@@ -1,10 +1,8 @@
-var dgram = require('dgram');
-var PORT = 7359;
-var MULTICAST_ADDR = "255.255.255.255";
-
-
-
 function findServers(timeoutMs, callback) {
+    var dgram = require('dgram');
+    var PORT = 7359;
+    var MULTICAST_ADDR = "255.255.255.255";
+
     var servers = [];
     var client;
 

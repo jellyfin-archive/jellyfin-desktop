@@ -114,6 +114,18 @@
         },
         shutdown: function () {
             sendCommand('shutdown');
+        },
+        appName: function() {
+            return appStartInfo.name;
+        },
+        appVersion: function () {
+            return appStartInfo.version;
+        },
+        deviceName: function () {
+            return appStartInfo.deviceName;
+        },
+        deviceId: function () {
+            return Promise.resolve(appStartInfo.deviceId);
         }
     };
 });
