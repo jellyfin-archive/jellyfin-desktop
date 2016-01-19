@@ -1,4 +1,4 @@
-﻿define([], function () {
+﻿define(['playbackManager'], function (playbackManager) {
 
     function getCapabilities() {
 
@@ -93,11 +93,11 @@
         capabilities: getCapabilities,
         exit: function () {
 
-            if (Emby.PlaybackManager.isPlaying()) {
+            if (playbackManager.isPlaying()) {
                 // Prevent backwards navigation from stopping video
-                history.back = function() {};
+                history.back = function () { };
                 showExit();
-                Emby.PlaybackManager.stop();
+                playbackManager.stop();
                 setTimeout(function () {
                     sendCommand('exit');
                 }, 1500);
@@ -115,7 +115,7 @@
         shutdown: function () {
             sendCommand('shutdown');
         },
-        appName: function() {
+        appName: function () {
             return appStartInfo.name;
         },
         appVersion: function () {

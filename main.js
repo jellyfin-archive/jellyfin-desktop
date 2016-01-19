@@ -162,15 +162,6 @@
         });
     }
 
-    function addVideoHandler() {
-
-        var js = 'document.addEventListener("appready", function(){ Events.on(Emby.PlaybackManager, "playbackstart", function(){ if (Emby.PlaybackManager.isPlayingVideo()){ var xhr = new XMLHttpRequest();xhr.open("POST", "electronapphost://video-on", true);xhr.send(); } }); });';
-        mainWindow.webContents.executeJavaScript(js);
-
-        js = 'document.addEventListener("appready", function(){ Events.on(Emby.PlaybackManager, "playbackstop", function(){ var xhr = new XMLHttpRequest();xhr.open("POST", "electronapphost://video-off", true);xhr.send(); });';
-        mainWindow.webContents.executeJavaScript(js);
-    }
-
     function alert(text) {
         require('dialog').showMessageBox(mainWindow, {
             message: text.toString(),
@@ -429,6 +420,5 @@
         registerAppHost();
         registerFileSystem();
         registerServerdiscovery();
-        addVideoHandler();
     });
 })();
