@@ -229,6 +229,10 @@
 
     function onAppCommand(e, cmd) {
 
+        if (cmd != 'Unknown') {
+            //alert(cmd);
+        }
+
         switch (cmd) {
 
             case 'browser-backward':
