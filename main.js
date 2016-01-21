@@ -357,12 +357,12 @@
                 "webgl": true,
                 nodeIntegration: false,
                 'plugins': false,
-                'directWrite': true,
                 'webaudio': true,
                 java: false,
                 allowDisplayingInsecureContent: true,
                 allowRunningInsecureContent: true,
-                experimentalFeatures: true
+                //experimentalFeatures: true,
+                blinkFeatures: 'CSSOMSmoothScroll'
             }
 
         };
