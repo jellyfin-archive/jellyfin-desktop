@@ -202,6 +202,7 @@
                     version: app.getVersion(),
                     deviceName: os.hostname(),
                     deviceId: os.hostname(),
+                    supportsTransparentWindow: supportsTransparentWindow(),
                     plugins: pluginFiles.filter(function (f) {
 
                         return f.indexOf('.js') != -1;
@@ -328,6 +329,17 @@
 
     app.commandLine.appendSwitch('enable-transparent-visuals');
 
+    function supportsTransparentWindow() {
+
+        if (process.platform !== 'win32') {
+            return true;
+        }
+
+        //alert(app.isAeroGlassEnabled());
+        var arguments = process.argv.slice(2);
+        return arguments[0] == 'true';
+    }
+
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     app.on('ready', function () {
@@ -343,8 +355,10 @@
             previousWindowBounds = {};
         }
 
+        var supportsTransparency = supportsTransparentWindow();
+
         var windowOptions = {
-            transparent: true,
+            transparent: supportsTransparency,
             frame: false,
             resizable: true,
             title: 'Emby Theater',
@@ -354,10 +368,10 @@
 
             webPreferences: {
                 webSecurity: false,
-                "webgl": true,
+                webgl: true,
                 nodeIntegration: false,
-                'plugins': false,
-                'webaudio': true,
+                plugins: false,
+                webaudio: true,
                 java: false,
                 allowDisplayingInsecureContent: true,
                 allowRunningInsecureContent: true,

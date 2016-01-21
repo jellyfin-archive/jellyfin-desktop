@@ -67,15 +67,19 @@
         setWindowState: setWindowState,
         supports: function (command) {
 
-            return [
-
+            var features = [
                 'windowstate',
                 'exit'
                 //'sleep',
                 //'restart',
                 //'shutdown'
+            ];
 
-            ].indexOf(command.toLowerCase()) != -1;
+            if (appStartInfo.supportsTransparentWindow) {
+                features.push('windowtransparency');
+            }
+
+            return features.indexOf(command.toLowerCase()) != -1;
         },
         appInfo: function () {
 
