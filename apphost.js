@@ -1,4 +1,4 @@
-﻿define(['playbackManager'], function (playbackManager) {
+﻿define(['playbackManager'], function () {
 
     function getCapabilities() {
 
@@ -97,18 +97,19 @@
         capabilities: getCapabilities,
         exit: function () {
 
-            if (playbackManager.isPlaying()) {
-                // Prevent backwards navigation from stopping video
-                history.back = function () { };
-                showExit();
-                playbackManager.stop();
-                setTimeout(function () {
+            require(['playbackManager'], function (playbackManager) {
+                if (playbackManager.isPlaying()) {
+                    // Prevent backwards navigation from stopping video
+                    history.back = function () { };
+                    showExit();
+                    playbackManager.stop();
+                    setTimeout(function () {
+                        sendCommand('exit');
+                    }, 1500);
+                } else {
                     sendCommand('exit');
-                }, 1500);
-            } else {
-                sendCommand('exit');
-            }
-
+                }
+            });
         },
         sleep: function () {
             sendCommand('sleep');
