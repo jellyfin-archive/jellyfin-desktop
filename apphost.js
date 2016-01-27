@@ -1,4 +1,4 @@
-﻿define(['playbackManager'], function () {
+﻿define([], function () {
 
     function getCapabilities() {
 
