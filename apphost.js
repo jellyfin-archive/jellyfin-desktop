@@ -26,10 +26,10 @@
 
     document.addEventListener('dblclick', function () {
 
-        if (getWindowState() == 'Maximized') {
-            setWindowState('Normal');
-        } else {
+        if (getWindowState() == 'Normal') {
             setWindowState('Maximized');
+        } else {
+            setWindowState('Normal');
         }
     });
 
