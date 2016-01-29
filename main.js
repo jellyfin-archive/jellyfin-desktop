@@ -376,7 +376,7 @@
                 allowDisplayingInsecureContent: true,
                 allowRunningInsecureContent: true,
                 //experimentalFeatures: true,
-                blinkFeatures: 'CSSOMSmoothScroll'
+                blinkFeatures: 'CSSOMSmoothScroll,CSSBackdropFilter'
             }
 
         };
