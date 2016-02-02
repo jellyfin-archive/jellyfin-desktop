@@ -335,9 +335,7 @@
             return true;
         }
 
-        //alert(app.isAeroGlassEnabled());
-        var arguments = process.argv.slice(2);
-        return arguments[0] == 'true';
+        return app.isAeroGlassEnabled();
     }
 
     // This method will be called when Electron has finished
