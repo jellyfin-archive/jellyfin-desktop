@@ -23,6 +23,6 @@
   },
   "homepage": "https://github.com/MediaBrowser/Emby.Theater.Electron#readme",
   "devDependencies": {
-    "electron-prebuilt": "^0.35.1"
+    "electron-prebuilt": "^0.36.7"
   }
 }
