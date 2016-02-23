@@ -1,7 +1,7 @@
 {
   "name": "emby.theater",
   "productName": "Emby Theater",
-  "version": "1.0.45",
+  "version": "1.0.46",
   "description": "Emby Theater for Electron",
   "main": "main.js",
   "scripts": {
