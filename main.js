@@ -174,7 +174,22 @@
         return str.split(find).join(replace);
     }
 
+    var firstDomDone;
     function setStartInfo() {
+
+        if (!firstDomDone) {
+            firstDomDone = true;
+
+            var url = 'http://mediabrowser.github.io/Emby.Web/index.html';
+            //url = 'http://localhost:8088/index.html';
+            url += '?v=' + new Date().getTime();
+
+            // and load the index.html of the app.
+            mainWindow.loadUrl(url);
+
+            firstDomDone = true;
+            return;
+        }
 
         var os = require("os");
 
@@ -327,7 +342,7 @@
         }
     }
 
-    app.commandLine.appendSwitch('enable-transparent-visuals');
+    //app.commandLine.appendSwitch('enable-transparent-visuals');
 
     function supportsTransparentWindow() {
 
@@ -363,6 +378,9 @@
             minWidth: 720,
             minHeight: 480,
             //alwaysOnTop: true,
+
+            //show: false,
+            backgroundColor: '#000000',
 
             webPreferences: {
                 webSecurity: false,
@@ -402,10 +420,7 @@
         mainWindow = new BrowserWindow(windowOptions);
         mainWindow.webContents.on('dom-ready', setStartInfo);
 
-        var url = 'http://mediabrowser.github.io/Emby.Web/index.html';
-        //url = 'http://localhost:8088/index.html';
-
-        url += '?v=' + new Date().getTime();
+        var url = 'file://' + __dirname + '/index.html';
 
         // and load the index.html of the app.
         mainWindow.loadUrl(url);
