@@ -186,8 +186,6 @@
 
             // and load the index.html of the app.
             mainWindow.loadUrl(url);
-
-            firstDomDone = true;
             return;
         }
 
