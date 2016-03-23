@@ -42,9 +42,9 @@
     }
 
     function showExit() {
-        require(['paperdialoghelper'], function (paperdialoghelper) {
+        require(['dialogHelper'], function (dialogHelper) {
 
-            var dlg = paperdialoghelper.createDialog({
+            var dlg = dialogHelper.createDialog({
                 removeOnClose: true
             });
 
@@ -58,7 +58,7 @@
             dlg.innerHTML = html;
             document.body.appendChild(dlg);
 
-            return paperdialoghelper.open(dlg);
+            dialogHelper.open(dlg);
         });
     }
 
