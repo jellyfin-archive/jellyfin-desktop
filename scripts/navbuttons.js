@@ -5,9 +5,25 @@ require(['inputmanager'], function (inputmanager) {
         inputmanager.handle(name);
     }
 
+    function parentWithTag(elem, tagName) {
+
+        while (elem.tagName != tagName) {
+            elem = elem.parentNode;
+
+            if (!elem) {
+                return null;
+            }
+        }
+
+        return elem;
+    }
+
     function isEditable(elem) {
 
         if (elem.readonly) {
+            return false;
+        }
+        if (parentWithTag(elem, 'EMBY-DROPDOWN-MENU')) {
             return false;
         }
         return elem.tagName == 'INPUT';
