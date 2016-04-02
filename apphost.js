@@ -69,7 +69,8 @@
 
             var features = [
                 'windowstate',
-                'exit'
+                'exit',
+                'runatstartup'
                 //'sleep',
                 //'restart',
                 //'shutdown'
@@ -80,19 +81,6 @@
             }
 
             return features.indexOf(command.toLowerCase()) != -1;
-        },
-        appInfo: function () {
-
-            return new Promise(function (resolve, reject) {
-
-                resolve({
-                    deviceId: appStartInfo.deviceId,
-                    deviceName: appStartInfo.deviceName,
-                    appName: appStartInfo.name,
-                    appVersion: appStartInfo.version
-                });
-            });
-
         },
         capabilities: getCapabilities,
         exit: function () {

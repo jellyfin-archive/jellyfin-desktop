@@ -86,6 +86,15 @@
                 case 'exit':
                     app.quit();
                     break;
+                case 'sleep':
+                    app.quit();
+                    break;
+                case 'shutdown':
+                    app.quit();
+                    break;
+                case 'restart':
+                    app.quit();
+                    break;
                 case 'openurl':
                     require('shell').openExternal(url.substring(url.indexOf('url=') + 4));
                     break;
