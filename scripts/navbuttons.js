@@ -2,7 +2,7 @@ require(['inputmanager'], function (inputmanager) {
 
     function sendCommand(name) {
 
-        inputmanager.handle(name);
+        inputmanager.trigger(name);
     }
 
     function parentWithTag(elem, tagName) {
