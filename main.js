@@ -134,7 +134,8 @@
     function startProcess(options, callback) {
 
         var pid;
-        var process = require('child_process').execFile(options.path, [options.arguments || ''], {}, function (error, stdout, stderr) {
+        var args = (options.arguments || '').split('|||');
+        var process = require('child_process').execFile(options.path, args, {}, function (error, stdout, stderr) {
 
             processes[pid] = null;
             var script = 'onChildProcessClosed("' + pid + '", ' + (error ? 'true' : 'false') + ');';
