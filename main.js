@@ -62,7 +62,8 @@
 
             // Add 3 to account for ://
             var url = request.url.substr(customProtocol.length + 3);
-            var command = url.split('?')[0];
+            var parts = url.split('?');
+            var command = parts[0];
 
             switch (command) {
 
@@ -98,6 +99,15 @@
                 case 'openurl':
                     require('shell').openExternal(url.substring(url.indexOf('url=') + 4));
                     break;
+                case 'shellstart':
+
+                    var options = require('querystring').parse(parts[1]);
+                    startProcess(options, callback);
+                    return;
+                case 'shellclose':
+
+                    closeProcess(require('querystring').parse(parts[1]).id, callback);
+                    return;
                 case 'video-on':
                     isTransparencyRequired = true;
                     mainWindow.setResizable(false);
@@ -117,6 +127,33 @@
             }
             callback("");
         });
+    }
+
+    var processes = {};
+
+    function startProcess(options, callback) {
+
+        var pid;
+        var process = require('child_process').execFile(options.path, [options.arguments || ''], {}, function (error, stdout, stderr) {
+
+            processes[pid] = null;
+            var script = 'onChildProcessClosed("' + pid + '", ' + (error ? 'true' : 'false') + ');';
+
+            sendJavascript(script);
+        });
+
+        pid = process.pid.toString();
+        processes[pid] = process;
+        callback(pid);
+    }
+
+    function closeProcess(id, callback) {
+
+        var process = processes[id];
+        if (process) {
+            process.kill();
+        }
+        callback("");
     }
 
     function registerFileSystem() {
@@ -239,7 +276,7 @@
                     })
                 };
 
-                mainWindow.webContents.executeJavaScript('var appStartInfo=' + JSON.stringify(startInfo) + ';');
+                sendJavascript('var appStartInfo=' + JSON.stringify(startInfo) + ';');
             });
         });
     }
@@ -247,7 +284,19 @@
     function sendCommand(cmd) {
 
         var script = "require(['inputmanager'], function(inputmanager){inputmanager.handle('" + cmd + "');});";
-        mainWindow.webContents.executeJavaScript(script);
+        sendJavascript(script);
+    }
+
+    function sendJavascript(script) {
+
+        // Add some null checks to handle attempts to send JS when the process is closing or has closed
+        var win = mainWindow;
+        if (win) {
+            var web = win.webContents;
+            if (web) {
+                web.executeJavaScript(script);
+            }
+        }
     }
 
     function onAppCommand(e, cmd) {
