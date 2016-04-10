@@ -63,7 +63,7 @@
         openUrl: function (url) {
             return sendCommand('openurl?url=' + url);
         },
-        canExec: false,
+        canExec: true,
         close: function (processId) {
 
             var url = 'shellclose?id=' + processId;
