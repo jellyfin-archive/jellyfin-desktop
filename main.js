@@ -284,7 +284,7 @@
 
     function sendCommand(cmd) {
 
-        var script = "require(['inputmanager'], function(inputmanager){inputmanager.handle('" + cmd + "');});";
+        var script = "require(['inputmanager'], function(inputmanager){inputmanager.trigger('" + cmd + "');});";
         sendJavascript(script);
     }
 
