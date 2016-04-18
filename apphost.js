@@ -70,7 +70,8 @@
             var features = [
                 'windowstate',
                 'exit',
-                'runatstartup'
+                'runatstartup',
+                'filedownload'
                 //'sleep',
                 //'restart',
                 //'shutdown'
@@ -107,6 +108,15 @@
         },
         shutdown: function () {
             sendCommand('shutdown');
+        },
+        appInfo: function () {
+
+            return Promise.resolve({
+                appName: appStartInfo.name,
+                appVersion: appStartInfo.version,
+                deviceName: appStartInfo.deviceName,
+                deviceId: appStartInfo.deviceId
+            });
         },
         appName: function () {
             return appStartInfo.name;
