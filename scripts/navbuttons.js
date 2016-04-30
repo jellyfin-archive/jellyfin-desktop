@@ -26,7 +26,7 @@ require(['inputmanager'], function (inputmanager) {
         if (parentWithTag(elem, 'EMBY-DROPDOWN-MENU')) {
             return false;
         }
-        return elem.tagName == 'INPUT';
+        return elem.tagName == 'INPUT' || elem.tagName == 'TEXTAREA';
     }
 
     window.addEventListener('keydown', function (e) {
