@@ -41,27 +41,6 @@
         xhr.send();
     }
 
-    function showExit() {
-        require(['dialogHelper'], function (dialogHelper) {
-
-            var dlg = dialogHelper.createDialog({
-                removeOnClose: true
-            });
-
-            var html = '';
-            html += '<div>';
-
-            html += 'Shutting down...';
-
-            html += '</div>';
-
-            dlg.innerHTML = html;
-            document.body.appendChild(dlg);
-
-            dialogHelper.open(dlg);
-        });
-    }
-
     return {
         getWindowState: getWindowState,
         setWindowState: setWindowState,
@@ -85,20 +64,7 @@
         },
         capabilities: getCapabilities,
         exit: function () {
-
-            require(['playbackManager'], function (playbackManager) {
-                if (playbackManager.isPlaying()) {
-                    // Prevent backwards navigation from stopping video
-                    history.back = function () { };
-                    showExit();
-                    playbackManager.stop();
-                    setTimeout(function () {
-                        sendCommand('exit');
-                    }, 1500);
-                } else {
-                    sendCommand('exit');
-                }
-            });
+            sendCommand('exit');
         },
         sleep: function () {
             sendCommand('sleep');

@@ -410,12 +410,27 @@
         return app.isAeroGlassEnabled();
     }
 
+    function getWindowStateDataPath() {
+
+        var path = require("path");
+        return path.join(app.getDataPath(), "windowstate.json");
+    }
+
+    function onWindowClose() {
+
+        var data = mainWindow.getBounds();
+        data.state = currentWindowState;
+        var windowStatePath = getWindowStateDataPath();
+        require("fs").writeFileSync(windowStatePath, JSON.stringify(data));
+
+        mainWindow.webContents.executeJavaScript('AppCloseHelper.onClosing();');
+    }
+
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     app.on('ready', function () {
 
-        var path = require("path");
-        var windowStatePath = path.join(app.getDataPath(), "windowstate.json");
+        var windowStatePath = getWindowStateDataPath();
 
         var previousWindowBounds;
         try {
@@ -492,15 +507,8 @@
 
         mainWindow.setMenu(null);
         mainWindow.on('move', onWindowMoved);
-
         mainWindow.on('app-command', onAppCommand);
-
-        mainWindow.on("close", function () {
-
-            var data = mainWindow.getBounds();
-            data.state = currentWindowState;
-            require("fs").writeFileSync(windowStatePath, JSON.stringify(data));
-        });
+        mainWindow.on("close", onWindowClose);
 
         //mainWindow.openDevTools();
 
