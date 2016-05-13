@@ -50,7 +50,8 @@
                 'windowstate',
                 'exit',
                 'runatstartup',
-                'filedownload'
+                'filedownload',
+                'sharing'
                 //'sleep',
                 //'restart',
                 //'shutdown'
