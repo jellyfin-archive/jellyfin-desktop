@@ -1,7 +1,8 @@
 (function () {
 
-    var app = require('app');  // Module to control application life.
-    var BrowserWindow = require('browser-window');  // Module to create native browser window.
+    var electron = require('electron');
+    var app = electron.app;  // Module to control application life.
+    var BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
 
     // Keep a global reference of the window object, if you don't, the window will
     // be closed automatically when the JavaScript object is garbage collected.
@@ -34,7 +35,7 @@
 
     function addPathIntercepts() {
 
-        var protocol = require('protocol');
+        var protocol = electron.protocol;
         var path = require('path');
 
         protocol.registerFileProtocol(customFileProtocol, function (request, callback) {
@@ -55,7 +56,7 @@
 
     function registerAppHost() {
 
-        var protocol = require('protocol');
+        var protocol = electron.protocol;
         var customProtocol = 'electronapphost';
 
         protocol.registerStringProtocol(customProtocol, function (request, callback) {
@@ -159,7 +160,7 @@
 
     function registerFileSystem() {
 
-        var protocol = require('protocol');
+        var protocol = electron.protocol;
         var customProtocol = 'electronfs';
 
         protocol.registerStringProtocol(customProtocol, function (request, callback) {
@@ -187,7 +188,8 @@
     }
 
     function registerServerdiscovery() {
-        var protocol = require('protocol');
+
+        var protocol = electron.protocol;
         var customProtocol = 'electronserverdiscovery';
         var serverdiscovery = require('./serverdiscovery/serverdiscovery-native');
 
@@ -229,10 +231,11 @@
 
             var url = 'http://mediabrowser.github.io/Emby.Web/index.html';
             //url = 'http://localhost:8088/index.html';
+            url = 'http://tv.emby.media/index.html';
             url += '?v=' + new Date().getTime();
 
             // and load the index.html of the app.
-            mainWindow.loadUrl(url);
+            mainWindow.loadURL(url);
             return;
         }
 
@@ -407,13 +410,13 @@
             return true;
         }
 
-        return app.isAeroGlassEnabled();
+        return true;
     }
 
     function getWindowStateDataPath() {
 
         var path = require("path");
-        return path.join(app.getDataPath(), "windowstate.json");
+        return path.join(app.getPath('userData'), "windowstate.json");
     }
 
     function onWindowClose() {
@@ -463,8 +466,9 @@
                 java: false,
                 allowDisplayingInsecureContent: true,
                 allowRunningInsecureContent: true,
-                //experimentalFeatures: true,
-                blinkFeatures: 'CSSOMSmoothScroll,CSSBackdropFilter'
+                experimentalFeatures: true,
+                blinkFeatures: 'CSSOMSmoothScroll,CSSBackdropFilter',
+                backgroundThrottling: false
             }
 
         };
@@ -495,7 +499,7 @@
         var url = 'file://' + __dirname + '/index.html';
 
         // and load the index.html of the app.
-        mainWindow.loadUrl(url);
+        mainWindow.loadURL(url);
 
         // Emitted when the window is closed.
         mainWindow.on('closed', function () {
