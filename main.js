@@ -231,7 +231,7 @@
 
             var url = 'http://mediabrowser.github.io/Emby.Web/index.html';
             //url = 'http://localhost:8088/index.html';
-            url = 'http://tv.emby.media/index.html';
+            //url = 'http://tv.emby.media/index.html';
             url += '?v=' + new Date().getTime();
 
             // and load the index.html of the app.
