@@ -98,7 +98,7 @@
                     app.quit();
                     break;
                 case 'openurl':
-                    require('shell').openExternal(url.substring(url.indexOf('url=') + 4));
+                    electron.shell.openExternal(url.substring(url.indexOf('url=') + 4));
                     break;
                 case 'shellstart':
 
