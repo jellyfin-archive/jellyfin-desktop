@@ -212,7 +212,7 @@
     }
 
     function alert(text) {
-        require('dialog').showMessageBox(mainWindow, {
+        electron.dialog.showMessageBox(mainWindow, {
             message: text.toString(),
             buttons: ['ok']
         });
@@ -230,8 +230,8 @@
             firstDomDone = true;
 
             var url = 'http://mediabrowser.github.io/Emby.Web/index.html';
+            url = 'http://tv.emby.media/index.html';
             //url = 'http://localhost:8088/index.html';
-            //url = 'http://tv.emby.media/index.html';
             url += '?v=' + new Date().getTime();
 
             // and load the index.html of the app.
@@ -427,6 +427,12 @@
         require("fs").writeFileSync(windowStatePath, JSON.stringify(data));
 
         mainWindow.webContents.executeJavaScript('AppCloseHelper.onClosing();');
+    }
+
+    var commandLineArguments = process.argv.slice(2);
+
+    if (commandLineArguments.length > 0) {
+        app.setPath('userData', commandLineArguments[0]);
     }
 
     // This method will be called when Electron has finished
