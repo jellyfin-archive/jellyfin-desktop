@@ -7,7 +7,7 @@
     // Keep a global reference of the window object, if you don't, the window will
     // be closed automatically when the JavaScript object is garbage collected.
     var mainWindow = null;
-
+    var hasAppLoaded = false;
 
     // Quit when all windows are closed.
     app.on('window-all-closed', function () {
@@ -124,6 +124,7 @@
                         mainWindow.setResizable(false);
                         setWindowState('Maximized');
                     }
+                    hasAppLoaded = true;
                     break;
             }
             callback("");
@@ -421,10 +422,12 @@
 
     function onWindowClose() {
 
-        var data = mainWindow.getBounds();
-        data.state = currentWindowState;
-        var windowStatePath = getWindowStateDataPath();
-        require("fs").writeFileSync(windowStatePath, JSON.stringify(data));
+        if (hasAppLoaded) {
+            var data = mainWindow.getBounds();
+            data.state = currentWindowState;
+            var windowStatePath = getWindowStateDataPath();
+            require("fs").writeFileSync(windowStatePath, JSON.stringify(data));
+        }
 
         mainWindow.webContents.executeJavaScript('AppCloseHelper.onClosing();');
     }
