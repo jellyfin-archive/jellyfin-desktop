@@ -524,10 +524,18 @@
         mainWindow.on("close", onWindowClose);
 
         //mainWindow.openDevTools();
-
         addPathIntercepts();
         registerAppHost();
         registerFileSystem();
         registerServerdiscovery();
+        /* cec stuff */
+        const cec = require('./cec/cec.js');
+        // create the cec event
+        const EventEmitter = require('events').EventEmitter;
+        var cecEmitter = new EventEmitter();
+        cecEmitter.on('receive-cmd', function(cmd) {
+            console.log('cec command received: ' + cmd + '\n');
+        });
+        cec.init({cecEmitter: cecEmitter});
     });
 })();
