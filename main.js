@@ -529,7 +529,7 @@
         registerFileSystem();
         registerServerdiscovery();
         /* cec stuff */
-        const cec = require('./scripts/cec.js');
+        const cec = require('./cec/cec.js');
         // create the cec event
         const EventEmitter = require('events').EventEmitter;
         var cecEmitter = new EventEmitter();
