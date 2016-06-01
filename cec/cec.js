@@ -28,8 +28,14 @@ function init(args) {
     logStream.end();
 
     // spawn the cec-client
+
     const spawn = require('child_process').spawn;
-    const cec = spawn('cec-client', ['-d', '0']);
+    const cec = spawn('cec-client1', ['-d', '3']);
+    // if cec-client is not installed, then we run the app normally
+    cec.on('error', function(err) {
+        console.log('ERROR: cec-client not installed, running without cec functionality.\n');
+        console.log(err);
+    });
     // create pipelines for the cec-client process
     cec.stdout.on('data', function(data) {
         console.log('cec-client:\n' + data);
@@ -49,8 +55,7 @@ function init(args) {
         logStream.write('child process exited with code ' + code);
         logStream.end();
     });
-
-    testTVOn(cec);
+    // testTVOn(cec);
 }
 
 function testEventEmitter(emitter) {
