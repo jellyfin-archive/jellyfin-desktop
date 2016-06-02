@@ -30,7 +30,7 @@ function init(args) {
     // spawn the cec-client
 
     const spawn = require('child_process').spawn;
-    const cec = spawn('cec-client1', ['-d', '3']);
+    const cec = spawn('cec-client', ['-d', '15']);
     // if cec-client is not installed, then we run the app normally
     cec.on('error', function(err) {
         console.log('ERROR: cec-client not installed, running without cec functionality.\n');
