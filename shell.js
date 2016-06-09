@@ -59,28 +59,33 @@
         return values.join('&');
     }
 
-    return {
-        openUrl: function (url) {
-            return sendCommand('openurl?url=' + url);
-        },
-        canExec: true,
-        close: function (processId) {
-
-            var url = 'shellclose?id=' + processId;
-
-            return sendCommand(url);
-        },
-        exec: function (options) {
-
-            var url = 'shellstart?' + paramsToString(options);
-
-            return sendCommand(url).then(function (response) {
-
-                return {
-                    id: response,
-                    promise: getProcessClosePromise(response)
-                };
-            });
-        }
+    shell.openUrl = function (url) {
+        return sendCommand('openurl?url=' + url);
     };
+
+    shell.canExec = true;
+
+    shell.close = function (processId) {
+
+        var url = 'shellclose?id=' + processId;
+
+        return sendCommand(url);
+    };
+
+    shell.exec = function (options) {
+
+        var url = 'shellstart?' + paramsToString(options);
+
+        return sendCommand(url).then(function (response) {
+
+            events.trigger(shell, 'exec', [response]);
+
+            return {
+                id: response,
+                promise: getProcessClosePromise(response)
+            };
+        });
+    };
+
+    return shell;
 });

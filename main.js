@@ -537,5 +537,20 @@
         //    console.log('cec command received: ' + cmd + '\n');
         //});
         //cec.init({cecEmitter: cecEmitter});
+
+        //new BrowserWindow({
+        //    transparent: false,
+        //    frame: false,
+        //    resizable: false,
+        //    minWidth: 720,
+        //    minHeight: 480,
+        //    //alwaysOnTop: true,
+
+        //    //show: false,
+        //    backgroundColor: '#000000',
+        //    skipTaskbar: true,
+        //    closable: false
+
+        //}).show();
     });
 })();
