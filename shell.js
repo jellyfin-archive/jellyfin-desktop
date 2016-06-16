@@ -1,4 +1,4 @@
-﻿define(['events'], function (events) {
+﻿define(['events', 'apphost'], function (events, apphost) {
 
     function sendCommand(name) {
 
@@ -30,6 +30,10 @@
 
                 if (processId == pid) {
 
+                    if (apphost.supports('windowstate')) {
+                        apphost.setWindowState('Maximized');
+                    }
+
                     if (error) {
                         reject();
                     } else {
@@ -41,6 +45,7 @@
     }
 
     window.onChildProcessClosed = function (processId, error) {
+
         events.trigger(shell, 'closed', [processId, error]);
     };
 
@@ -77,6 +82,10 @@
         var url = 'shellstart?' + paramsToString(options);
 
         return sendCommand(url).then(function (response) {
+
+            if (apphost.supports('windowstate')) {
+                apphost.setWindowState('Minimized');
+            }
 
             events.trigger(shell, 'exec', [response]);
 
