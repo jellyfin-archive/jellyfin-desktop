@@ -542,5 +542,29 @@
         registerServerdiscovery();
         /* cec stuff */
         initCec();
+        ///* cec stuff */
+        //const cec = require('./cec/cec.js');
+        //// create the cec event
+        //const EventEmitter = require('events').EventEmitter;
+        //var cecEmitter = new EventEmitter();
+        //cecEmitter.on('receive-cmd', function(cmd) {
+        //    console.log('cec command received: ' + cmd + '\n');
+        //});
+        //cec.init({cecEmitter: cecEmitter});
+
+        //new BrowserWindow({
+        //    transparent: false,
+        //    frame: false,
+        //    resizable: false,
+        //    minWidth: 720,
+        //    minHeight: 480,
+        //    //alwaysOnTop: true,
+
+        //    //show: false,
+        //    backgroundColor: '#000000',
+        //    skipTaskbar: true,
+        //    closable: false
+
+        //}).show();
     });
 })();
