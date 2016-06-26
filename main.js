@@ -438,6 +438,18 @@
         app.setPath('userData', commandLineArguments[0]);
     }
 
+    /* CEC Module */
+    function initCec() {
+        const cec = require('./cec/cec.js');
+        // create the cec event
+        const EventEmitter = require('events').EventEmitter;
+        var cecEmitter = new EventEmitter();
+        cecEmitter.on('receive-cmd', function(cmd) {
+            console.log('cec command received: ' + cmd + '\n');
+        });
+        cec.init({cecEmitter: cecEmitter});
+    }
+
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     app.on('ready', function () {
@@ -529,13 +541,6 @@
         registerFileSystem();
         registerServerdiscovery();
         /* cec stuff */
-        const cec = require('./cec/cec.js');
-        // create the cec event
-        const EventEmitter = require('events').EventEmitter;
-        var cecEmitter = new EventEmitter();
-        cecEmitter.on('receive-cmd', function(cmd) {
-            console.log('cec command received: ' + cmd + '\n');
-        });
-        cec.init({cecEmitter: cecEmitter});
+        initCec();
     });
 })();

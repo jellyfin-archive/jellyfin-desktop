@@ -72,4 +72,3 @@ function testTVOn(cec) {
 
 /* Necessary exports for our cec module */
 exports.init = init;
-exports.cec = init.cec;
