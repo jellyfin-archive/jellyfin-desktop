@@ -440,6 +440,8 @@
 
     /* CEC Module */
     function initCec() {
+
+        var cecExePath = commandLineArguments[1];
         const cec = require('./cec/cec.js');
         // create the cec event
         const EventEmitter = require('events').EventEmitter;
