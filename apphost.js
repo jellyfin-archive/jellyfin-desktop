@@ -37,7 +37,7 @@
 
         var xhr = new XMLHttpRequest();
         xhr.open('GET', 'electronapphost://' + name, true);
-
+        
         xhr.send();
     }
 
@@ -51,7 +51,8 @@
                 'exit',
                 'runatstartup',
                 'filedownload',
-                'sharing'
+                'sharing',
+                'externallinks'
                 //'sleep',
                 //'restart',
                 //'shutdown'
