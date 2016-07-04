@@ -411,7 +411,7 @@
             return true;
         }
 
-        return true;
+        return commandLineArguments[1] == 'true';
     }
 
     function getWindowStateDataPath() {
@@ -441,7 +441,7 @@
     /* CEC Module */
     function initCec() {
 
-        var cecExePath = commandLineArguments[1];
+        var cecExePath = commandLineArguments[2];
         const cec = require('./cec/cec.js');
         // create the cec event
         const EventEmitter = require('events').EventEmitter;
@@ -543,7 +543,7 @@
         registerFileSystem();
         registerServerdiscovery();
         /* cec stuff */
-        initCec();
+        //initCec();
         ///* cec stuff */
         //const cec = require('./cec/cec.js');
         //// create the cec event
