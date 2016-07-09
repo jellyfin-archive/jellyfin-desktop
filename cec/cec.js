@@ -12,7 +12,8 @@ const child_process = require("child_process");
 
 function init(args) {
     console.log("Initializing cec-client...\n");
-
+    console.log(args);
+    var cecExePath = args.cecExePath;
     // register the emitter
     var cecEmitter = args.cecEmitter;
     testEventEmitter(cecEmitter);
@@ -37,7 +38,7 @@ function init(args) {
     logStream.end();
 
     // spawn the cec-client
-    const cec = child_process.spawn("cec-client", ["-d", "15"]);
+    const cec = child_process.spawn(cecExePath, ["-d", "15"]);
     // if cec-client is not installed, then we run the app normally
     cec.on("error", function(err) {
         console.log("ERROR: cec-client not installed, running without cec functionality.\n");
@@ -68,13 +69,11 @@ function init(args) {
 function testEventEmitter(emitter) {
     setInterval(function() {
         emitter.emit("receive-cmd", "testEmitter");
-    }, 5000);
+    }, 50000);
 }
 
 function testTVOn(cec) {
-    setInterval(function() {
-        cec.stdin.write("on 0\n");
-    }, 5000);
+    cec.stdin.write("on 0\n");
 }
 
 /* Necessary exports for our cec module */

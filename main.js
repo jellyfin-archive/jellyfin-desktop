@@ -441,7 +441,7 @@
     /* CEC Module */
     function initCec() {
         const cec = require('./cec/cec.js');
-        var cecExecPath = commandLineArguments[2];
+        var cecExePath = commandLineArguments[2];
         // create the cec event
         const EventEmitter = require("events").EventEmitter;
         var cecEmitter = new EventEmitter();
@@ -449,7 +449,7 @@
             console.log("cec command received: " + cmd + "\n");
         });
         var cecOpts = {
-            execPath: cecExecPath,
+            cecExePath: cecExePath,
             cecEmitter: cecEmitter
         };
         cec.init(cecOpts);
@@ -546,7 +546,7 @@
         registerFileSystem();
         registerServerdiscovery();
         /* cec stuff */
-        //initCec();
+        initCec();
         ///* cec stuff */
         //const cec = require('./cec/cec.js');
         //// create the cec event
