@@ -1,5 +1,4 @@
 ﻿node_modules/
--–remote-debugging-port=9222/
+cec/logs/
 *.iml
 .idea/
-cec/logs/
