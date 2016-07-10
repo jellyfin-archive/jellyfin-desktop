@@ -440,16 +440,21 @@
 
     /* CEC Module */
     function initCec() {
-
+        const cec = require('./cec/cec');
         var cecExePath = commandLineArguments[2];
-        const cec = require('./cec/cec.js');
         // create the cec event
-        const EventEmitter = require('events').EventEmitter;
+        const EventEmitter = require("events").EventEmitter;
         var cecEmitter = new EventEmitter();
-        cecEmitter.on('receive-cmd', function(cmd) {
-            console.log('cec command received: ' + cmd + '\n');
+        var cecOpts = {
+            cecExePath: cecExePath,
+            cecEmitter: cecEmitter
+        };
+        cec.init(cecOpts);
+        
+        cecEmitter.on("receive-cmd", function(cmd) {
+            console.log("Command received: " + cmd);
+            sendCommand(cmd);
         });
-        cec.init({cecEmitter: cecEmitter});
     }
 
     // This method will be called when Electron has finished
@@ -543,7 +548,7 @@
         registerFileSystem();
         registerServerdiscovery();
         /* cec stuff */
-        //initCec();
+        initCec();
         ///* cec stuff */
         //const cec = require('./cec/cec.js');
         //// create the cec event
