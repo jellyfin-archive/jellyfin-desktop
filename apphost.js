@@ -41,6 +41,14 @@
         xhr.send();
     }
 
+    function supportsVoiceInput() {
+        return window.SpeechRecognition ||
+               window.webkitSpeechRecognition ||
+               window.mozSpeechRecognition ||
+               window.oSpeechRecognition ||
+               window.msSpeechRecognition;
+    }
+
     return {
         getWindowState: getWindowState,
         setWindowState: setWindowState,
@@ -60,6 +68,10 @@
 
             if (appStartInfo.supportsTransparentWindow) {
                 features.push('windowtransparency');
+            }
+
+            if (supportsVoiceInput()) {
+                features.push('voiceinput');
             }
 
             return features.indexOf(command.toLowerCase()) != -1;
