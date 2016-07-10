@@ -26,7 +26,7 @@ function init(args) {
     var cecExePath = args.cecExePath;
     // register the emitter
     cecEmitter = args.cecEmitter;
-    testEventEmitter();
+    // testEventEmitter();
 
     // spawn the cec-client
     cecProcess = child_process.spawn(cecExePath,
@@ -95,14 +95,13 @@ function registerEvents(cecProcess) {
     // create pipelines for the cec-client process
     var remoteButton = {};    // 0 is not pressed, 1 is pressed
     cecProcess.stdout.on("data", function(data) {
-        console.log("cec-client:\n" + data);
+        // console.log("cec-client:\n" + data);
         // check for initialization
         if (!initialized) {
             var dataAsString = data.toString().replace(/\s+/g, "");
             var indexOfAdapter = dataAsString.includes("CECclientregistered");
-            console.log(indexOfAdapter);
             if (indexOfAdapter) {
-                console.log("CEC Client successfully registered.\n");
+                console.log("\nCEC Client successfully registered.\n");
                 var initVals = dataAsString.split(",");
                 var cecAdapterVals = initVals[4].split("(");
                 var cecBaseVals = initVals[5].split("(");
@@ -122,16 +121,16 @@ function registerEvents(cecProcess) {
         // check for remote commands
         if (data.toString().includes(">>")) {
             var cecCmd = data.toString().split(">>")[1].replace(/\s+/g, "").split(":");
-            console.log(cecCmd);
+            // console.log(cecCmd);
             if (cecCmd[0][0] == CEC_BASE.lAddr && cecCmd[0][1] == CEC_ADAPTER.lAddr) {  // device => adapter
                 if (cecCmd[1] == "44") {    // key pressed
-                    console.log("pressed");
+                    console.log("remote control button pressed");
                     remoteButton.state = 1;
                     remoteButton.cmd = cecCmd[2];
                     parseCmd(remoteButton.cmd, cecEmitter);
                 }
                 else if (cecCmd[1] == "45") {    // key released
-                    console.log("released");
+                    console.log("remote control button released");
                     remoteButton.state = 0;
                 }
             }
@@ -149,7 +148,7 @@ function registerEvents(cecProcess) {
     });
 
     cecProcess.on("close", function(code) {
-        console.log("child process exited with code " + code);
+        console.log("cec-client exited with code " + code);
         logStream = fs.createWriteStream(logFile, {"flags": "a"});
         logStream.write("child process exited with code " + code);
         logStream.end();

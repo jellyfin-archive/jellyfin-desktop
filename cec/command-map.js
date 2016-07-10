@@ -15,7 +15,7 @@ function emitCmd(cmd) {
  */
 function parseCmd(code, emitter) {
     cecEmitter = emitter;
-    switch(code) {
+    switch(code.toUpperCase()) {
         case "00":  // Select
             emitCmd("select");
             break;
@@ -47,7 +47,7 @@ function parseCmd(code, emitter) {
             emitCmd("menu");
             break;
         case "0A":  // Setup Menu
-            emitCmd("menu");
+            emitCmd("settings");
             break;
         case "0B":  // Contents Menu
             // emitCmd("select");
@@ -147,7 +147,7 @@ function parseCmd(code, emitter) {
             emitCmd("volumedown");
             break;
         case "43":  // Mute
-            emitCmd("mute");
+            emitCmd("togglemute");
             break;
         case "44":  // Play
             emitCmd("play");
@@ -202,6 +202,72 @@ function parseCmd(code, emitter) {
             break;
         case "55":  // Initial Configuration
             // emitCmd("stop");
+            break;
+
+        // 56 to 5F is reserved
+
+        case "60":  // Play Function
+            emitCmd("play");
+            break;
+        case "61":  // Pause-Play Function
+            emitCmd("playpause");
+            break;
+        case "62":  // Record Function
+            emitCmd("record");
+            break;
+        case "63":  // Pause-Record Function
+            // emitCmd("");
+            break;
+        case "64":  // Stop Function
+            emitCmd("stop");
+            break;
+        case "65":  // Mute Function
+            emitCmd("togglemute");
+            break;
+        case "66":  // Restore Volume Function
+            // emitCmd("togglemute");
+            break;
+        case "67":  // Tune Function
+            // emitCmd("togglemute");
+            break;
+        case "68":  // Select Media Function
+            // emitCmd("togglemute");
+            break;
+        case "69":  // Select A/V Input Function
+            // emitCmd("togglemute");
+            break;
+        case "6A":  // Select Audio Input Function
+            // emitCmd("togglemute");
+            break;
+        case "6B":  // Power Toggle Function
+            // emitCmd("togglemute");
+            break;
+        case "6C":  // Power Off Function
+            // emitCmd("togglemute");
+            break;
+        case "6D":  // Power On Function
+            // emitCmd("togglemute");
+            break;
+
+        // 6E to 70 is reserved
+
+        case "71":  // F1 (Blue)
+            // emitCmd("playpause");
+            break;
+        case "72":  // F2 (Red)
+            // emitCmd("record");
+            break;
+        case "73":  // F3 (Green)
+            // emitCmd("");
+            break;
+        case "74":  // F4 (Yellow)
+            // emitCmd("stop");
+            break;
+        case "75":  // F5
+            // emitCmd("togglemute");
+            break;
+        case "76":  // Data
+            // emitCmd("togglemute");
             break;
     }
 }
