@@ -440,19 +440,21 @@
 
     /* CEC Module */
     function initCec() {
-        const cec = require('./cec/cec.js');
+        const cec = require('./cec/cec');
         var cecExePath = commandLineArguments[2];
         // create the cec event
         const EventEmitter = require("events").EventEmitter;
         var cecEmitter = new EventEmitter();
-        cecEmitter.on("receive-cmd", function(cmd) {
-            console.log("cec command received: " + cmd + "\n");
-        });
         var cecOpts = {
             cecExePath: cecExePath,
             cecEmitter: cecEmitter
         };
         cec.init(cecOpts);
+        
+        cecEmitter.on("receive-cmd", function(cmd) {
+            console.log("Command received: " + cmd);
+            sendCommand(cmd);
+        });
     }
 
     // This method will be called when Electron has finished

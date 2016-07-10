@@ -1,4 +1,5 @@
-﻿node_modules/
+node_modules/
 cec/logs/
 *.iml
 .idea/
+cec/test-exec-files/
