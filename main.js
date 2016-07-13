@@ -438,23 +438,31 @@
         app.setPath('userData', commandLineArguments[0]);
     }
 
+    function onCecCommand(cmd) {
+        console.log("Command received: " + cmd);
+        sendCommand(cmd);
+    }
+
     /* CEC Module */
     function initCec() {
-        const cec = require('./cec/cec');
-        var cecExePath = commandLineArguments[2];
-        // create the cec event
-        const EventEmitter = require("events").EventEmitter;
-        var cecEmitter = new EventEmitter();
-        var cecOpts = {
-            cecExePath: cecExePath,
-            cecEmitter: cecEmitter
-        };
-        cec.init(cecOpts);
-        
-        cecEmitter.on("receive-cmd", function(cmd) {
-            console.log("Command received: " + cmd);
-            sendCommand(cmd);
-        });
+
+        try {
+            const cec = require('./cec/cec');
+            var cecExePath = commandLineArguments[2];
+            // create the cec event
+            const EventEmitter = require("events").EventEmitter;
+            var cecEmitter = new EventEmitter();
+            var cecOpts = {
+                cecExePath: cecExePath,
+                cecEmitter: cecEmitter
+            };
+            cec.init(cecOpts);
+
+            cecEmitter.on("receive-cmd", onCecCommand);
+
+        } catch (err) {
+            console.log('error initializing cec: ' + err);
+        }
     }
 
     // This method will be called when Electron has finished
@@ -547,17 +555,8 @@
         registerAppHost();
         registerFileSystem();
         registerServerdiscovery();
-        /* cec stuff */
+
         initCec();
-        ///* cec stuff */
-        //const cec = require('./cec/cec.js');
-        //// create the cec event
-        //const EventEmitter = require('events').EventEmitter;
-        //var cecEmitter = new EventEmitter();
-        //cecEmitter.on('receive-cmd', function(cmd) {
-        //    console.log('cec command received: ' + cmd + '\n');
-        //});
-        //cec.init({cecEmitter: cecEmitter});
 
         //new BrowserWindow({
         //    transparent: false,
