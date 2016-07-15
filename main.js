@@ -24,11 +24,85 @@
     }
 
     var currentWindowState = 'Normal';
+    var restoreWindowState;
 
     function setWindowState(state) {
 
+        restoreWindowState = null;
+        var previousState = currentWindowState;
+
+        if (state == 'Maximized') {
+            state = 'Fullscreen';
+        }
+
+        if (state == 'Minimized') {
+            restoreWindowState = previousState;
+            mainWindow.minimize();
+        } else if (state == 'Maximized') {
+            mainWindow.maximize();
+            mainWindow.setAlwaysOnTop(false);
+        } else if (state == 'Fullscreen') {
+            mainWindow.setFullScreen(true);
+            mainWindow.setAlwaysOnTop(true);
+        } else {
+
+            var setSize = false;
+            if (previousState == "Minimized") {
+                mainWindow.restore();
+            }
+
+            else if (previousState == "Fullscreen") {
+                setSize = true;
+                mainWindow.setFullScreen(false);
+            }
+
+            else if (previousState == "Maximized") {
+                mainWindow.unmaximize();
+            }
+
+            if (setSize) {
+                mainWindow.setSize(1280, 720);
+                mainWindow.center();
+            }
+            mainWindow.setAlwaysOnTop(false);
+        }
+    }
+
+    function onWindowStateChanged(state) {
+
         currentWindowState = state;
         mainWindow.webContents.executeJavaScript('document.windowState="' + state + '";document.dispatchEvent(new CustomEvent("windowstatechanged", {detail:{windowState:"' + state + '"}}));');
+    }
+
+    function onMinimize() {
+        onWindowStateChanged('Minimized');
+    }
+
+    function onLeaveFullscreen() {
+        onWindowStateChanged('Normal');
+    }
+
+    function onRestore() {
+
+        var restoreState = restoreWindowState;
+        restoreWindowState = null;
+        if (restoreState && restoreState != 'Normal' && restoreState != 'Minimized') {
+            setWindowState(restoreState);
+        } else {
+            onWindowStateChanged('Normal');
+        }
+    }
+
+    function onMaximize() {
+        onWindowStateChanged('Maximized');
+    }
+
+    function onEnterFullscreen() {
+        onWindowStateChanged('Fullscreen');
+    }
+
+    function onUnMaximize() {
+        onWindowStateChanged('Normal');
     }
 
     var customFileProtocol = 'electronfile';
@@ -52,8 +126,7 @@
     }
 
     var isTransparencyRequired = false;
-    var maximizeOnStart = false;
-
+    var windowStateOnLoad;
     function registerAppHost() {
 
         var protocol = electron.protocol;
@@ -119,10 +192,8 @@
                     break;
                 case 'loaded':
 
-                    if (maximizeOnStart) {
-
-                        mainWindow.setResizable(false);
-                        setWindowState('Maximized');
+                    if (windowStateOnLoad) {
+                        setWindowState(windowStateOnLoad);
                     }
                     hasAppLoaded = true;
                     break;
@@ -492,6 +563,8 @@
 
             //show: false,
             backgroundColor: '#000000',
+            center: true,
+            show: false,
 
             webPreferences: {
                 webSecurity: false,
@@ -509,20 +582,13 @@
 
         };
 
-        windowOptions.center = true;
-
-        maximizeOnStart = previousWindowBounds.state == 'Maximized';
-
-        if (maximizeOnStart) {
-
-            windowOptions.width = previousWindowBounds.width || 1280;
-            windowOptions.height = previousWindowBounds.height || 720;
+        if (previousWindowBounds.state == 'Maximized') {
             windowOptions.width = 1280;
             windowOptions.height = 720;
-            //windowOptions.alwaysOnTop = true;
-            //windowOptions.x = 0;
-            //windowOptions.y = 0;
-
+        } else if (previousWindowBounds.state == 'Fullscreen') {
+            windowOptions.fullscreen = true;
+            windowOptions.width = 1280;
+            windowOptions.height = 720;
         } else {
             windowOptions.width = previousWindowBounds.width || 1280;
             windowOptions.height = previousWindowBounds.height || 720;
@@ -530,25 +596,28 @@
 
         // Create the browser window.
         mainWindow = new BrowserWindow(windowOptions);
+
         mainWindow.webContents.on('dom-ready', setStartInfo);
 
         var url = 'file://' + __dirname + '/index.html';
 
+        windowStateOnLoad = previousWindowBounds.state;
+
         // and load the index.html of the app.
         mainWindow.loadURL(url);
-
-        // Emitted when the window is closed.
-        mainWindow.on('closed', function () {
-            // Dereference the window object, usually you would store windows
-            // in an array if your app supports multi windows, this is the time
-            // when you should delete the corresponding element.
-            mainWindow = null;
-        });
 
         mainWindow.setMenu(null);
         mainWindow.on('move', onWindowMoved);
         mainWindow.on('app-command', onAppCommand);
         mainWindow.on("close", onWindowClose);
+        mainWindow.on("minimize", onMinimize);
+        mainWindow.on("maximize", onMaximize);
+        mainWindow.on("enter-full-screen", onEnterFullscreen);
+        mainWindow.on("restore", onRestore);
+        mainWindow.on("unmaximize", onUnMaximize);
+        mainWindow.on("leave-full-screen", onLeaveFullscreen);
+
+        mainWindow.show();
 
         //mainWindow.openDevTools();
         addPathIntercepts();
@@ -557,20 +626,5 @@
         registerServerdiscovery();
 
         initCec();
-
-        //new BrowserWindow({
-        //    transparent: false,
-        //    frame: false,
-        //    resizable: false,
-        //    minWidth: 720,
-        //    minHeight: 480,
-        //    //alwaysOnTop: true,
-
-        //    //show: false,
-        //    backgroundColor: '#000000',
-        //    skipTaskbar: true,
-        //    closable: false
-
-        //}).show();
     });
 })();
