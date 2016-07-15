@@ -37,6 +37,7 @@
 
         if (state == 'Minimized') {
             restoreWindowState = previousState;
+            mainWindow.setAlwaysOnTop(false);
             mainWindow.minimize();
         } else if (state == 'Maximized') {
             mainWindow.maximize();
@@ -195,6 +196,7 @@
                     if (windowStateOnLoad) {
                         setWindowState(windowStateOnLoad);
                     }
+                    mainWindow.focus();
                     hasAppLoaded = true;
                     break;
             }
