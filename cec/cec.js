@@ -24,6 +24,10 @@ function init(args) {
     console.log("Initializing cec-client...\n");
     console.log(args);
     var cecExePath = args.cecExePath;
+    if (!args.cecExePath) {
+        console.log("ERROR: cec-client not installed, running without cec functionality.\n");
+        return;
+    }
     // register the emitter
     cecEmitter = args.cecEmitter;
     // testEventEmitter();
@@ -36,9 +40,13 @@ function init(args) {
             "-o", "EmbyTheater"
         ]
     );
+    // if cec-client is not installed, then we run the app normally
+    cecProcess.on("error", function(err) {
+        console.log("ERROR: cec-client not installed, running without cec functionality.\n");
+        // console.log(err);
+    });
     registerEvents(cecProcess);
 }
-
 
 
 function testEventEmitter() {
@@ -86,11 +94,6 @@ function registerEvents(cecProcess) {
     /**
      * CEC Events. Events are detected by parsing the cec-client pipelines.
      */
-    // if cec-client is not installed, then we run the app normally
-    cecProcess.on("error", function(err) {
-        console.log("ERROR: cec-client not installed, running without cec functionality.\n");
-        // console.log(err);
-    });
 
     // create pipelines for the cec-client process
     var remoteButton = {};    // 0 is not pressed, 1 is pressed
