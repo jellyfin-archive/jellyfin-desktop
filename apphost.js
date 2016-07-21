@@ -109,6 +109,8 @@
         },
         deviceId: function () {
             return Promise.resolve(appStartInfo.deviceId);
-        }
+        },
+
+        moreIcon: 'dots-vert'
     };
 });
