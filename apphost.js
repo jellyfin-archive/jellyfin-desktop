@@ -74,6 +74,9 @@
                 features.push('voiceinput');
             }
 
+            features.push('htmlaudioautoplay');
+            features.push('htmlvideoautoplay');
+
             return features.indexOf(command.toLowerCase()) != -1;
         },
         capabilities: getCapabilities,
