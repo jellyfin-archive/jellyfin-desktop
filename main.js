@@ -303,8 +303,7 @@
         if (!firstDomDone) {
             firstDomDone = true;
 
-            var url = 'http://mediabrowser.github.io/Emby.Web/index.html';
-            url = 'http://tv.emby.media/index.html';
+            var url = 'https://tv.emby.media/index.html';
             //url = 'http://localhost:8088/index.html';
             url += '?v=' + new Date().getTime();
 
@@ -599,6 +598,7 @@
         // Create the browser window.
         mainWindow = new BrowserWindow(windowOptions);
 
+        //mainWindow.openDevTools();
         mainWindow.webContents.on('dom-ready', setStartInfo);
 
         var url = 'file://' + __dirname + '/index.html';
@@ -621,7 +621,6 @@
 
         mainWindow.show();
 
-        //mainWindow.openDevTools();
         addPathIntercepts();
         registerAppHost();
         registerFileSystem();
