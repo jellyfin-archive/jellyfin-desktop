@@ -298,12 +298,19 @@
     }
 
     var firstDomDone;
+    var enableHttps;
+
     function setStartInfo() {
 
         if (!firstDomDone) {
             firstDomDone = true;
 
             var url = 'https://tv.emby.media/index.html';
+
+            if (!enableHttps) {
+                url = 'http://tv.emby.media/index.html';
+            }
+
             //url = 'http://localhost:8088/index.html';
             url += '?v=' + new Date().getTime();
 
@@ -497,6 +504,7 @@
         if (hasAppLoaded) {
             var data = mainWindow.getBounds();
             data.state = currentWindowState;
+            data.enableHttps = enableHttps;
             var windowStatePath = getWindowStateDataPath();
             require("fs").writeFileSync(windowStatePath, JSON.stringify(data));
         }
@@ -543,13 +551,20 @@
 
         var windowStatePath = getWindowStateDataPath();
 
-        var previousWindowBounds;
+        var previousWindowInfo;
         try {
-            previousWindowBounds = JSON.parse(require("fs").readFileSync(windowStatePath, 'utf8'));
+            previousWindowInfo = JSON.parse(require("fs").readFileSync(windowStatePath, 'utf8'));
+            if (previousWindowInfo.enableHttps == null) {
+                previousWindowInfo.enableHttps = false;
+            }
         }
         catch (e) {
-            previousWindowBounds = {};
+            previousWindowInfo = {
+                enableHttps: true
+            };
         }
+
+        enableHttps = previousWindowInfo.enableHttps;
 
         var supportsTransparency = supportsTransparentWindow();
 
@@ -583,16 +598,16 @@
 
         };
 
-        if (previousWindowBounds.state == 'Maximized') {
+        if (previousWindowInfo.state == 'Maximized') {
             windowOptions.width = 1280;
             windowOptions.height = 720;
-        } else if (previousWindowBounds.state == 'Fullscreen') {
+        } else if (previousWindowInfo.state == 'Fullscreen') {
             windowOptions.fullscreen = true;
             windowOptions.width = 1280;
             windowOptions.height = 720;
         } else {
-            windowOptions.width = previousWindowBounds.width || 1280;
-            windowOptions.height = previousWindowBounds.height || 720;
+            windowOptions.width = previousWindowInfo.width || 1280;
+            windowOptions.height = previousWindowInfo.height || 720;
         }
 
         // Create the browser window.
@@ -603,7 +618,7 @@
 
         var url = 'file://' + __dirname + '/index.html';
 
-        windowStateOnLoad = previousWindowBounds.state;
+        windowStateOnLoad = previousWindowInfo.state;
 
         // and load the index.html of the app.
         mainWindow.loadURL(url);
