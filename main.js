@@ -198,10 +198,23 @@
                     }
                     mainWindow.focus();
                     hasAppLoaded = true;
+                    onLoaded();
                     break;
             }
             callback("");
         });
+    }
+
+    function onLoaded() {
+
+        var globalShortcut = electron.globalShortcut;
+
+        globalShortcut.register('mediastop', function () {
+            sendCommand('stop-global');
+        });
+
+        //globalShortcut.register('mediaplaypause', function () {
+        //});
     }
 
     var processes = {};
@@ -510,6 +523,9 @@
         }
 
         mainWindow.webContents.executeJavaScript('AppCloseHelper.onClosing();');
+
+        // Unregister all shortcuts.
+        electron.globalShortcut.unregisterAll();
     }
 
     var commandLineArguments = process.argv.slice(2);
