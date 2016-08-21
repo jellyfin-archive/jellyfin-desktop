@@ -223,17 +223,25 @@
 
         var pid;
         var args = (options.arguments || '').split('|||');
-        var process = require('child_process').execFile(options.path, args, {}, function (error, stdout, stderr) {
 
-            processes[pid] = null;
-            var script = 'onChildProcessClosed("' + pid + '", ' + (error ? 'true' : 'false') + ');';
+        try {
+            var process = require('child_process').execFile(options.path, args, {}, function (error, stdout, stderr) {
 
-            sendJavascript(script);
-        });
+                if (error) {
+                    console.log('Process closed with error: ' + error);
+                }
+                processes[pid] = null;
+                var script = 'onChildProcessClosed("' + pid + '", ' + (error ? 'true' : 'false') + ');';
 
-        pid = process.pid.toString();
-        processes[pid] = process;
-        callback(pid);
+                sendJavascript(script);
+            });
+
+            pid = process.pid.toString();
+            processes[pid] = process;
+            callback(pid);
+        } catch (err) {
+            alert('Error launching process: ' + err);
+        }
     }
 
     function closeProcess(id, callback) {
