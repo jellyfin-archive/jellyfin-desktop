@@ -210,7 +210,7 @@
         var globalShortcut = electron.globalShortcut;
 
         globalShortcut.register('mediastop', function () {
-            sendCommand('stop-global');
+            sendCommand('stop');
         });
 
         //globalShortcut.register('mediaplaypause', function () {
