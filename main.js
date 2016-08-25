@@ -126,6 +126,23 @@
         });
     }
 
+    function sleepMode() {
+
+        var sleepMode = require('sleep-mode');
+        sleepMode(function(err, stderr, stdout) {
+        });
+    }
+
+    function restartSystem() {
+    }
+
+    function shutdownSystem() {
+
+        var powerOff = require('power-off');
+        powerOff(function (err, stderr, stdout) {
+        });
+    }
+
     var isTransparencyRequired = false;
     var windowStateOnLoad;
     function registerAppHost() {
@@ -163,13 +180,13 @@
                     app.quit();
                     break;
                 case 'sleep':
-                    app.quit();
+                    sleepMode();
                     break;
                 case 'shutdown':
-                    app.quit();
+                    shutdownSystem();
                     break;
                 case 'restart':
-                    app.quit();
+                    restartSystem();
                     break;
                 case 'openurl':
                     electron.shell.openExternal(url.substring(url.indexOf('url=') + 4));

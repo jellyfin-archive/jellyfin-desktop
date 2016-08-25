@@ -60,10 +60,10 @@
                 'runatstartup',
                 'filedownload',
                 'sharing',
-                'externallinks'
-                //'sleep',
+                'externallinks',
+                'sleep',
                 //'restart',
-                //'shutdown'
+                'shutdown'
             ];
 
             if (appStartInfo.supportsTransparentWindow) {
