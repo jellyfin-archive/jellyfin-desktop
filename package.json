@@ -1,7 +1,7 @@
 {
   "name": "emby.theater",
   "productName": "Emby Theater",
-  "version": "2.5.12",
+  "version": "2.5.13",
   "description": "Emby Theater for Electron",
   "main": "main.js",
   "scripts": {
@@ -23,7 +23,9 @@
   },
   "homepage": "https://github.com/MediaBrowser/Emby.Theater.Electron#readme",
   "devDependencies": {
-    "electron-prebuilt": "^0.36.7"
+    "electron-prebuilt": "^0.36.7",
+    "power-off": "^1.0.1",
+    "sleep-mode": "^1.1.0"
   },
   "dependencies": {
     "power-off": "^1.0.1",

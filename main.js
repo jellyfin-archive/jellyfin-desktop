@@ -226,9 +226,9 @@
 
         var globalShortcut = electron.globalShortcut;
 
-        globalShortcut.register('mediastop', function () {
-            sendCommand('stop');
-        });
+        //globalShortcut.register('mediastop', function () {
+        //    sendCommand('stop');
+        //});
 
         //globalShortcut.register('mediaplaypause', function () {
         //});

@@ -74,6 +74,7 @@
                 features.push('voiceinput');
             }
 
+            features.push('displaymode');
             features.push('plugins');
             features.push('exitmenu');
             features.push('htmlaudioautoplay');
