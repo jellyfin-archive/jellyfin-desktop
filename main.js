@@ -350,7 +350,7 @@
             }
 
             //url = 'http://localhost:8088/index.html';
-            url += '?v=' + new Date().getTime();
+            //url += '?v=' + new Date().getTime();
 
             // and load the index.html of the app.
             mainWindow.loadURL(url);
