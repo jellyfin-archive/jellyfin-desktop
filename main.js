@@ -124,12 +124,18 @@
                 path: path.normalize(url)
             });
         });
+
+        //protocol.interceptHttpProtocol('https', function (request, callback) {
+
+        //    alert(request.url);
+        //    callback({ 'url': request.url, 'referrer': request.referrer, session: null });
+        //});
     }
 
-    function sleepMode() {
+    function sleepSystem() {
 
         var sleepMode = require('sleep-mode');
-        sleepMode(function(err, stderr, stdout) {
+        sleepMode(function (err, stderr, stdout) {
         });
     }
 
@@ -180,7 +186,7 @@
                     app.quit();
                     break;
                 case 'sleep':
-                    sleepMode();
+                    sleepSystem();
                     break;
                 case 'shutdown':
                     shutdownSystem();
@@ -224,7 +230,7 @@
 
     function onLoaded() {
 
-        var globalShortcut = electron.globalShortcut;
+        //var globalShortcut = electron.globalShortcut;
 
         //globalShortcut.register('mediastop', function () {
         //    sendCommand('stop');
@@ -336,24 +342,22 @@
     }
 
     var firstDomDone;
-    var enableHttps;
+
+    function getAppUrl() {
+
+        var url = 'https://tv.emby.media/index.html';
+
+        //url = 'http://localhost:8088/index.html';
+        //url += '?v=' + new Date().getTime();
+        return url;
+    }
 
     function setStartInfo() {
 
         if (!firstDomDone) {
             firstDomDone = true;
 
-            var url = 'https://tv.emby.media/index.html';
-
-            if (!enableHttps) {
-                url = 'http://tv.emby.media/index.html';
-            }
-
-            //url = 'http://localhost:8088/index.html';
-            //url += '?v=' + new Date().getTime();
-
-            // and load the index.html of the app.
-            mainWindow.loadURL(url);
+            mainWindow.loadURL(getAppUrl());
             return;
         }
 
@@ -542,7 +546,6 @@
         if (hasAppLoaded) {
             var data = mainWindow.getBounds();
             data.state = currentWindowState;
-            data.enableHttps = enableHttps;
             var windowStatePath = getWindowStateDataPath();
             require("fs").writeFileSync(windowStatePath, JSON.stringify(data));
         }
@@ -595,17 +598,10 @@
         var previousWindowInfo;
         try {
             previousWindowInfo = JSON.parse(require("fs").readFileSync(windowStatePath, 'utf8'));
-            if (previousWindowInfo.enableHttps == null) {
-                previousWindowInfo.enableHttps = false;
-            }
         }
         catch (e) {
-            previousWindowInfo = {
-                enableHttps: true
-            };
+            previousWindowInfo = {};
         }
-
-        enableHttps = previousWindowInfo.enableHttps;
 
         var supportsTransparency = supportsTransparentWindow();
 
@@ -661,6 +657,8 @@
 
         windowStateOnLoad = previousWindowInfo.state;
 
+        addPathIntercepts();
+
         // and load the index.html of the app.
         mainWindow.loadURL(url);
 
@@ -677,7 +675,6 @@
 
         mainWindow.show();
 
-        addPathIntercepts();
         registerAppHost();
         registerFileSystem();
         registerServerdiscovery();
