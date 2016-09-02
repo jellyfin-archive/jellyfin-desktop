@@ -24,15 +24,6 @@
         sendCommand('windowstate-' + state);
     }
 
-    document.addEventListener('dblclick', function () {
-
-        if (getWindowState() == 'Normal') {
-            setWindowState('Maximized');
-        } else {
-            setWindowState('Normal');
-        }
-    });
-
     function sendCommand(name) {
 
         var xhr = new XMLHttpRequest();
@@ -80,6 +71,7 @@
             features.push('exitmenu');
             features.push('htmlaudioautoplay');
             features.push('htmlvideoautoplay');
+            features.push('fullscreen');
 
             return features.indexOf(command.toLowerCase()) != -1;
         },

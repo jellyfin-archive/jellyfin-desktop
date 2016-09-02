@@ -343,11 +343,17 @@
 
     var firstDomDone;
 
+    function getAppBaseUrl() {
+
+        var url = 'https://tv.emby.media';
+
+        //url = 'http://localhost:8088';
+        return url;
+    }
+
     function getAppUrl() {
 
-        var url = 'https://tv.emby.media/index.html';
-
-        //url = 'http://localhost:8088/index.html';
+        var url = getAppBaseUrl() + '/index.html';
         //url += '?v=' + new Date().getTime();
         return url;
     }
@@ -366,6 +372,7 @@
         var path = require('path');
         var fs = require('fs');
 
+        var topDirectory = path.normalize(__dirname);
         var pluginDirectory = path.normalize(__dirname + '/plugins');
         var scriptsDirectory = path.normalize(__dirname + '/scripts');
 
@@ -381,6 +388,7 @@
                         apphost: customFileProtocol + '://apphost',
                         shell: customFileProtocol + '://shell',
                         serverdiscovery: customFileProtocol + '://serverdiscovery/serverdiscovery',
+                        fullscreenmanager: 'file://' + replaceAll(path.normalize(topDirectory + '/fullscreenmanager.js'), '\\', '/'),
                         filesystem: customFileProtocol + '://filesystem'
                     },
                     name: app.getName(),
@@ -653,7 +661,7 @@
         //mainWindow.openDevTools();
         mainWindow.webContents.on('dom-ready', setStartInfo);
 
-        var url = 'file://' + __dirname + '/index.html';
+        var url = 'file://' + __dirname + '/splash.html';
 
         windowStateOnLoad = previousWindowInfo.state;
 
