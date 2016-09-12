@@ -26,7 +26,14 @@ require(['inputmanager'], function (inputmanager) {
         if (parentWithTag(elem, 'EMBY-DROPDOWN-MENU')) {
             return false;
         }
-        return elem.tagName == 'INPUT' || elem.tagName == 'TEXTAREA';
+        if (elem.tagName == 'INPUT') {
+            
+            if (elem.type == 'checkbox' || elem.type == 'radio') {
+                return false;
+            }
+            return true;
+        }
+        return elem.tagName == 'TEXTAREA';
     }
 
     window.addEventListener('keydown', function (e) {
