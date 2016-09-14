@@ -72,6 +72,7 @@
             features.push('htmlaudioautoplay');
             features.push('htmlvideoautoplay');
             features.push('fullscreen');
+            features.push('displayableversion');
 
             return features.indexOf(command.toLowerCase()) != -1;
         },
