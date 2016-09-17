@@ -28,7 +28,7 @@
 
         var xhr = new XMLHttpRequest();
         xhr.open('GET', 'electronapphost://' + name, true);
-        
+
         xhr.send();
     }
 
@@ -111,6 +111,20 @@
             return Promise.resolve(appStartInfo.deviceId);
         },
 
-        moreIcon: 'dots-vert'
+        moreIcon: 'dots-vert',
+
+        getKeyOptions: function () {
+
+            return {
+
+                // chromium doesn't automatically handle these
+                handleAltLeftBack: true,
+                handleAltRightForward: true,
+                keyMaps: {
+                    back: [8]
+                }
+            };
+
+        }
     };
 });
