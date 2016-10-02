@@ -697,7 +697,9 @@
                 experimentalFeatures: true,
                 blinkFeatures: 'CSSOMSmoothScroll,CSSBackdropFilter',
                 backgroundThrottling: false
-            }
+            },
+
+            icon: __dirname + '/icon.ico'
 
         };
 
