@@ -694,13 +694,12 @@
                 java: false,
                 allowDisplayingInsecureContent: true,
                 allowRunningInsecureContent: true,
-                experimentalFeatures: true,
-                blinkFeatures: 'CSSOMSmoothScroll,CSSBackdropFilter',
+                experimentalFeatures: false,
+                blinkFeatures: 'CSSOMSmoothScroll',
                 backgroundThrottling: false
             },
 
             icon: __dirname + '/icon.ico'
-
         };
 
         if (previousWindowInfo.state == 'Maximized') {
