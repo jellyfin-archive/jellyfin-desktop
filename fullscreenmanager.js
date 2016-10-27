@@ -1,4 +1,5 @@
 ﻿define(['apphost'], function (appHost) {
+    'use strict';
 
     function fullscreenManager() {
 

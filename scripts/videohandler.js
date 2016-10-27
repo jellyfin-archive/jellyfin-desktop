@@ -1,4 +1,5 @@
 require(['playbackManager', 'events'], function (playbackManager, events) {
+    'use strict';
 
     events.on(playbackManager, "playbackstart", function (e, player) {
         if (player.requiresVideoTransparency && playbackManager.isPlayingVideo()) {

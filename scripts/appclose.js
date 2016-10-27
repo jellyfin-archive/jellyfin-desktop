@@ -1,4 +1,5 @@
 require(['playbackManager'], function (playbackManager) {
+    'use strict';
 
     window.AppCloseHelper = {
         onClosing: function () {
