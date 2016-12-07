@@ -341,8 +341,6 @@
         return str.split(find).join(replace);
     }
 
-    var firstDomDone;
-
     function getAppBaseUrl() {
 
         var url = 'https://tv.emby.media';
@@ -360,12 +358,12 @@
 
     function setStartInfo() {
 
-        if (!firstDomDone) {
-            firstDomDone = true;
+        //if (!firstDomDone) {
+        //    firstDomDone = true;
 
-            mainWindow.loadURL(getAppUrl());
-            return;
-        }
+        //    mainWindow.loadURL(getAppUrl());
+        //    return;
+        //}
 
         var os = require("os");
 
@@ -720,14 +718,12 @@
         //mainWindow.openDevTools();
         mainWindow.webContents.on('dom-ready', setStartInfo);
 
-        var url = 'file://' + __dirname + '/splash.html';
-
         windowStateOnLoad = previousWindowInfo.state;
 
         addPathIntercepts();
 
         // and load the index.html of the app.
-        mainWindow.loadURL(url);
+        mainWindow.loadURL(getAppUrl());
 
         mainWindow.setMenu(null);
         mainWindow.on('move', onWindowMoved);
