@@ -9,7 +9,7 @@
             SupportsPersistentIdentifier: true
         };
 
-        return caps;
+        return Promise.resolve(caps);
     }
 
     function getWindowState() {
@@ -77,7 +77,7 @@
 
             return features.indexOf(command.toLowerCase()) != -1;
         },
-        capabilities: getCapabilities,
+        getCapabilities: getCapabilities,
         exit: function () {
             sendCommand('exit');
         },
