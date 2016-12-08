@@ -77,6 +77,13 @@
 
             return features.indexOf(command.toLowerCase()) != -1;
         },
+        capabilities: function () {
+            return {
+                PlayableMediaTypes: ['Audio', 'Video'],
+
+                SupportsPersistentIdentifier: true
+            };
+        },
         getCapabilities: getCapabilities,
         exit: function () {
             sendCommand('exit');
