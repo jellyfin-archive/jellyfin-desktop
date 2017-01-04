@@ -72,8 +72,11 @@
             features.push('exitmenu');
             features.push('htmlaudioautoplay');
             features.push('htmlvideoautoplay');
-            features.push('fullscreen');
+            features.push('fullscreenchange');
             features.push('displayableversion');
+
+            features.push('multiserver');
+            features.push('imageanalysis');
 
             return features.indexOf(command.toLowerCase()) != -1;
         },
