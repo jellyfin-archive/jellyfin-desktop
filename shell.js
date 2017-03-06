@@ -20,6 +20,7 @@
     }
 
     var shell = {};
+    var closingWindowState;
 
     function getProcessClosePromise(pid) {
 
@@ -28,10 +29,11 @@
 
             events.on(shell, 'closed', function (e, processId, error) {
 
-                if (processId == pid) {
+                if (processId === pid) {
 
-                    if (apphost.supports('windowstate')) {
-                        apphost.setWindowState('Maximized');
+                    if (closingWindowState) {
+                        apphost.setWindowState(closingWindowState);
+                        closingWindowState = null;
                     }
 
                     if (error) {
@@ -84,6 +86,8 @@
         return sendCommand(url).then(function (response) {
 
             if (apphost.supports('windowstate')) {
+
+                closingWindowState = apphost.getWindowState();
                 apphost.setWindowState('Minimized');
             }
 
