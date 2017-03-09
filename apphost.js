@@ -82,6 +82,7 @@
 
         features.push('multiserver');
         features.push('imageanalysis');
+        features.push('remotemedia');
 
         return features;
     }();
