@@ -146,7 +146,11 @@
                 handleAltLeftBack: true,
                 handleAltRightForward: true,
                 keyMaps: {
-                    back: [8]
+                    back: [
+                        8,
+                        // ESC
+                        27
+                    ]
                 }
             };
 
