@@ -7,6 +7,7 @@
     // Keep a global reference of the window object, if you don't, the window will
     // be closed automatically when the JavaScript object is garbage collected.
     var mainWindow = null;
+    var playerWindow = null;
     var hasAppLoaded = false;
     var enableSplash = true;
 
@@ -22,6 +23,13 @@
     function onWindowMoved() {
 
         mainWindow.webContents.executeJavaScript('window.dispatchEvent(new CustomEvent("move", {}));');
+        var winPosition = mainWindow.getPosition();
+	    playerWindow.setPosition(winPosition[0], winPosition[1]);
+    }
+
+    function onWindowResize() {
+	    var winSize = mainWindow.getSize();
+	    playerWindow.setSize(winSize[0], winSize[1]);
     }
 
     var currentWindowState = 'Normal';
@@ -626,7 +634,7 @@
     var commandLineArguments = process.argv.slice(2);
 
     if (commandLineArguments.length > 0) {
-        app.setPath('userData', commandLineArguments[0]);
+        //app.setPath('userData', commandLineArguments[0]);
     }
 
     function onCecCommand(cmd) {
@@ -673,7 +681,7 @@
         var supportsTransparency = supportsTransparentWindow();
 
         var windowOptions = {
-            transparent: supportsTransparency,
+            transparent: false, //supportsTransparency,
             frame: false,
             resizable: true,
             title: 'Emby Theater',
@@ -715,6 +723,12 @@
             windowOptions.height = previousWindowInfo.height || 720;
         }
 
+        windowOptions.skipTaskbar = true;
+         
+        playerWindow = new BrowserWindow(windowOptions);
+        //windowOptions.parent = playerWindow;
+        windowOptions.skipTaskbar = false;
+        windowOptions.transparent = true;
         // Create the browser window.
         mainWindow = new BrowserWindow(windowOptions);
 
@@ -746,6 +760,7 @@
         mainWindow.on("restore", onRestore);
         mainWindow.on("unmaximize", onUnMaximize);
         mainWindow.on("leave-full-screen", onLeaveFullscreen);
+        mainWindow.on("resize", onWindowResize);
 
         mainWindow.show();
 
@@ -754,5 +769,9 @@
         registerServerdiscovery();
 
         initCec();
+
+        var playbackhandler = require('./playbackhandler/playbackhandler');
+        playbackhandler.initialize(playerWindow);
+        playbackhandler.registerMediaPlayerProtocol(electron.protocol, mainWindow);
     });
 })();
