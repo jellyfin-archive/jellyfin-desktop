@@ -85,6 +85,7 @@
     }
 
     function onMinimize() {
+        playerWindow.minimize();
         onWindowStateChanged('Minimized');
     }
 
@@ -101,6 +102,8 @@
         } else {
             onWindowStateChanged('Normal');
         }
+
+        playerWindow.restore();
     }
 
     function onMaximize() {
@@ -690,7 +693,7 @@
             //alwaysOnTop: true,
 
             //show: false,
-            backgroundColor: '#000000',
+            //backgroundColor: '#000000',
             center: true,
             show: false,
 
@@ -723,11 +726,11 @@
             windowOptions.height = previousWindowInfo.height || 720;
         }
 
-        windowOptions.skipTaskbar = true;
+        //windowOptions.skipTaskbar = false;
          
         playerWindow = new BrowserWindow(windowOptions);
-        //windowOptions.parent = playerWindow;
-        windowOptions.skipTaskbar = false;
+        windowOptions.parent = playerWindow;
+        //windowOptions.skipTaskbar = false;
         windowOptions.transparent = true;
         // Create the browser window.
         mainWindow = new BrowserWindow(windowOptions);
@@ -762,6 +765,7 @@
         mainWindow.on("leave-full-screen", onLeaveFullscreen);
         mainWindow.on("resize", onWindowResize);
 
+        playerWindow.show();
         mainWindow.show();
 
         registerAppHost();

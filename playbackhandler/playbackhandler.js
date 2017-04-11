@@ -1,17 +1,14 @@
 var processes = {};
 var timeposition
 var mainWindowRef
-var playerWindowRef
 var mpvPlayer
 
 function play(url, callback) {
 	console.log('Play URL : ' + url);
-    playerWindowRef.show();
     mpvPlayer.loadFile(url);
 }
 
 function stop(callback) { 
-    playerWindowRef.hide();
     mpvPlayer.stop();
 }
 
@@ -86,8 +83,6 @@ function initialize(playerWindow) {
             console.log("Unknown Native Window Handle Format.");
         }
     }
-    console.log("Native Handle: " + handle.toString('hex'));
-    playerWindowRef = playerWindow;
     var longVal = Long.fromString(handle.toString('hex'), unsigned=true, radix=16);
     console.log('PlayerWindowId : ' + longVal.toString());
     var mpv = require('node-mpv');
