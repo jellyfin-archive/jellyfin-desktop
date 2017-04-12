@@ -1,15 +1,20 @@
 var processes = {};
 var timeposition
 var mainWindowRef
+var mpv = require('node-mpv');
 var mpvPlayer
+var playerWindowId
+var mpvPath
 
 function play(url, callback) {
+    createMpv();
 	console.log('Play URL : ' + url);
     mpvPlayer.loadFile(url);
 }
 
-function stop(callback) { 
+function stop(callback) {
     mpvPlayer.stop();
+    delete mpvPlayer;
 }
 
 function pause() {
@@ -33,7 +38,6 @@ function processRequest(request, callback) {
 	var url = require('url');
 	var url_parts = url.parse(request.url, true);
 	var action = url_parts.host;
- //       console.log('playbackhandler:processRequest action: ' + action);
 	switch (action) {
 
 		case 'play':
@@ -68,7 +72,7 @@ function processRequest(request, callback) {
 	}
 }
 
-function initialize(playerWindow) {
+function initialize(playerWindow, mpvBinaryPath) {
     var Long = require("long");
     var os = require("os");
     var handle = playerWindow.getNativeWindowHandle();
@@ -83,28 +87,33 @@ function initialize(playerWindow) {
             console.log("Unknown Native Window Handle Format.");
         }
     }
-    var longVal = Long.fromString(handle.toString('hex'), unsigned=true, radix=16);
-    console.log('PlayerWindowId : ' + longVal.toString());
-    var mpv = require('node-mpv');
+    var longVal = Long.fromString(handle.toString('hex'), unsigned = true, radix = 16);
+    playerWindowId = longVal.toString();
+    mpvPath = mpvBinaryPath;
+}
+
+function createMpv() {
     var isWindows = require('is-windows');
     if (isWindows()) {
         mpvPlayer = new mpv({
+            "binary": mpvPath,
             "ipc_command": "--input-ipc-server",
             "socket": "\\\\.\\pipe\\emby-pipe",
             "debug" : false
             },
             [
-            "--wid=" + longVal.toString(),
+            "--wid=" + playerWindowId,
             "--no-osc"
             ]);
     } else {
         mpvPlayer = new mpv({
+            "binary": mpvPath,
             "ipc_command": "--input-unix-socket",
             "socket": "/tmp/emby.sock",
             "debug": false
             },
             [
-            "--wid=" + longVal.toString(),
+            "--wid=" + playerWindowId,
             "--no-osc"
             ]);
     }

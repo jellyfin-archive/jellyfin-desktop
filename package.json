@@ -25,10 +25,16 @@
   "devDependencies": {
     "electron-prebuilt": "^0.36.7",
     "power-off": "^1.0.1",
-    "sleep-mode": "^1.1.0"
+    "sleep-mode": "^1.1.0",
+    "node-mpv": "^1.0.3",
+    "long": "^3.2.0",
+    "is-windows": "^1.0.0"
   },
   "dependencies": {
     "power-off": "^1.0.1",
-    "sleep-mode": "^1.1.0"
+    "sleep-mode": "^1.1.0",
+    "node-mpv": "^1.0.3",
+    "long": "^3.2.0",
+    "is-windows": "^1.0.0"
   }
 }

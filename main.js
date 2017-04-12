@@ -9,7 +9,7 @@
     var mainWindow = null;
     var playerWindow = null;
     var hasAppLoaded = false;
-    var enableSplash = true;
+    var enableSplash = false;
 
     // Quit when all windows are closed.
     app.on('window-all-closed', function () {
@@ -637,7 +637,7 @@
     var commandLineArguments = process.argv.slice(2);
 
     if (commandLineArguments.length > 0) {
-        //app.setPath('userData', commandLineArguments[0]);
+        app.setPath('userData', commandLineArguments[0]);
     }
 
     function onCecCommand(cmd) {
@@ -686,14 +686,14 @@
         var windowOptions = {
             transparent: false, //supportsTransparency,
             frame: false,
-            resizable: true,
+            resizable: false,
             title: 'Emby Theater',
             minWidth: 720,
             minHeight: 480,
             //alwaysOnTop: true,
 
             //show: false,
-            //backgroundColor: '#000000',
+            backgroundColor: '#00000000',
             center: true,
             show: false,
 
@@ -725,13 +725,11 @@
             windowOptions.width = previousWindowInfo.width || 1280;
             windowOptions.height = previousWindowInfo.height || 720;
         }
-
-        //windowOptions.skipTaskbar = false;
          
         playerWindow = new BrowserWindow(windowOptions);
         windowOptions.parent = playerWindow;
-        //windowOptions.skipTaskbar = false;
         windowOptions.transparent = true;
+        windowOptions.resizable = true;
         // Create the browser window.
         mainWindow = new BrowserWindow(windowOptions);
 
@@ -774,7 +772,7 @@
 
         initCec();
 
-        var playbackhandler = require('./playbackhandler/playbackhandler');
+        var playbackhandler = require('./playbackhandler/playbackhandler', null);
         playbackhandler.initialize(playerWindow);
         playbackhandler.registerMediaPlayerProtocol(electron.protocol, mainWindow);
     });
