@@ -33,6 +33,10 @@ function set_position(data) {
 	mpvPlayer.goToPosition(data / 1000000000)
 }
 
+function set_volume(data) {
+    mpvPlayer.volume(data);
+}
+
 function processRequest(request, callback) {
 
 	var url = require('url');
@@ -64,7 +68,11 @@ function processRequest(request, callback) {
             break;             
         case 'pause':
             pause();
-            break; 			
+            break;
+	    case 'volume':
+	        var data = url_parts.query["data"];
+	        set_volume(data);
+	        break;
 		default:
 			console.log('playbackhandler:processRequest action unknown : ' + action);
 			callback("");

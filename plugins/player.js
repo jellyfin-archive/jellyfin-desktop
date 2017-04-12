@@ -15,6 +15,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         var currentSrc;
         var playbackPosition = 0;
         var timeUpdateInterval;
+        var currentVolume = 100;
         var playerState = {};
         var ignoreEnded;
 
@@ -228,11 +229,12 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         self.volume = function (val) {
 			//alert("volume");
             if (val != null) {
-                // set vol
+                sendData("volume", val);
+                currentVolume = val;
                 return;
             }
 
-            return 0;
+            return currentVolume;;
         };
 
         self.setSubtitleStreamIndex = function (index) {
