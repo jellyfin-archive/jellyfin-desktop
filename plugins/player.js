@@ -165,9 +165,10 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
                 currentSrc = url;
                 
                 var startTime = new Date(null);
-                startTime.setSeconds((options.playerStartPositionTicks || 0) / 1000000000);
+                startTime.setSeconds((options.playerStartPositionTicks || 0) / 10000000);
                 //alert("Play called, options.playerStartPositionTick/bigthing = " + String(startTime.setSeconds((options.playerStartPositionTicks || 0) / 1000000000)));
                 var startTimeString = startTime.toISOString().substr(11, 8);
+                //alert(startTimeString);
                 
                 var playRequest = {
                     url: url,
@@ -176,23 +177,25 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
                 var playData = JSON.stringify(playRequest);                
      			
                 sendData("play", url, setCurrentPos);
+                //playbackPosition = options.playerStartPositionTicks * 100;
 
                 startTimeUpdateInterval(1000);
 			    embyRouter.showVideoOsd();
 			 }
 			 
-            playbackPosition = (options.playerStartPositionTicks || 0) / 10;
+            //playbackPosition = (options.playerStartPositionTicks || 0) / 10;
             events.trigger(self, 'timeupdate');
             return Promise.resolve();
         };
  
         self.currentTime = function (val) {
             if (val != null) {
-                sendData("set_position", val);
+                sendData("set_position", val / 10000);
+                playbackPosition = val / 10000;
                 return;
             }
-            // needs to be in secconds
-            return playbackPosition / 1000;
+            // needs to be in seconds
+            return playbackPosition / 100;
         };
         
         self.duration = function (val) {
@@ -267,7 +270,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
             }
         }
 		
-        function onTimeUpdate() {;
+        function onTimeUpdate() {
             sendData("get_position", false, updatePlayerPosition);
         }
         
@@ -277,7 +280,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         }
 		
 		function setCurrentPos(data) {
-			//sendData("set_position", data);
+		    //sendData("set_position", playbackPosition);
 		}
 
 		function sendData(action, sendData, callback) {
@@ -287,7 +290,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
 			xhr.open('POST', 'mpvplayer://' + action + '?data=' + sendData, true);
 			xhr.onload = function () {
 				if (this.response) {
-					var data = this.response;
+				    var data = this.response;
 					if(callback) {
 						callback(data);
 					}

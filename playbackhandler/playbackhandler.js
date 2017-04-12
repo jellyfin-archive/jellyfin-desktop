@@ -1,5 +1,5 @@
 var processes = {};
-var timeposition
+var timeposition = 0;
 var mainWindowRef
 var mpv = require('node-mpv');
 var mpvPlayer
@@ -26,11 +26,11 @@ function pause_toggle() {
 }
 
 function get_position(callback) {
-	callback(timeposition);
+	callback(String(timeposition));
 }
 
 function set_position(data) {
-	mpvPlayer.goToPosition(data / 1000000000)
+    mpvPlayer.goToPosition(data / 1000000000);
 }
 
 function set_volume(data) {
@@ -65,13 +65,16 @@ function processRequest(request, callback) {
         	break;
         case 'pause_toggle':
             pause_toggle();
+            callback("Pause Toggle Action");
             break;             
         case 'pause':
             pause();
+            callback("Pause Action");
             break;
 	    case 'volume':
 	        var data = url_parts.query["data"];
 	        set_volume(data);
+	        callback("Volume Action");
 	        break;
 		default:
 			console.log('playbackhandler:processRequest action unknown : ' + action);
@@ -127,7 +130,7 @@ function createMpv() {
     }
 
 	mpvPlayer.on('timeposition', function (data) {
-	    timeposition = data * 1000000000;
+	    timeposition = data * 100000;
 	});
 
 	mpvPlayer.on('started', function () {
