@@ -24,12 +24,12 @@
 
         mainWindow.webContents.executeJavaScript('window.dispatchEvent(new CustomEvent("move", {}));');
         var winPosition = mainWindow.getPosition();
-	    playerWindow.setPosition(winPosition[0], winPosition[1]);
+        playerWindow.setPosition(winPosition[0], winPosition[1]);
     }
 
     function onWindowResize() {
-	    var winSize = mainWindow.getSize();
-	    playerWindow.setSize(winSize[0], winSize[1]);
+        var winSize = mainWindow.getSize();
+        playerWindow.setSize(winSize[0], winSize[1]);
     }
 
     var currentWindowState = 'Normal';
@@ -250,6 +250,8 @@
 
         //globalShortcut.register('mediaplaypause', function () {
         //});
+
+        sendJavascript('window.PlayerWindowId="' + getWindowId(playerWindow) + '";');
     }
 
     var processes = {};
@@ -606,11 +608,7 @@
 
     function supportsTransparentWindow() {
 
-        if (process.platform !== 'win32') {
-            return true;
-        }
-
-        return commandLineArguments[1] == 'true';
+        return true;
     }
 
     function getWindowStateDataPath() {
@@ -650,7 +648,7 @@
 
         try {
             const cec = require('./cec/cec');
-            var cecExePath = commandLineArguments[2];
+            var cecExePath = commandLineArguments[1];
             // create the cec event
             const EventEmitter = require("events").EventEmitter;
             var cecEmitter = new EventEmitter();
@@ -667,6 +665,34 @@
         }
     }
 
+    function getWindowId(win) {
+
+        var Long = require("long");
+        var os = require("os");
+        var handle = win.getNativeWindowHandle();
+
+        if (os.endianness() == "LE") {
+
+            if (handle.length == 4) {
+                handle.swap32();
+            } else if (handle.length == 8) {
+                handle.swap64();
+            } else {
+                console.log("Unknown Native Window Handle Format.");
+            }
+        }
+        var longVal = Long.fromString(handle.toString('hex'), unsigned = true, radix = 16);
+
+        return longVal.toString();
+    }
+
+    function initPlaybackHandler(mpvPath) {
+
+        var playbackhandler = require('./playbackhandler/playbackhandler');
+        playbackhandler.initialize(getWindowId(playerWindow), mpvPath);
+        playbackhandler.registerMediaPlayerProtocol(electron.protocol, mainWindow);
+    }
+
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     app.on('ready', function () {
@@ -681,8 +707,6 @@
         catch (e) {
             previousWindowInfo = {};
         }
-
-        var supportsTransparency = supportsTransparentWindow();
 
         var windowOptions = {
             transparent: false, //supportsTransparency,
@@ -727,7 +751,7 @@
             windowOptions.width = previousWindowInfo.width || 1280;
             windowOptions.height = previousWindowInfo.height || 720;
         }
-         
+
         playerWindow = new BrowserWindow(windowOptions);
         windowOptions.parent = playerWindow;
         windowOptions.transparent = true;
@@ -775,8 +799,11 @@
 
         initCec();
 
-        var playbackhandler = require('./playbackhandler/playbackhandler');
-        playbackhandler.initialize(playerWindow);
-        playbackhandler.registerMediaPlayerProtocol(electron.protocol, mainWindow);
+        var mpvPath = commandLineArguments[2] || null;
+
+        if (mpvPath || !isWindows()) {
+
+            initPlaybackHandler(mpvPath);
+        }
     });
 })();
