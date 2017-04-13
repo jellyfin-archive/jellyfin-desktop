@@ -671,6 +671,7 @@
     // initialization and is ready to create browser windows.
     app.on('ready', function () {
 
+        var isWindows = require('is-windows');
         var windowStatePath = getWindowStateDataPath();
 
         var previousWindowInfo;
@@ -691,6 +692,7 @@
             minWidth: 720,
             minHeight: 480,
             //alwaysOnTop: true,
+            skipTaskbar: isWindows() ? false : true,
 
             //show: false,
             backgroundColor: '#00000000',
@@ -730,6 +732,7 @@
         windowOptions.parent = playerWindow;
         windowOptions.transparent = true;
         windowOptions.resizable = true;
+        windowOptions.skipTaskbar = false;
         // Create the browser window.
         mainWindow = new BrowserWindow(windowOptions);
 
@@ -772,7 +775,7 @@
 
         initCec();
 
-        var playbackhandler = require('./playbackhandler/playbackhandler', null);
+        var playbackhandler = require('./playbackhandler/playbackhandler');
         playbackhandler.initialize(playerWindow);
         playbackhandler.registerMediaPlayerProtocol(electron.protocol, mainWindow);
     });

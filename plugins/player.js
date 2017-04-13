@@ -174,10 +174,11 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
                     url: url,
                     startTime: startTimeString
                 };
-                var playData = JSON.stringify(playRequest);                
-     			
+                var playData = JSON.stringify(playRequest);
+                
+     		playbackPosition = options.playerStartPositionTicks * 100;	
                 sendData("play", url, setCurrentPos);
-                //playbackPosition = options.playerStartPositionTicks * 100;
+		
 
                 startTimeUpdateInterval(1000);
 			    embyRouter.showVideoOsd();
@@ -278,26 +279,33 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
             playbackPosition = parseInt(data);
             events.trigger(self, 'timeupdate');
         }
-		
-		function setCurrentPos(data) {
-		    //sendData("set_position", playbackPosition);
-		}
 
-		function sendData(action, sendData, callback) {
-			
-			sendData = encodeURIComponent(sendData);
-			var xhr = new XMLHttpRequest();
-			xhr.open('POST', 'mpvplayer://' + action + '?data=' + sendData, true);
-			xhr.onload = function () {
-				if (this.response) {
-				    var data = this.response;
-					if(callback) {
-						callback(data);
-					}
+	// sleep time expects milliseconds
+	function sleep (time) {
+	  return new Promise((resolve) => setTimeout(resolve, time));
+	}
+		
+	function setCurrentPos(data) {
+	    sleep(100).then(() => {
+		sendData("set_position", playbackPosition);
+	    });
+	}
+
+	function sendData(action, sendData, callback) {
+		
+		sendData = encodeURIComponent(sendData);
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', 'mpvplayer://' + action + '?data=' + sendData, true);
+		xhr.onload = function () {
+			if (this.response) {
+			    var data = this.response;
+				if(callback) {
+					callback(data);
 				}
-			};
-			xhr.send();
-		}
+			}
+		};
+		xhr.send();
+	}
 		
 
 		
