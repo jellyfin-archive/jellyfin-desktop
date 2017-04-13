@@ -7,8 +7,9 @@
     // Keep a global reference of the window object, if you don't, the window will
     // be closed automatically when the JavaScript object is garbage collected.
     var mainWindow = null;
+    var playerWindow = null;
     var hasAppLoaded = false;
-    var enableSplash = true;
+    var enableSplash = false;
 
     // Quit when all windows are closed.
     app.on('window-all-closed', function () {
@@ -22,6 +23,13 @@
     function onWindowMoved() {
 
         mainWindow.webContents.executeJavaScript('window.dispatchEvent(new CustomEvent("move", {}));');
+        var winPosition = mainWindow.getPosition();
+	    playerWindow.setPosition(winPosition[0], winPosition[1]);
+    }
+
+    function onWindowResize() {
+	    var winSize = mainWindow.getSize();
+	    playerWindow.setSize(winSize[0], winSize[1]);
     }
 
     var currentWindowState = 'Normal';
@@ -77,6 +85,7 @@
     }
 
     function onMinimize() {
+        playerWindow.minimize();
         onWindowStateChanged('Minimized');
     }
 
@@ -93,6 +102,8 @@
         } else {
             onWindowStateChanged('Normal');
         }
+
+        playerWindow.restore();
     }
 
     function onMaximize() {
@@ -660,6 +671,7 @@
     // initialization and is ready to create browser windows.
     app.on('ready', function () {
 
+        var isWindows = require('is-windows');
         var windowStatePath = getWindowStateDataPath();
 
         var previousWindowInfo;
@@ -673,16 +685,17 @@
         var supportsTransparency = supportsTransparentWindow();
 
         var windowOptions = {
-            transparent: supportsTransparency,
+            transparent: false, //supportsTransparency,
             frame: false,
-            resizable: true,
+            resizable: false,
             title: 'Emby Theater',
             minWidth: 720,
             minHeight: 480,
             //alwaysOnTop: true,
+            skipTaskbar: isWindows() ? false : true,
 
             //show: false,
-            backgroundColor: '#000000',
+            backgroundColor: '#00000000',
             center: true,
             show: false,
 
@@ -714,7 +727,12 @@
             windowOptions.width = previousWindowInfo.width || 1280;
             windowOptions.height = previousWindowInfo.height || 720;
         }
-
+         
+        playerWindow = new BrowserWindow(windowOptions);
+        windowOptions.parent = playerWindow;
+        windowOptions.transparent = true;
+        windowOptions.resizable = true;
+        windowOptions.skipTaskbar = false;
         // Create the browser window.
         mainWindow = new BrowserWindow(windowOptions);
 
@@ -746,7 +764,9 @@
         mainWindow.on("restore", onRestore);
         mainWindow.on("unmaximize", onUnMaximize);
         mainWindow.on("leave-full-screen", onLeaveFullscreen);
+        mainWindow.on("resize", onWindowResize);
 
+        playerWindow.show();
         mainWindow.show();
 
         registerAppHost();
@@ -754,5 +774,9 @@
         registerServerdiscovery();
 
         initCec();
+
+        var playbackhandler = require('./playbackhandler/playbackhandler');
+        playbackhandler.initialize(playerWindow);
+        playbackhandler.registerMediaPlayerProtocol(electron.protocol, mainWindow);
     });
 })();
