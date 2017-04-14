@@ -14,7 +14,6 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         var timeUpdateInterval;
         var currentVolume = 100;
         var playerState = {};
-        var ignoreEnded;
 
         self.canPlayMediaType = function (mediaType) {
 
@@ -30,7 +29,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         };
 
         self.getDeviceProfile = function () {
-            //alert("getDeviceProfile");
+
 
             var profile = {};
 
@@ -41,7 +40,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
             profile.DirectPlayProfiles = [];
 
             profile.DirectPlayProfiles.push({
-                Container: 'm4v,3gp,ts,mpegts,mov,xvid,vob,mkv,wmv,asf,ogm,ogv,m2v,avi,mpg,mpeg,mp4,webm,wtv,dvr-ms,iso,m2ts',
+                Container: 'm4v,3gp,ts,mpegts,mov,xvid,vob,mkv,wmv,asf,ogm,ogv,m2v,avi,mpg,mpeg,mp4,webm,wtv,iso,m2ts,dvr-ms',
                 Type: 'Video'
             });
 
@@ -53,11 +52,15 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
             profile.TranscodingProfiles = [];
 
             profile.TranscodingProfiles.push({
-                Container: 'mkv',
+                Container: 'ts',
                 Type: 'Video',
-                AudioCodec: 'mp3,ac3,aac',
+                AudioCodec: 'ac3,mp3,aac',
                 VideoCodec: 'h264',
-                Context: 'Streaming'
+                Context: 'Streaming',
+                Protocol: 'hls',
+                MaxAudioChannels: '6',
+                MinSegments: '2',
+                BreakOnNonKeyFrames: false
             });
 
             profile.TranscodingProfiles.push({
@@ -196,51 +199,74 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         };
 
         self.duration = function (val) {
-            //alert("duration");
-            return 0;
+            
+            // TODO: Return runtime in ms as detected by the player, or null
+            return null;
         };
 
-        self.stop = function (destroyPlayer, reportEnded) {
+        self.stop = function (destroyPlayer) {
+
+            // TODO: Make this more like the following code which is commented out
+            // Don't trigger ended and reset data when stop is requested, do it once the stop actually happens
+            //var cmd = destroyPlayer ? 'stopfade' : 'stop';
+            //return sendCommand(cmd).then(function () {
+
+            //    onEnded(reportEnded);
+
+            //    if (destroyPlayer) {
+            //        self.destroy();
+            //    }
+            //});
+
             currentSrc = "";
+
             sendData("stop");
             events.trigger(self, 'stopped');
-            embyRouter.setTransparency('none');
+            
+            if (destroyPlayer) {
+                self.destroy();
+            }
         };
 
         self.destroy = function () {
-            //alert("destroy");
             embyRouter.setTransparency('none');
         };
 
         self.pause = function () {
-            sendData("pause_toggle")
+            sendData("pause_toggle");
         };
 
         self.unpause = function () {
-            sendData("pause_toggle")
+            sendData("pause_toggle");
+        };
+
+        self.playPause = function () {
+            sendData("pause_toggle");
         };
 
         self.paused = function () {
-            //alert("paused");
-            //sendData("pause_toggle")			
+
+            // TODO	
             return false;
         };
 
         self.volume = function (val) {
-            //alert("volume");
+
             if (val != null) {
                 sendData("volume", val);
                 currentVolume = val;
                 return;
             }
 
-            return currentVolume;;
+            return currentVolume;
         };
 
         self.setSubtitleStreamIndex = function (index) {
+            // TODO
         };
 
         self.setAudioStreamIndex = function (index) {
+            // TODO
         };
 
         self.canSetAudioStreamIndex = function () {
