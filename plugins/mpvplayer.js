@@ -4,13 +4,10 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
     return function () {
 
         var self = this;
-		
-		//alert("Plugin Loaded");
 
         self.name = 'MPV Media Player';
         self.type = 'mediaplayer';
         self.id = 'mpvmediaplayer';
-        self.requiresVideoTransparency = true;
 
         var currentSrc;
         var playbackPosition = 0;
@@ -19,22 +16,22 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         var playerState = {};
         var ignoreEnded;
 
-
         self.canPlayMediaType = function (mediaType) {
-			//alert("canPlayMediaType");
-			
-			return true;
+
+            if ((mediaType || '').toLowerCase() == 'video') {
+
+                return appHost.supports('windowtransparency');
+            }
+            return (mediaType || '').toLowerCase() == 'audio';
         };
 
         self.canPlayItem = function (item) {
-			//alert("canPlayItem");
-
             return true;
         };
 
         self.getDeviceProfile = function () {
-			//alert("getDeviceProfile");
-			
+            //alert("getDeviceProfile");
+
             var profile = {};
 
             profile.MaxStreamingBitrate = 100000000;
@@ -145,17 +142,16 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         };
 
         self.currentSrc = function () {
-			//alert("currentSrc");
             return currentSrc;
         };
 
         self.play = function (options) {
-			
+
             var mediaSource = JSON.parse(JSON.stringify(options.mediaSource));
 
             var url = options.url;
 
-            if(currentSrc == url) {
+            if (currentSrc == url) {
                 // we are already playing this file so just set position
                 // need this in seconds
                 //alert("Play called again, playerStartPorsitionTicks*100= " + String(options.playerStartPositionTicks * 100));
@@ -163,32 +159,32 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
             }
             else {
                 currentSrc = url;
-                
+
                 var startTime = new Date(null);
                 startTime.setSeconds((options.playerStartPositionTicks || 0) / 10000000);
                 //alert("Play called, options.playerStartPositionTick/bigthing = " + String(startTime.setSeconds((options.playerStartPositionTicks || 0) / 1000000000)));
                 var startTimeString = startTime.toISOString().substr(11, 8);
                 //alert(startTimeString);
-                
+
                 var playRequest = {
                     url: url,
                     startTime: startTimeString
                 };
                 var playData = JSON.stringify(playRequest);
-                
-     		playbackPosition = options.playerStartPositionTicks * 100;	
+
+                playbackPosition = options.playerStartPositionTicks * 100;
                 sendData("play", url, setCurrentPos);
-		
+
 
                 startTimeUpdateInterval(1000);
-			    embyRouter.showVideoOsd();
-			 }
-			 
+                embyRouter.showVideoOsd();
+            }
+
             //playbackPosition = (options.playerStartPositionTicks || 0) / 10;
             events.trigger(self, 'timeupdate');
             return Promise.resolve();
         };
- 
+
         self.currentTime = function (val) {
             if (val != null) {
                 sendData("set_position", val / 10000);
@@ -198,40 +194,40 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
             // needs to be in seconds
             return playbackPosition / 100;
         };
-        
+
         self.duration = function (val) {
-			//alert("duration");
+            //alert("duration");
             return 0;
         };
 
         self.stop = function (destroyPlayer, reportEnded) {
-			currentSrc = "";
-            sendData("stop");	
+            currentSrc = "";
+            sendData("stop");
             events.trigger(self, 'stopped');
-			embyRouter.setTransparency('none');			
+            embyRouter.setTransparency('none');
         };
 
         self.destroy = function () {
-			//alert("destroy");
-			embyRouter.setTransparency('none');
+            //alert("destroy");
+            embyRouter.setTransparency('none');
         };
 
         self.pause = function () {
-			sendData("pause_toggle")
+            sendData("pause_toggle")
         };
 
         self.unpause = function () {
-			sendData("pause_toggle")
+            sendData("pause_toggle")
         };
 
         self.paused = function () {
-			//alert("paused");
-			//sendData("pause_toggle")			
+            //alert("paused");
+            //sendData("pause_toggle")			
             return false;
         };
 
         self.volume = function (val) {
-			//alert("volume");
+            //alert("volume");
             if (val != null) {
                 sendData("volume", val);
                 currentVolume = val;
@@ -262,52 +258,44 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
             stopTimeUpdateInterval();
             //alert("startTimeUpdateInterval: " + interval);
             timeUpdateInterval = setInterval(onTimeUpdate, interval);
-        }        
-        
+        }
+
         function stopTimeUpdateInterval() {
             if (timeUpdateInterval) {
                 clearInterval(timeUpdateInterval);
                 timeUpdateInterval = null;
             }
         }
-		
+
         function onTimeUpdate() {
             sendData("get_position", false, updatePlayerPosition);
         }
-        
+
         function updatePlayerPosition(data) {
             playbackPosition = parseInt(data);
             events.trigger(self, 'timeupdate');
         }
 
-	// sleep time expects milliseconds
-	function sleep (time) {
-	  return new Promise((resolve) => setTimeout(resolve, time));
-	}
-		
-	function setCurrentPos(data) {
-	    sleep(100).then(() => {
-		sendData("set_position", playbackPosition);
-	    });
-	}
+        function setCurrentPos(data) {
+            setTimeout(function() {
+                sendData("set_position", playbackPosition);
+            }, 100);
+        }
 
-	function sendData(action, sendData, callback) {
-		
-		sendData = encodeURIComponent(sendData);
-		var xhr = new XMLHttpRequest();
-		xhr.open('POST', 'mpvplayer://' + action + '?data=' + sendData, true);
-		xhr.onload = function () {
-			if (this.response) {
-			    var data = this.response;
-				if(callback) {
-					callback(data);
-				}
-			}
-		};
-		xhr.send();
-	}
-		
+        function sendData(action, sendData, callback) {
 
-		
+            sendData = encodeURIComponent(sendData);
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'mpvplayer://' + action + '?data=' + sendData, true);
+            xhr.onload = function () {
+                if (this.response) {
+                    var data = this.response;
+                    if (callback) {
+                        callback(data);
+                    }
+                }
+            };
+            xhr.send();
+        }
     }
 });
