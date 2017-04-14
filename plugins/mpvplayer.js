@@ -184,7 +184,6 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
             }
 
             //playbackPosition = (options.playerStartPositionTicks || 0) / 10;
-            events.trigger(self, 'timeupdate');
             return Promise.resolve();
         };
 
@@ -208,6 +207,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
 
             // TODO: Make this more like the following code which is commented out
             // Don't trigger ended and reset data when stop is requested, do it once the stop actually happens
+
             //var cmd = destroyPlayer ? 'stopfade' : 'stop';
             //return sendCommand(cmd).then(function () {
 
@@ -294,6 +294,20 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         }
 
         function onTimeUpdate() {
+
+            // TODO: Need to poll for more than just current position
+            // Poll for this data, then trigger events based on changes
+
+            //class PlayerState
+            //{
+            //    public bool isPaused { get; set; }
+            //    public bool isMuted { get; set; }
+            //    public float volume { get; set; }
+            //    public long? positionTicks { get; set; }
+            //    public long? durationTicks { get; set; }
+            //    public string playstate { get; set; }
+            //}
+
             sendData("get_position", false, updatePlayerPosition);
         }
 
