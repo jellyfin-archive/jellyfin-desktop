@@ -800,10 +800,6 @@
         initCec();
 
         var mpvPath = commandLineArguments[2] || null;
-
-        if (mpvPath || !isWindows()) {
-
-            initPlaybackHandler(mpvPath);
-        }
+        initPlaybackHandler(mpvPath);
     });
 })();
