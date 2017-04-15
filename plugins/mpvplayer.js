@@ -8,12 +8,11 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         self.name = 'MPV Media Player';
         self.type = 'mediaplayer';
         self.id = 'mpvmediaplayer';
+        self.priority = -1;
 
         var currentSrc;
-        var playbackPosition = 0;
-        var timeUpdateInterval;
-        var currentVolume = 100;
         var playerState = {};
+        var ignoreEnded;
 
         self.getRoutes = function () {
 
@@ -229,125 +228,137 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
             return currentSrc;
         };
 
+        function getPlayerWindowHandle() {
+            return window.PlayerWindowId;
+        }
+
         self.play = function (options) {
 
             var mediaSource = JSON.parse(JSON.stringify(options.mediaSource));
 
             var url = options.url;
 
-            if (currentSrc == url) {
-                // we are already playing this file so just set position
-                // need this in seconds
-                //alert("Play called again, playerStartPorsitionTicks*100= " + String(options.playerStartPositionTicks * 100));
-                sendData("set_position", (options.playerStartPositionTicks * 100));
-            }
-            else {
-                currentSrc = url;
+            ignoreEnded = false;
+            currentSrc = url;
 
-                var startTime = new Date(null);
-                startTime.setSeconds((options.playerStartPositionTicks || 0) / 10000000);
-                //alert("Play called, options.playerStartPositionTick/bigthing = " + String(startTime.setSeconds((options.playerStartPositionTicks || 0) / 1000000000)));
-                var startTimeString = startTime.toISOString().substr(11, 8);
-                //alert(startTimeString);
+            //var isVideo = options.mimeType.toLowerCase('video').indexOf() == 0;
+            var isVideo = options.item.MediaType == 'Video';
 
-                var playRequest = {
-                    url: url,
-                    startTime: startTimeString
-                };
-                var playData = JSON.stringify(playRequest);
+            var enableFullscreen = options.fullscreen !== false;
 
-                playbackPosition = options.playerStartPositionTicks * 100;
-                sendData("play", url, setCurrentPos);
+            // Update the text url in the media source with the full url from the options object
+            mediaSource.MediaStreams.forEach(function (ms) {
+                var textTrack = options.tracks.filter(function (t) {
+                    return t.index == ms.Index;
 
+                })[0];
 
-                startTimeUpdateInterval(1000);
-                embyRouter.showVideoOsd();
-            }
+                if (textTrack) {
+                    ms.DeliveryUrl = textTrack.url;
+                }
+            });
 
-            //playbackPosition = (options.playerStartPositionTicks || 0) / 10;
-            return Promise.resolve();
+            var requestBody = {
+                url: url,
+                isVideo: isVideo,
+                item: options.item,
+                mediaSource: mediaSource,
+                startPositionTicks: options.playerStartPositionTicks,
+                fullscreen: enableFullscreen,
+                windowHandle: getPlayerWindowHandle()
+            };
+
+            return sendCommand('play', requestBody).then(function () {
+
+                if (isVideo) {
+                    if (enableFullscreen) {
+
+                        embyRouter.showVideoOsd();
+
+                    } else {
+                        embyRouter.setTransparency('backdrop');
+                    }
+                }
+
+                startTimeUpdateInterval();
+
+                return Promise.resolve();
+
+            }, function (err) {
+                stopTimeUpdateInterval();
+                throw err;
+            });
         };
 
+        // Save this for when playback stops, because querying the time at that point might return 0
         self.currentTime = function (val) {
+
             if (val != null) {
-                sendData("set_position", val / 10000);
-                playbackPosition = val / 10000;
+                sendCommand('positionticks?val=' + (val * 10000)).then(onTimeUpdate);
                 return;
             }
-            // needs to be in seconds
-            return playbackPosition / 100;
+
+            return (playerState.positionTicks || 0) / 10000;
         };
 
         self.duration = function (val) {
 
-            // TODO: Return runtime in ms as detected by the player, or null
-            return null;
+            return playerState.durationTicks / 10000;
         };
 
         self.stop = function (destroyPlayer) {
 
-            // TODO: Make this more like the following code which is commented out
-            // Don't trigger ended and reset data when stop is requested, do it once the stop actually happens
+            var cmd = destroyPlayer ? 'stopfade' : 'stop';
+            return sendCommand(cmd).then(function () {
 
-            //var cmd = destroyPlayer ? 'stopfade' : 'stop';
-            //return sendCommand(cmd).then(function () {
+                onEnded();
 
-            //    onEnded(reportEnded);
-
-            //    if (destroyPlayer) {
-            //        self.destroy();
-            //    }
-            //});
-
-            currentSrc = "";
-
-            sendData("stop");
-            events.trigger(self, 'stopped');
-
-            if (destroyPlayer) {
-                self.destroy();
-            }
+                if (destroyPlayer) {
+                    self.destroy();
+                }
+            });
         };
 
         self.destroy = function () {
             embyRouter.setTransparency('none');
         };
 
+        self.playPause = function () {
+            sendCommand('playpause').then(function() {
+                
+                // TODO: Call onPlaying or onPause
+
+            });
+        };
+
         self.pause = function () {
-            sendData("pause_toggle");
+            sendCommand('pause').then(onPause);
         };
 
         self.unpause = function () {
-            sendData("pause_toggle");
-        };
-
-        self.playPause = function () {
-            sendData("pause_toggle");
+            sendCommand('unpause').then(onPlaying);
         };
 
         self.paused = function () {
 
-            // TODO	
-            return false;
+            return playerState.isPaused || false;
         };
 
         self.volume = function (val) {
-
             if (val != null) {
-                sendData("volume", val);
-                currentVolume = val;
+                sendCommand('volume?val=' + val).then(onVolumeChange);
                 return;
             }
 
-            return currentVolume;
+            return playerState.volume || 0;
         };
 
         self.setSubtitleStreamIndex = function (index) {
-            // TODO
+            sendCommand('setSubtitleStreamIndex?index=' + index);
         };
 
         self.setAudioStreamIndex = function (index) {
-            // TODO
+            sendCommand('setAudioStreamIndex?index=' + index);
         };
 
         self.canSetAudioStreamIndex = function () {
@@ -355,16 +366,20 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         };
 
         self.setMute = function (mute) {
+
+            var cmd = mute ? 'mute' : 'unmute';
+
+            sendCommand(cmd).then(onVolumeChange);
         };
 
         self.isMuted = function () {
-            return false;
+            return playerState.isMuted || false;
         };
 
-        function startTimeUpdateInterval(interval) {
+        var timeUpdateInterval;
+        function startTimeUpdateInterval() {
             stopTimeUpdateInterval();
-            //alert("startTimeUpdateInterval: " + interval);
-            timeUpdateInterval = setInterval(onTimeUpdate, interval);
+            timeUpdateInterval = setInterval(onTimeUpdate, 500);
         }
 
         function stopTimeUpdateInterval() {
@@ -374,49 +389,131 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
             }
         }
 
-        function onTimeUpdate() {
+        function onEnded(reportEnded) {
+            stopTimeUpdateInterval();
 
-            // TODO: Need to poll for more than just current position
-            // Poll for this data, then trigger events based on changes
-
-            //class PlayerState
-            //{
-            //    public bool isPaused { get; set; }
-            //    public bool isMuted { get; set; }
-            //    public float volume { get; set; }
-            //    public long? positionTicks { get; set; }
-            //    public long? durationTicks { get; set; }
-            //    public string playstate { get; set; }
-            //}
-
-            sendData("get_position", false, updatePlayerPosition);
+            if (reportEnded) {
+                events.trigger(self, 'stopped');
+            }
         }
 
-        function updatePlayerPosition(data) {
-            playbackPosition = parseInt(data);
+        function onTimeUpdate() {
+
+            updatePlayerState();
             events.trigger(self, 'timeupdate');
         }
 
-        function setCurrentPos(data) {
-            setTimeout(function () {
-                sendData("set_position", playbackPosition);
-            }, 100);
+        function onVolumeChange() {
+            events.trigger(self, 'volumechange');
         }
 
-        function sendData(action, sendData, callback) {
+        function onPlaying() {
 
-            sendData = encodeURIComponent(sendData);
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'mpvplayer://' + action + '?data=' + sendData, true);
-            xhr.onload = function () {
-                if (this.response) {
-                    var data = this.response;
-                    if (callback) {
-                        callback(data);
-                    }
-                }
+            events.trigger(self, 'playing');
+        }
+
+        function onPause() {
+            events.trigger(self, 'pause');
+        }
+
+        function onError() {
+
+            stopTimeUpdateInterval();
+            events.trigger(self, 'error');
+        }
+
+        function getFetchPromise(request) {
+
+            var headers = request.headers || {};
+
+            if (request.dataType == 'json') {
+                headers.accept = 'application/json';
+            }
+
+            var fetchRequest = {
+                headers: headers,
+                method: request.type
             };
-            xhr.send();
+
+            var contentType = request.contentType;
+
+            if (request.data) {
+
+                if (typeof request.data === 'string') {
+                    fetchRequest.body = request.data;
+                } else {
+                    fetchRequest.body = paramsToString(request.data);
+
+                    contentType = contentType || 'application/x-www-form-urlencoded; charset=UTF-8';
+                }
+            }
+
+            if (contentType) {
+
+                headers['Content-Type'] = contentType;
+            }
+
+            return fetch(request.url, fetchRequest);
+        }
+
+        function paramsToString(params) {
+
+            var values = [];
+
+            for (var key in params) {
+
+                var value = params[key];
+
+                if (value !== null && value !== undefined && value !== '') {
+                    values.push(encodeURIComponent(key) + "=" + encodeURIComponent(value));
+                }
+            }
+            return values.join('&');
+        }
+
+        function sendCommand(name, body) {
+
+            var request = {
+                type: 'POST',
+                url: 'mpvplayer://' + name,
+                dataType: 'json'
+            };
+
+            if (body) {
+                request.contentType = 'application/json';
+                request.data = JSON.stringify(body);
+            }
+
+            return getFetchPromise(request).then(function (response) {
+
+                return response.json();
+
+            }).then(function (state) {
+
+                var previousPlayerState = playerState;
+
+                if (state.playstate == 'idle' && previousPlayerState.playstate != 'idle' && previousPlayerState.playstate) {
+                    if (!ignoreEnded) {
+                        ignoreEnded = true;
+                        onEnded(true);
+                    }
+                    return playerState;
+                }
+
+                playerState = state;
+
+                if (previousPlayerState.isMuted != state.isMuted ||
+                    previousPlayerState.volume != state.volume) {
+                    onVolumeChange();
+                }
+
+                return state;
+            });
+        }
+
+        function updatePlayerState() {
+
+            return sendCommand('refresh');
         }
     }
 });
