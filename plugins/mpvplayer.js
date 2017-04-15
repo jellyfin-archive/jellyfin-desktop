@@ -15,6 +15,87 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         var currentVolume = 100;
         var playerState = {};
 
+        self.getRoutes = function () {
+
+            var routes = [];
+
+            routes.push({
+                path: 'mpvplayer/audio.html',
+                transition: 'slide',
+                controller: pluginManager.mapPath(self, 'mpvplayer/audio.js'),
+                type: 'settings',
+                title: 'Audio',
+                category: 'Playback',
+                thumbImage: ''
+            });
+
+            if (appHost.supports('windowtransparency')) {
+                routes.push({
+                    path: 'mpvplayer/video.html',
+                    transition: 'slide',
+                    controller: pluginManager.mapPath(self, 'mpvplayer/video.js'),
+                    type: 'settings',
+                    title: 'Video',
+                    category: 'Playback',
+                    thumbImage: ''
+                });
+            }
+
+            return routes;
+        };
+
+        self.getTranslations = function () {
+
+            var files = [];
+
+            files.push({
+                lang: 'en-us',
+                path: pluginManager.mapPath(self, 'mpvplayer/strings/en-US.json')
+            });
+
+            files.push({
+                lang: 'en-GB',
+                path: pluginManager.mapPath(self, 'mpvplayer/strings/en-GB.json')
+            });
+
+            files.push({
+                lang: 'fr',
+                path: pluginManager.mapPath(self, 'mpvplayer/strings/fr.json')
+            });
+
+            files.push({
+                lang: 'hr',
+                path: pluginManager.mapPath(self, 'mpvplayer/strings/hr.json')
+            });
+
+            files.push({
+                lang: 'it',
+                path: pluginManager.mapPath(self, 'mpvplayer/strings/it.json')
+            });
+
+            files.push({
+                lang: 'pl',
+                path: pluginManager.mapPath(self, 'mpvplayer/strings/pl.json')
+            });
+
+            files.push({
+                lang: 'pt-PT',
+                path: pluginManager.mapPath(self, 'mpvplayer/strings/pt-PT.json')
+            });
+
+            files.push({
+                lang: 'ru',
+                path: pluginManager.mapPath(self, 'mpvplayer/strings/ru.json')
+            });
+
+            files.push({
+                lang: 'sv',
+                path: pluginManager.mapPath(self, 'mpvplayer/strings/sv.json')
+            });
+
+            return files;
+        };
+
         self.canPlayMediaType = function (mediaType) {
 
             if ((mediaType || '').toLowerCase() == 'video') {
@@ -198,7 +279,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         };
 
         self.duration = function (val) {
-            
+
             // TODO: Return runtime in ms as detected by the player, or null
             return null;
         };
@@ -222,7 +303,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
 
             sendData("stop");
             events.trigger(self, 'stopped');
-            
+
             if (destroyPlayer) {
                 self.destroy();
             }
@@ -317,7 +398,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         }
 
         function setCurrentPos(data) {
-            setTimeout(function() {
+            setTimeout(function () {
                 sendData("set_position", playbackPosition);
             }, 100);
         }
