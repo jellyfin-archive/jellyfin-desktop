@@ -84,6 +84,8 @@
         features.push('imageanalysis');
         features.push('remotemedia');
 
+        features.push('otherapppromotions');
+
         return features;
     }();
 

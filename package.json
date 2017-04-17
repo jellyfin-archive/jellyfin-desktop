@@ -23,7 +23,6 @@
   },
   "homepage": "https://github.com/MediaBrowser/Emby.Theater.Electron#readme",
   "devDependencies": {
-    "electron-prebuilt": "^0.36.7",
     "power-off": "^1.0.1",
     "sleep-mode": "^1.1.0",
     "node-mpv": "^1.0.3",

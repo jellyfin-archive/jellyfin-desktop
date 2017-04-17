@@ -604,7 +604,15 @@
         }
     }
 
-    //app.commandLine.appendSwitch('enable-transparent-visuals');
+    function setCommandLineSwitches() {
+
+        var isLinux = require('is-linux');
+
+        if (isLinux()) {
+            app.commandLine.appendSwitch('enable-transparent-visuals');
+            app.commandLine.appendSwitch('disable-gpu');
+        }
+    }
 
     function supportsTransparentWindow() {
 
@@ -632,10 +640,34 @@
         electron.globalShortcut.unregisterAll();
     }
 
-    var commandLineArguments = process.argv.slice(2);
+    function parseCommandLine() {
 
-    if (commandLineArguments.length > 0) {
-        app.setPath('userData', commandLineArguments[0]);
+        var isWindows = require('is-windows');
+
+        var result = {};
+        var commandLineArguments = process.argv.slice(2);
+
+        var index = 0;
+
+        if (isWindows()) {
+            result.userDataPath = commandLineArguments[index];
+            index++;
+        }
+
+        result.cecExePath = commandLineArguments[index];
+        index++;
+
+        result.mpvPath = commandLineArguments[index];
+        index++;
+
+        return result;
+    }
+
+    var commandLineOptions = parseCommandLine();
+
+    var userDataPath = commandLineOptions.userDataPath;
+    if (userDataPath) {
+        app.setPath('userData', userDataPath);
     }
 
     function onCecCommand(cmd) {
@@ -648,7 +680,7 @@
 
         try {
             const cec = require('./cec/cec');
-            var cecExePath = commandLineArguments[1];
+            var cecExePath = commandLineOptions.cecExePath;
             // create the cec event
             const EventEmitter = require("events").EventEmitter;
             var cecEmitter = new EventEmitter();
@@ -692,6 +724,8 @@
         playbackhandler.initialize(getWindowId(playerWindow), mpvPath);
         playbackhandler.registerMediaPlayerProtocol(electron.protocol, mainWindow);
     }
+
+    setCommandLineSwitches();
 
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
@@ -799,7 +833,6 @@
 
         initCec();
 
-        var mpvPath = commandLineArguments[2] || null;
-        initPlaybackHandler(mpvPath);
+        initPlaybackHandler(commandLineOptions.mpvPath);
     });
 })();
