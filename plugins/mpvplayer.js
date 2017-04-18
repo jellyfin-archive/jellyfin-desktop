@@ -324,8 +324,8 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         };
 
         self.playPause = function () {
-            sendCommand('playpause').then(function() {
-                
+            sendCommand('playpause').then(function () {
+
                 // TODO: Call onPlaying or onPause
 
             });
@@ -473,41 +473,47 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
 
         function sendCommand(name, body) {
 
-            var request = {
-                type: 'POST',
-                url: 'mpvplayer://' + name,
-                dataType: 'json'
-            };
+            return new Promise(function (resolve, reject) {
 
-            if (body) {
-                request.contentType = 'application/json';
-                request.data = JSON.stringify(body);
-            }
+                var xhr = new XMLHttpRequest();
 
-            return getFetchPromise(request).then(function (response) {
+                xhr.open('POST', 'mpvplayer://' + name, true);
 
-                return response.json();
+                xhr.onload = function () {
+                    if (this.responseText && this.status >= 200 && this.status <= 400) {
 
-            }).then(function (state) {
+                        var state = JSON.parse(this.responseText);
+                        var previousPlayerState = playerState;
 
-                var previousPlayerState = playerState;
+                        if (state.playstate == 'idle' && previousPlayerState.playstate != 'idle' && previousPlayerState.playstate) {
+                            if (!ignoreEnded) {
+                                ignoreEnded = true;
+                                onEnded(true);
+                            }
+                            return playerState;
+                        }
 
-                if (state.playstate == 'idle' && previousPlayerState.playstate != 'idle' && previousPlayerState.playstate) {
-                    if (!ignoreEnded) {
-                        ignoreEnded = true;
-                        onEnded(true);
+                        playerState = state;
+
+                        if (previousPlayerState.isMuted != state.isMuted ||
+                            previousPlayerState.volume != state.volume) {
+                            onVolumeChange();
+                        }
+
+                        resolve(state);
+                    } else {
+                        reject();
                     }
-                    return playerState;
+                };
+
+                xhr.onerror = reject;
+
+                if (body) {
+                    //request.contentType = 'application/json';
+                    xhr.send(JSON.stringify(body));
+                } else {
+                    xhr.send();
                 }
-
-                playerState = state;
-
-                if (previousPlayerState.isMuted != state.isMuted ||
-                    previousPlayerState.volume != state.volume) {
-                    onVolumeChange();
-                }
-
-                return state;
             });
         }
 
