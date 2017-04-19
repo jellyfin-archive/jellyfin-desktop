@@ -6,6 +6,13 @@ var mpvPlayer
 var playerWindowId
 var mpvPath
 
+function alert(text) {
+    require('electron').dialog.showMessageBox(mainWindowRef, {
+        message: text.toString(),
+        buttons: ['ok']
+    });
+}
+
 function play(url, callback) {
     createMpv();
 	console.log('Play URL : ' + url);
@@ -25,10 +32,6 @@ function pause_toggle() {
     mpvPlayer.togglePause();
 }
 
-function get_position(callback) {
-	callback(String(timeposition));
-}
-
 function set_position(data) {
     mpvPlayer.goToPosition(data / 1000000000);
 }
@@ -37,48 +40,58 @@ function set_volume(data) {
     mpvPlayer.volume(data);
 }
 
+function getReturnJson() {
+
+    return "{}";
+}
+
 function processRequest(request, callback) {
 
 	var url = require('url');
 	var url_parts = url.parse(request.url, true);
 	var action = url_parts.host;
+
 	switch (action) {
 
 		case 'play':
-			var data = url_parts.query["data"];			
+			var data = url_parts.query["path"];			
 			play(data, callback);
-			callback("Play Action");
+			callback(getReturnJson());
 			break;
-        case 'stop':			
+	    case 'stop':
+	        stop(callback);
+	        callback(getReturnJson());
+	        break;
+	    case 'stopfade':
+            // TODO: If playing audio, stop with a fade out
             stop(callback);
-            callback("Stop Action");
+            callback(getReturnJson());
             break;
-        case 'get_position':
-        	get_position(callback);
-        	//console.log("Get position called, timeposition = " + String(timeposition));
-        	break;
         case 'set_position':
         	var data = url_parts.query["data"];
         	set_position(data);
-        	callback("Set Position Action");
-        	//console.log("Set position called, request = " + String(data));
+        	callback(getReturnJson());
         	break;
-        case 'pause_toggle':
+	    case 'unpause':
+	        pause_toggle();
+	        callback(getReturnJson());
+	        break;
+	    case 'playpause':
             pause_toggle();
-            callback("Pause Toggle Action");
-            break;             
+            callback(getReturnJson());
+            break;
         case 'pause':
             pause();
-            callback("Pause Action");
+            callback(getReturnJson());
             break;
 	    case 'volume':
 	        var data = url_parts.query["data"];
 	        set_volume(data);
-	        callback("Volume Action");
+	        callback(getReturnJson());
 	        break;
 		default:
-			console.log('playbackhandler:processRequest action unknown : ' + action);
-			callback("");
+			// This could be a refresh, e.g. player polling for data
+			callback(getReturnJson());
 			break;
 	}
 }

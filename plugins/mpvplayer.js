@@ -259,7 +259,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
             });
 
             var requestBody = {
-                url: url,
+                path: url,
                 isVideo: isVideo,
                 //item: options.item,
                 //mediaSource: mediaSource,
@@ -430,7 +430,8 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
                 var value = params[key];
 
                 if (value !== null && value !== undefined && value !== '') {
-                    values.push(encodeURIComponent(key) + "=" + encodeURIComponent(value));
+                    //values.push(encodeURIComponent(key) + "=" + encodeURIComponent(value));
+                    values.push(encodeURIComponent(key) + "=" + value);
                 }
             }
             return values.join('&');
