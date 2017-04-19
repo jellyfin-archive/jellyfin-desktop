@@ -261,14 +261,13 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
             var requestBody = {
                 url: url,
                 isVideo: isVideo,
-                item: options.item,
-                mediaSource: mediaSource,
-                startPositionTicks: options.playerStartPositionTicks,
-                fullscreen: enableFullscreen,
-                windowHandle: getPlayerWindowHandle()
+                //item: options.item,
+                //mediaSource: mediaSource,
+                startPositionTicks: options.playerStartPositionTicks || 0,
+                fullscreen: enableFullscreen
             };
 
-            return sendCommand('play', requestBody).then(function () {
+            return sendCommand('play?' + paramsToString(requestBody)).then(function () {
 
                 if (isVideo) {
                     if (enableFullscreen) {
@@ -422,40 +421,6 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
             events.trigger(self, 'error');
         }
 
-        function getFetchPromise(request) {
-
-            var headers = request.headers || {};
-
-            if (request.dataType == 'json') {
-                headers.accept = 'application/json';
-            }
-
-            var fetchRequest = {
-                headers: headers,
-                method: request.type
-            };
-
-            var contentType = request.contentType;
-
-            if (request.data) {
-
-                if (typeof request.data === 'string') {
-                    fetchRequest.body = request.data;
-                } else {
-                    fetchRequest.body = paramsToString(request.data);
-
-                    contentType = contentType || 'application/x-www-form-urlencoded; charset=UTF-8';
-                }
-            }
-
-            if (contentType) {
-
-                headers['Content-Type'] = contentType;
-            }
-
-            return fetch(request.url, fetchRequest);
-        }
-
         function paramsToString(params) {
 
             var values = [];
@@ -471,7 +436,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
             return values.join('&');
         }
 
-        function sendCommand(name, body) {
+        function sendCommand(name) {
 
             return new Promise(function (resolve, reject) {
 
@@ -490,7 +455,8 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
                                 ignoreEnded = true;
                                 onEnded(true);
                             }
-                            return playerState;
+                            resolve(playerState);
+                            return;
                         }
 
                         playerState = state;
@@ -508,12 +474,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
 
                 xhr.onerror = reject;
 
-                if (body) {
-                    //request.contentType = 'application/json';
-                    xhr.send(JSON.stringify(body));
-                } else {
-                    xhr.send();
-                }
+                xhr.send();
             });
         }
 
