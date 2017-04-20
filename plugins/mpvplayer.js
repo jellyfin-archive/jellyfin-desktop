@@ -387,9 +387,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         function onEnded(reportEnded) {
             stopTimeUpdateInterval();
 
-            if (reportEnded) {
-                events.trigger(self, 'stopped');
-            }
+            events.trigger(self, 'stopped');
         }
 
         function onTimeUpdate() {
