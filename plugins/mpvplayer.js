@@ -384,10 +384,13 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
             }
         }
 
-        function onEnded(reportEnded) {
+        function onEnded() {
             stopTimeUpdateInterval();
 
-            events.trigger(self, 'stopped');
+            if (!ignoreEnded) {
+                ignoreEnded = true;
+                events.trigger(self, 'stopped');
+            }
         }
 
         function onTimeUpdate() {
@@ -446,10 +449,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
                         var previousPlayerState = playerState;
 
                         if (state.playstate == 'idle' && previousPlayerState.playstate != 'idle' && previousPlayerState.playstate) {
-                            if (!ignoreEnded) {
-                                ignoreEnded = true;
-                                onEnded(true);
-                            }
+                            onEnded();
                             resolve(playerState);
                             return;
                         }
