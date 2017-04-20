@@ -323,11 +323,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         };
 
         self.playPause = function () {
-            sendCommand('playpause').then(function () {
-
-                // TODO: Call onPlaying or onPause
-
-            });
+            sendCommand('playpause');
         };
 
         self.pause = function () {
@@ -378,7 +374,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         var timeUpdateInterval;
         function startTimeUpdateInterval() {
             stopTimeUpdateInterval();
-            timeUpdateInterval = setInterval(onTimeUpdate, 500);
+            timeUpdateInterval = setInterval(onTimeUpdate, 200);
         }
 
         function stopTimeUpdateInterval() {
@@ -462,9 +458,17 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
 
                         playerState = state;
 
-                        if (previousPlayerState.isMuted != state.isMuted ||
-                            previousPlayerState.volume != state.volume) {
+                        if (previousPlayerState.isMuted !== state.isMuted ||
+                            previousPlayerState.volume !== state.volume) {
                             onVolumeChange();
+                        }
+
+                        if (previousPlayerState.isPaused !== state.isPaused) {
+                            if (state.isPaused) {
+                                onPause();
+                            } else if (previousPlayerState.isPaused) {
+                                onPlaying();
+                            }
                         }
 
                         resolve(state);
