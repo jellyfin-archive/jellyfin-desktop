@@ -80,7 +80,6 @@ function unmute() {
 
 function set_audiostream(index) {
 
-    return;
     var audioIndex = 0;
     var i, length, stream;
     var streams = playMediaSource.MediaStreams || [];
@@ -163,7 +162,7 @@ function processRequest(request, body, callback) {
 
     var url = require('url');
     var url_parts = url.parse(request.url, true);
-    var action = url_parts.pathname.substring(1);
+    var action = url_parts.pathname.substring(1).toLowerCase();
 
     switch (action) {
 
@@ -172,11 +171,10 @@ function processRequest(request, body, callback) {
             externalSubIndexes = {};
             var data = JSON.parse(body);
             var startPositionTicks = data["startPositionTicks"];
-            playMediaSource = data.mediaSource;
-            //console.log(playMediaSource);
+            playMediaSource = JSON.parse(data.mediaSource);
 
             play(data.path).then(() => {
-
+               
                 set_audiostream(playMediaSource.DefaultAudioStreamIndex);
                 set_subtitlestream(playMediaSource.DefaultSubtitleStreamIndex);
 
