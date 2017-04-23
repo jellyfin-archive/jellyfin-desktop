@@ -267,7 +267,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
                 fullscreen: enableFullscreen
             };
 
-            return sendCommand('play?' + paramsToString(requestBody)).then(function () {
+            return sendCommand('play', requestBody).then(function () {
 
                 if (isVideo) {
                     if (enableFullscreen) {
@@ -434,11 +434,15 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
             return values.join('&');
         }
 
-        function sendCommand(name) {
+        function sendCommand(name, body) {
 
             return new Promise(function (resolve, reject) {
 
                 var xhr = new XMLHttpRequest();
+
+                if (body) {
+                    name += '?' + paramsToString(body);
+                }
 
                 xhr.open('POST', 'mpvplayer://' + name, true);
 
