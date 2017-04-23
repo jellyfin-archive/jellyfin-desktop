@@ -145,22 +145,22 @@ function getReturnJson(positionTicks) {
     return JSON.stringify(state);
 }
 
-function processRequest(request, callback) {
+function processRequest(request, body, callback) {
 
     var url = require('url');
     var url_parts = url.parse(request.url, true);
-    var action = url_parts.host;
+    var action = url_parts.pathname.substring(1);
 
     switch (action) {
 
         case 'play':
             createMpv();
-            var data = url_parts.query["path"];
-            var startPositionTicks = url_parts.query["startPositionTicks"];
-            playMediaSource = JSON.parse(url_parts.query["mediaSource"]);
+            var data = JSON.parse(body);
+            var startPositionTicks = data["startPositionTicks"];
+            playMediaSource = data.mediaSource;
             //console.log(playMediaSource);
 
-            play(data).then(() => {
+            play(data.path).then(() => {
                 if (startPositionTicks != 0) {
                     set_position(startPositionTicks);
                 }
@@ -278,13 +278,32 @@ function createMpv() {
     });
 }
 
+function processNodeRequest(req, res) {
+    
+    var body = [];
+
+    req.on('data', function (chunk) {
+        body.push(chunk);
+    }).on('end', function () {
+
+        body = Buffer.concat(body).toString();
+        // at this point, `body` has the entire request body stored in it as a string
+
+        processRequest(req, body, function (json) {
+
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(json);
+        });
+    });
+}
+
 function registerMediaPlayerProtocol(protocol, mainWindow) {
 
-    protocol.registerStringProtocol('mpvplayer', function (request, callback) {
-        mainWindowRef = mainWindow;
-        processRequest(request, callback);
-    });
+    mainWindowRef = mainWindow;
 
+    var http = require('http');
+
+    http.createServer(processNodeRequest).listen(8023, '127.0.0.1');
 }
 
 exports.initialize = initialize;

@@ -440,11 +440,11 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
 
                 var xhr = new XMLHttpRequest();
 
-                if (body) {
-                    name += '?' + paramsToString(body);
-                }
+                //if (body) {
+                //    name += '?' + paramsToString(body);
+                //}
 
-                xhr.open('POST', 'mpvplayer://' + name, true);
+                xhr.open('POST', 'http://127.0.0.1:8023/' + name, true);
 
                 xhr.onload = function () {
                     if (this.responseText && this.status >= 200 && this.status <= 400) {
@@ -481,7 +481,12 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
 
                 xhr.onerror = reject;
 
-                xhr.send();
+                if (body) {
+                    xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+                    xhr.send(JSON.stringify(body));
+                } else {
+                    xhr.send();
+                }
             });
         }
 
