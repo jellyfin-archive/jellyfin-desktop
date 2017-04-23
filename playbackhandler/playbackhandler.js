@@ -80,8 +80,7 @@ function unmute() {
 
 function set_audiostream(index) {
 
-    index = parseInt(index);
-
+    return;
     var audioIndex = 0;
     var i, length, stream;
     var streams = playMediaSource.MediaStreams || [];
@@ -98,8 +97,6 @@ function set_audiostream(index) {
 }
 
 function set_subtitlestream(index) {
-
-    index = parseInt(index);
 
     if (index < 0) {
         mpvPlayer.setProperty("sid", "no");
