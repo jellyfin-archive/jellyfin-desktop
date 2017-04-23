@@ -16,4 +16,14 @@ require(['playbackManager', 'events'], function (playbackManager, events) {
             xhr.send();
         }
     });
+
+    function sendCommand(name) {
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'electronapphost://' + name, true);
+
+        xhr.send();
+    }
+
+    sendCommand('loaded');
 });
