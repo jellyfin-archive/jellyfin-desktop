@@ -5,6 +5,7 @@ var mpv = require('node-mpv');
 var mpvPlayer
 var playerWindowId
 var mpvPath
+var playMediaSource
 var playerStatus
 var playerStarted = false;
 
@@ -12,6 +13,24 @@ function alert(text) {
     require('electron').dialog.showMessageBox(mainWindowRef, {
         message: text.toString(),
         buttons: ['ok']
+    });
+}
+
+function download(url, dest) {
+    return new Promise(function (resolve, reject) {
+        var http = require('http');
+        var fs = require('fs');
+        var file = fs.createWriteStream(dest);
+        var request = http.get(url, function (response) {
+            response.pipe(file);
+            file.on('finish', function () {
+                file.close();  // close() is async, call cb after close completes.
+                resolve();
+            });
+        }).on('error', function (err) { // Handle errors
+            fs.unlink(dest); // Delete the file async. (But we don't check the result)
+            resolve();
+        });
     });
 }
 
@@ -59,12 +78,58 @@ function unmute() {
     mpvPlayer.unmute();
 }
 
+function set_audiostream(index) {
+    var audioIndex = 0;
+    var i, length, stream;
+    var streams = playMediaSource.MediaStreams || [];
+    for (i = 0, length = streams.length; i < length; i++) {
+        stream = streams[i];
+        if (stream.Type === 'Audio') {
+            audioIndex++;
+            if (stream.Index == index) {
+                break;
+            }
+        }
+    }
+    mpvPlayer.setProperty("aid", audioIndex);
+}
+
+function set_subtitlestream(index) {
+    if (index < 0) {
+        mpvPlayer.setProperty("sid", "off");
+    } else {
+        var subIndex = 0;
+        var i, length, stream;
+        var streams = playMediaSource.MediaStreams || [];
+        for (i = 0, length = streams.length; i < length; i++) {
+            stream = streams[i];
+            if (stream.Type === 'Subtitle') {
+                subIndex++;
+
+                if (stream.Index == index) {
+                    if (stream.DeliveryMethod === 'External') {
+                        var os = require('os');
+                        var subtitlefile = os.tmpdir() + "/" + stream.DisplayTitle + "." + stream.Codec.toLowerCase();
+                        download(stream.DeliveryUrl, subtitlefile).then(() => {
+                            mpvPlayer.addSubtitles(subtitlefile, "cached", stream.DisplayTitle, stream.Language);
+                        });
+                    } else {
+                        mpvPlayer.setProperty("sid", subIndex);
+                    }
+
+                    break;
+                }
+            }
+        }
+    }
+}
+
 function getReturnJson(positionTicks) {
     var playState = "playing";
     if (playerStatus.pause) {
         playState = "paused";
     }
-    if (playerStatus['idle-active']) {;
+    if (playerStatus['idle-active']) {
         playState = "idle";
     }
 
@@ -92,11 +157,14 @@ function processRequest(request, callback) {
             createMpv();
             var data = url_parts.query["path"];
             var startPositionTicks = url_parts.query["startPositionTicks"];
+            playMediaSource = JSON.parse(url_parts.query["mediaSource"]);
+            //console.log(playMediaSource);
 
             play(data).then(() => {
                 if (startPositionTicks != 0) {
                     set_position(startPositionTicks);
                 }
+                set_subtitlestream(playMediaSource.DefaultSubtitleStreamIndex);
                 callback(getReturnJson(startPositionTicks));
             });
 
@@ -142,9 +210,15 @@ function processRequest(request, callback) {
             unmute();
             callback(getReturnJson());
             break;
-        case 'setAudioStreamIndex':
+        case 'setaudiostreamindex':
+            var data = url_parts.query["index"];
+            set_audiostream(data);
+            callback(getReturnJson());
             break;
-        case 'setSubtitleStreamIndex':
+        case 'setsubtitlestreamindex':
+            var data = url_parts.query["index"];
+            set_subtitlestream(data);
+            callback(getReturnJson());
             break;
         default:
             // This could be a refresh, e.g. player polling for data

@@ -262,7 +262,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
                 path: url,
                 isVideo: isVideo,
                 //item: options.item,
-                //mediaSource: mediaSource,
+                mediaSource: JSON.stringify(mediaSource),
                 startPositionTicks: options.playerStartPositionTicks || 0,
                 fullscreen: enableFullscreen
             };
