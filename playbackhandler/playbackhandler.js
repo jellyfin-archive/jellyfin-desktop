@@ -137,12 +137,16 @@ function getReturnJson(positionTicks) {
         isPaused: playerStatus.pause || false,
         isMuted: playerStatus.mute || false,
         volume: playerStatus.volume || 100,
-        durationTicks: playerStatus.duration * 100000 || 0,
         positionTicks: positionTicks || timeposition,
         playstate: playState
     }
-    //console.log(state);
-    return JSON.stringify(state);
+
+    if (playerStatus.duration) {
+
+        state.durationTicks = playerStatus.duration * 10000000;
+    }
+
+    return Promise.resolve(JSON.stringify(state));
 }
 
 function processRequest(request, body, callback) {
@@ -165,64 +169,64 @@ function processRequest(request, body, callback) {
                     set_position(startPositionTicks);
                 }
                 set_subtitlestream(playMediaSource.DefaultSubtitleStreamIndex);
-                callback(getReturnJson(startPositionTicks));
+                getReturnJson(startPositionTicks).then(callback);
             });
 
             break;
         case 'stop':
             stop();
-            callback(getReturnJson());
+            getReturnJson().then(callback);
             break;
         case 'stopfade':
             // TODO: If playing audio, stop with a fade out
             stop();
             delete mpvPlayer;
-            callback(getReturnJson());
+            getReturnJson().then(callback);
             break;
         case 'positionticks':
             var data = url_parts.query["val"];
             set_position(data);
             timeposition = data;
-            callback(getReturnJson());
+            getReturnJson().then(callback);
             break;
         case 'unpause':
             pause_toggle();
-            callback(getReturnJson());
+            getReturnJson().then(callback);
             break;
         case 'playpause':
             pause_toggle();
-            callback(getReturnJson());
+            getReturnJson().then(callback);
             break;
         case 'pause':
             pause();
-            callback(getReturnJson());
+            getReturnJson().then(callback);
             break;
         case 'volume':
             var data = url_parts.query["val"];
             set_volume(data);
-            callback(getReturnJson());
+            getReturnJson().then(callback);
             break;
         case 'mute':
             mute();
-            callback(getReturnJson());
+            getReturnJson().then(callback);
             break;
         case 'unmute':
             unmute();
-            callback(getReturnJson());
+            getReturnJson().then(callback);
             break;
         case 'setaudiostreamindex':
             var data = url_parts.query["index"];
             set_audiostream(data);
-            callback(getReturnJson());
+            getReturnJson().then(callback);
             break;
         case 'setsubtitlestreamindex':
             var data = url_parts.query["index"];
             set_subtitlestream(data);
-            callback(getReturnJson());
+            getReturnJson().then(callback);
             break;
         default:
             // This could be a refresh, e.g. player polling for data
-            callback(getReturnJson());
+            getReturnJson().then(callback);
             break;
     }
 }
@@ -279,7 +283,7 @@ function createMpv() {
 }
 
 function processNodeRequest(req, res) {
-    
+
     var body = [];
 
     req.on('data', function (chunk) {

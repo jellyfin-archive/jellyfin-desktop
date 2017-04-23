@@ -120,7 +120,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
             profile.DirectPlayProfiles = [];
 
             profile.DirectPlayProfiles.push({
-                Container: 'm4v,3gp,ts,mpegts,mov,xvid,vob,mkv,wmv,asf,ogm,ogv,m2v,avi,mpg,mpeg,mp4,webm,wtv,iso,m2ts,dvr-ms',
+                Container: 'm4v,mpegts,ts,3gp,mov,xvid,vob,mkv,wmv,asf,ogm,ogv,m2v,avi,mpg,mpeg,mp4,webm,wtv,iso,m2ts,dvr-ms',
                 Type: 'Video'
             });
 
@@ -135,7 +135,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
                 Container: 'ts',
                 Type: 'Video',
                 AudioCodec: 'ac3,mp3,aac',
-                VideoCodec: 'h264',
+                VideoCodec: 'h264,mpeg2video',
                 Context: 'Streaming',
                 Protocol: 'hls',
                 MaxAudioChannels: '6',
@@ -301,6 +301,10 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
         };
 
         self.duration = function (val) {
+
+            if (playerState.durationTicks == null) {
+                return null;
+            }
 
             return playerState.durationTicks / 10000;
         };
