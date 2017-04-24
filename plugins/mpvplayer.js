@@ -228,10 +228,6 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
             return currentSrc;
         };
 
-        function getPlayerWindowHandle() {
-            return window.PlayerWindowId;
-        }
-
         self.play = function (options) {
 
             var mediaSource = JSON.parse(JSON.stringify(options.mediaSource));
