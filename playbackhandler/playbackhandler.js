@@ -153,6 +153,8 @@ function getReturnJson(positionTicks) {
     if (playerStatus.duration) {
 
         state.durationTicks = playerStatus.duration * 10000000;
+    } else if (playerStatus['demuxer-cache-time']) {
+        state.durationTicks = playerStatus['demuxer-cache-time'] * 10000000;
     }
 
     return Promise.resolve(JSON.stringify(state));
@@ -276,6 +278,7 @@ function createMpv() {
             ]);
     }
     mpvPlayer.observeProperty('idle-active', 13);
+    mpvPlayer.observeProperty('demuxer-cache-time', 14);
 
     mpvPlayer.on('timeposition', function (data) {
         timeposition = data * 10000000;
