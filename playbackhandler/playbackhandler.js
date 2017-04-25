@@ -176,11 +176,11 @@ function processRequest(request, body, callback) {
             playMediaSource = JSON.parse(data.mediaSource);
 
             play(data.path).then(() => {
-                if (playMediaSource.DefaultAudioStreamIndex) {
+                if (playMediaSource.DefaultAudioStreamIndex != null) {
                     set_audiostream(playMediaSource.DefaultAudioStreamIndex);
                 }
 
-                if (playMediaSource.DefaultSubtitleStreamIndex) {
+                if (playMediaSource.DefaultSubtitleStreamIndex != null) {
                     set_subtitlestream(playMediaSource.DefaultSubtitleStreamIndex);
                 }
                 else {
@@ -261,29 +261,30 @@ function initialize(playerWindowIdString, mpvBinaryPath) {
 function createMpv() {
     if (mpvPlayer) return;
     var isWindows = require('is-windows');
+
+    var mpvOptions = [
+            "--wid=" + playerWindowId,
+            "--no-osc"
+    ];
+
     if (isWindows()) {
         mpvPlayer = new mpv({
             "binary": mpvPath,
             "ipc_command": "--input-ipc-server",
             "socket": "\\\\.\\pipe\\emby-pipe",
             "debug": false
-        },
-            [
-            "--wid=" + playerWindowId,
-            "--no-osc"
-            ]);
+
+        }, mpvOptions);
     } else {
         mpvPlayer = new mpv({
             "binary": mpvPath,
             "ipc_command": "--input-unix-socket",
             "socket": "/tmp/emby.sock",
             "debug": false
-        },
-            [
-            "--wid=" + playerWindowId,
-            "--no-osc"
-            ]);
+
+        }, mpvOptions);
     }
+
     mpvPlayer.observeProperty('idle-active', 13);
     mpvPlayer.observeProperty('demuxer-cache-time', 14);
 
