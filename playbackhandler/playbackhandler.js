@@ -176,9 +176,16 @@ function processRequest(request, body, callback) {
             playMediaSource = JSON.parse(data.mediaSource);
 
             play(data.path).then(() => {
-               
-                set_audiostream(playMediaSource.DefaultAudioStreamIndex);
-                set_subtitlestream(playMediaSource.DefaultSubtitleStreamIndex);
+                if (playMediaSource.DefaultAudioStreamIndex) {
+                    set_audiostream(playMediaSource.DefaultAudioStreamIndex);
+                }
+
+                if (playMediaSource.DefaultSubtitleStreamIndex) {
+                    set_subtitlestream(playMediaSource.DefaultSubtitleStreamIndex);
+                }
+                else {
+                    set_subtitlestream(-1);
+                }
 
                 if (startPositionTicks != 0) {
                     set_position(startPositionTicks);
