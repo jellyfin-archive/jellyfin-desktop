@@ -136,31 +136,11 @@ function set_subtitlestream(index) {
     }
 }
 
-function set_config(config) {
-    if (!mpvPlayer) return;
-
-    if (config.Video.deinterlace != null) {
-        mpvPlayer.setProperty("deinterlace", config.Video.deinterlace.toLowerCase());
-    }
-
-    if (config.Audio['audio-spdif'] != null) {
-        mpvPlayer.setProperty("audio-spdif", config.Audio['audio-spdif'].toLowerCase());
-    }
-
-    if (config.Audio['audio-channels'] != null) {
-        mpvPlayer.setProperty("audio-channels", config.Audio['audio-channels'].toLowerCase());
-    }
-
-    if (config.Audio['ad-lavc-ac3drc'] != null) {
-        mpvPlayer.setProperty("ad-lavc-ac3drc", config.Audio['ad-lavc-ac3drc'].toLowerCase());
-    }
-}
-
 function setMpvVideoOptions(player, options) {
 
-    mpvPlayer.setProperty("hwdec", options.hwdec || 'no');
-    mpvPlayer.setProperty("video-output-levels", options.videoOutputLevels || 'auto');
-    mpvPlayer.setProperty("deinterlace", options.deinterlace || 'no');
+    player.setProperty("hwdec", options.hwdec || 'no');
+    player.setProperty("video-output-levels", options.videoOutputLevels || 'auto');
+    player.setProperty("deinterlace", options.deinterlace || 'no');
 }
 
 function setMpvVideoAudioOptions(player, options) {
@@ -173,11 +153,10 @@ function setMpvVideoAudioOptions(player, options) {
         audioChannels = '7.1,5.1,stereo';
     }
 
-    mpvPlayer.setProperty("audio-channels", audioChannels);
+    player.setProperty("audio-channels", audioChannels);
 
-    alert(options.audioSpdif || '');
-    mpvPlayer.setProperty("audio-spdif", options.audioSpdif || '');
-    mpvPlayer.setProperty("ad-lavc-ac3drc", options.dynamicRangeCompression || 0);
+    player.setProperty("audio-spdif", options.audioSpdif || '');
+    player.setProperty("ad-lavc-ac3drc", options.dynamicRangeCompression || 0);
 }
 
 function setMpvMusicOptions(player, options) {
@@ -328,23 +307,25 @@ function createMpv() {
             "--no-osc"
     ];
 
-    if (isWindows()) {
-        mpvPlayer = new mpv({
-            "binary": mpvPath,
-            "ipc_command": "--input-ipc-server",
-            "socket": "\\\\.\\pipe\\emby-pipe",
-            "debug": false
+    var mpvInitOptions = {
+        "debug": false
+    };
 
-        }, mpvOptions);
-    } else {
-        mpvPlayer = new mpv({
-            "binary": mpvPath,
-            "ipc_command": "--input-unix-socket",
-            "socket": "/tmp/emby.sock",
-            "debug": false
-
-        }, mpvOptions);
+    if (mpvPath) {
+        mpvInitOptions.binary = mpvPath;
     }
+
+    if (isWindows()) {
+
+        mpvInitOptions.socket = "\\\\.\\pipe\\emby-pipe";
+        mpvInitOptions.ipc_command = "--input-ipc-server";
+    } else {
+
+        mpvInitOptions.socket = "/tmp/emby.sock";
+        mpvInitOptions.ipc_command = "--input-unix-socket";
+    }
+
+    mpvPlayer = new mpv(mpvInitOptions, mpvOptions);
 
     mpvPlayer.observeProperty('idle-active', 13);
     mpvPlayer.observeProperty('demuxer-cache-time', 14);
