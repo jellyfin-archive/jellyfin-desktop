@@ -1,4 +1,4 @@
-define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, pluginManager, events, embyRouter) {
+define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], function (appHost, pluginManager, events, embyRouter, appSettings) {
     'use strict';
 
     return function () {
@@ -260,7 +260,13 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter'], function (appHost, 
                 //item: options.item,
                 mediaSource: JSON.stringify(mediaSource),
                 startPositionTicks: options.playerStartPositionTicks || 0,
-                fullscreen: enableFullscreen
+                fullscreen: enableFullscreen,
+                mediaType: options.mediaType,
+                playerOptions: {
+                    dynamicRangeCompression: parseInt(appSettings.get('mpv-drc') || '0') / 100,
+                    audioChannels: appSettings.get('mpv-speakerlayout'),
+                    audioSpdif: appSettings.get('mpv-audiospdif')
+                }
             };
 
             return sendCommand('play', requestBody).then(function () {

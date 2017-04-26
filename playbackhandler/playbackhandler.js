@@ -2,13 +2,14 @@ var processes = {};
 var timeposition = 0;
 var mainWindowRef
 var mpv = require('node-mpv');
-var mpvPlayer
-var playerWindowId
-var mpvPath
-var playMediaSource
-var playerStatus
-var externalSubIndexes
+var mpvPlayer;
+var playerWindowId;
+var mpvPath;
+var playMediaSource;
+var playerStatus;
+var externalSubIndexes;
 var playerStarted = false;
+var playerStopped = false;
 
 function alert(text) {
     require('electron').dialog.showMessageBox(mainWindowRef, {
@@ -29,7 +30,7 @@ function download(url, dest) {
             });
         }).on('error', function (err) { // Handle errors
             fs.unlink(dest); // Delete the file async. (But we don't check the result)
-            resolve();
+            reject();
         });
     });
 }
@@ -41,11 +42,11 @@ function play(path) {
         mpvPlayer.loadFile(path);
 
         (function checkStarted(i) {
-            setTimeout(function () {
+            setTimeout(function() {
                 if (playerStarted) resolve();
                 if (--i) checkStarted(i);
-                else resolve();
-            }, 100)
+                else reject();
+            }, 100);
         })(100);
     });
 }
@@ -87,7 +88,7 @@ function set_audiostream(index) {
         stream = streams[i];
         if (stream.Type === 'Audio') {
             audioIndex++;
-            if (stream.Index == index) {
+            if (stream.Index === index) {
                 break;
             }
         }
@@ -108,7 +109,7 @@ function set_subtitlestream(index) {
             if (stream.Type === 'Subtitle') {
                 subIndex++;
 
-                if (stream.Index == index) {
+                if (stream.Index === index) {
                     if (stream.DeliveryMethod === 'External') {
                         if (stream.Index in externalSubIndexes) {
                             mpvPlayer.setProperty("sid", externalSubIndexes[stream.Index]);
@@ -119,6 +120,8 @@ function set_subtitlestream(index) {
                                 mpvPlayer.addSubtitles(subtitlefile, "select", stream.DisplayTitle, stream.Language);
                                 mpvPlayer.getProperty('sid').then(function (sid) {
                                     externalSubIndexes[stream.Index] = sid;
+                                }).catch(() => {
+                                    console.log("Failed to download " + stream.DeliveryUrl);
                                 });
                             });
                         }
@@ -131,6 +134,54 @@ function set_subtitlestream(index) {
             }
         }
     }
+}
+
+function set_config(config) {
+    if (!mpvPlayer) return;
+
+    if (config.Video.deinterlace != null) {
+        mpvPlayer.setProperty("deinterlace", config.Video.deinterlace.toLowerCase());
+    }
+
+    if (config.Audio['audio-spdif'] != null) {
+        mpvPlayer.setProperty("audio-spdif", config.Audio['audio-spdif'].toLowerCase());
+    }
+
+    if (config.Audio['audio-channels'] != null) {
+        mpvPlayer.setProperty("audio-channels", config.Audio['audio-channels'].toLowerCase());
+    }
+
+    if (config.Audio['ad-lavc-ac3drc'] != null) {
+        mpvPlayer.setProperty("ad-lavc-ac3drc", config.Audio['ad-lavc-ac3drc'].toLowerCase());
+    }
+}
+
+function setMpvVideoOptions(player, options) {
+
+    mpvPlayer.setProperty("hwdec", options.hwdec || 'no');
+    mpvPlayer.setProperty("video-output-levels", options.videoOutputLevels || 'auto');
+    mpvPlayer.setProperty("deinterlace", options.deinterlace || 'no');
+}
+
+function setMpvVideoAudioOptions(player, options) {
+
+    var audioChannels = options.audioChannels || 'auto-safe';
+    if (audioChannels === '5.1') {
+        audioChannels = '5.1,stereo';
+    }
+    else if (audioChannels === '7.1') {
+        audioChannels = '7.1,5.1,stereo';
+    }
+
+    mpvPlayer.setProperty("audio-channels", audioChannels);
+
+    alert(options.audioSpdif || '');
+    mpvPlayer.setProperty("audio-spdif", options.audioSpdif || '');
+    mpvPlayer.setProperty("ad-lavc-ac3drc", options.dynamicRangeCompression || 0);
+}
+
+function setMpvMusicOptions(player, options) {
+
 }
 
 function getReturnJson(positionTicks) {
@@ -170,8 +221,16 @@ function processRequest(request, body, callback) {
 
         case 'play':
             createMpv();
-            externalSubIndexes = {};
             var data = JSON.parse(body);
+
+            if (data.mediaType === 'Audio') {
+                setMpvMusicOptions(mpvPlayer, data.playerOptions);
+            } else {
+                setMpvVideoOptions(mpvPlayer, data.playerOptions);
+                setMpvVideoAudioOptions(mpvPlayer, data.playerOptions);
+            }
+
+            externalSubIndexes = {};
             var startPositionTicks = data["startPositionTicks"];
             playMediaSource = JSON.parse(data.mediaSource);
 
@@ -192,6 +251,8 @@ function processRequest(request, body, callback) {
                 }
 
                 getReturnJson(startPositionTicks).then(callback);
+            }).catch(() => {
+                callback(null);
             });
 
             break;
@@ -294,6 +355,7 @@ function createMpv() {
 
     mpvPlayer.on('started', function () {
         playerStarted = true;
+        playerStopped = false;
         mainWindowRef.focus();
     });
 
@@ -303,6 +365,7 @@ function createMpv() {
 
     mpvPlayer.on('stopped', function () {
         timeposition = 0;
+        playerStopped = true;
     });
 }
 
@@ -318,9 +381,13 @@ function processNodeRequest(req, res) {
         // at this point, `body` has the entire request body stored in it as a string
 
         processRequest(req, body, function (json) {
-
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(json);
+            if (json != null) {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(json);
+            } else {
+                res.writeHead(500);
+                res.end();
+            }
         });
     });
 }

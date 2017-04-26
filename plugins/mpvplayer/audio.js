@@ -2,8 +2,6 @@
 
     return function (view, params) {
 
-        var self = this;
-
         view.addEventListener('viewbeforeshow', function (e) {
 
             var isRestored = e.detail.isRestored;
@@ -22,36 +20,34 @@
 
         function saveSettings() {
 
-            var selectAudioBitstreamingMode = view.querySelector('.selectAudioBitstreamingMode');
-            config.AudioConfig.AudioBitstreaming = selectAudioBitstreamingMode.value;
+            appSettings.set('mpv-drc', view.querySelector('.selectDrc').value);
+            appSettings.set('mpv-speakerlayout', view.querySelector('.selectSpeakerLayout').value);
 
-            var selectAudioRenderer = view.querySelector('.selectAudioRenderer');
-            config.AudioConfig.Renderer = selectAudioRenderer.value;
+            var spdifCheckboxes = view.querySelectorAll('.chkSpdif');
+            var spdif = [];
 
-            var selectSpeakerLayout = view.querySelector('.selectSpeakerLayout');
-            config.AudioConfig.SpeakerLayout = selectSpeakerLayout.value;
+            for (var i = 0, length = spdifCheckboxes.length; i < length; i++) {
 
-            var selectDrc = view.querySelector('.selectDrc');
-            config.AudioConfig.EnableDRC = selectDrc.value != '';
-            config.AudioConfig.DRCLevel = selectDrc.value || '100';
+                if (spdifCheckboxes[i].checked) {
+                    spdif.push(spdifCheckboxes[i].getAttribute('data-value'));
+                }
+            }
 
-            config.AudioConfig.ExpandMono = view.querySelector('.selectExpandMono').value == 'true';
-            config.AudioConfig.Expand61 = view.querySelector('.selectExpandSixToSeven').value == 'true';
+            appSettings.set('mpv-audiospdif', spdif.join(','));
         }
 
         function renderSettings() {
-            var selectAudioBitstreamingMode = view.querySelector('.selectAudioBitstreamingMode');
-            selectAudioBitstreamingMode.value = config.AudioConfig.AudioBitstreaming;
 
-            var selectAudioRenderer = view.querySelector('.selectAudioRenderer');
-            selectAudioRenderer.value = config.AudioConfig.Renderer;
+            view.querySelector('.selectSpeakerLayout').value = appSettings.get('mpv-speakerlayout') || '';
+            view.querySelector('.selectDrc').value = appSettings.get('mpv-drc') || '';
 
-            view.querySelector('.selectSpeakerLayout').value = config.AudioConfig.SpeakerLayout;
+            var spdif = (appSettings.get('mpv-audiospdif') || '').split(',');
+            var spdifCheckboxes = view.querySelectorAll('.chkSpdif');
 
-            view.querySelector('.selectDrc').value = config.AudioConfig.EnableDRC ? config.AudioConfig.DRCLevel : '';
+            for (var i = 0, length = spdifCheckboxes.length; i < length; i++) {
 
-            view.querySelector('.selectExpandMono').value = config.AudioConfig.ExpandMono;
-            view.querySelector('.selectExpandSixToSeven').value = config.AudioConfig.Expand61;
+                spdifCheckboxes[i].checked = spdif.indexOf(spdifCheckboxes[i].getAttribute('data-value')) !== -1;
+            }
         }
     }
 
