@@ -3,12 +3,14 @@
     <div class="selectContainer">
         <select is="emby-select" class="selectHwaMode" label="${HardwareAccelerationMode}">
             <option value="auto">${Auto}</option>
-            <option value="none">${None}</option>
+            <option value="auto-copy">Auto (copy back)</option>
+            <option value="">${None}</option>
         </select>
     </div>
 
     <div class="selectContainer">
         <select is="emby-select" class="selectNominalRange" label="${OutputRange}">
+            <option value="">${Auto}</option>
             <option value="pc">PC (0-255)</option>
             <option value="video">Video (16-235)</option>
         </select>
@@ -17,7 +19,7 @@
     <div class="selectContainer">
         <select is="emby-select" class="selectRefreshRateMode" label="${ChangeRefreshRate}">
             <option value="true">${Yes}</option>
-            <option value="false">${No}</option>
+            <option value="">${No}</option>
         </select>
     </div>
 </div>

@@ -265,7 +265,10 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
                 playerOptions: {
                     dynamicRangeCompression: parseInt(appSettings.get('mpv-drc') || '0') / 100,
                     audioChannels: appSettings.get('mpv-speakerlayout'),
-                    audioSpdif: appSettings.get('mpv-audiospdif')
+                    audioSpdif: appSettings.get('mpv-audiospdif'),
+                    videoOutputLevels: appSettings.get('mpv-outputlevels'),
+                    deinterlace: appSettings.get('mpv-deinterlace'),
+                    hwdec: appSettings.get('mpv-hwdec')
                 }
             };
 

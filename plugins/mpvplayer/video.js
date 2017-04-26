@@ -2,8 +2,6 @@
 
     return function (view, params) {
 
-        var self = this;
-
         view.addEventListener('viewbeforeshow', function (e) {
 
             var isRestored = e.detail.isRestored;
@@ -23,26 +21,16 @@
 
         function saveSettings() {
 
-            var selectHwaMode = view.querySelector('.selectHwaMode');
-            config.VideoConfig.HwaMode = selectHwaMode.value;
-
-            var selectRefreshRateMode = view.querySelector('.selectRefreshRateMode');
-            config.VideoConfig.AutoChangeRefreshRate = selectRefreshRateMode.value;
-
-            var selectNominalRange = view.querySelector('.selectNominalRange');
-            config.VideoConfig.NominalRange = selectNominalRange.value;
+            appSettings.set('mpv-hwdec', view.querySelector('.selectHwaMode').value);
+            appSettings.set('mpv-outputlevels', view.querySelector('.selectNominalRange').value);
+            appSettings.set('mpv-refreshrate', view.querySelector('.selectRefreshRateMode').value);
         }
 
         function renderSettings() {
 
-            var selectHwaMode = view.querySelector('.selectHwaMode');
-            selectHwaMode.value = config.VideoConfig.HwaMode;
-
-            var selectRefreshRateMode = view.querySelector('.selectRefreshRateMode');
-            selectRefreshRateMode.value = config.VideoConfig.AutoChangeRefreshRate;
-
-            var selectNominalRange = view.querySelector('.selectNominalRange');
-            selectNominalRange.value = config.VideoConfig.NominalRange;
+            view.querySelector('.selectHwaMode').value = appSettings.get('mpv-hwdec') || '';
+            view.querySelector('.selectNominalRange').value = appSettings.get('mpv-outputlevels') || '';
+            view.querySelector('.selectRefreshRateMode').value = appSettings.get('mpv-refreshrate') || '';
         }
     }
 
