@@ -1,5 +1,35 @@
 ﻿define(['loading', 'scrollHelper', 'appSettings', 'emby-select', 'emby-checkbox'], function (loading, scrollHelper, appSettings) {
 
+    function getMultiCheckboxValues(view, className, defaultValue) {
+
+        var checkboxes = view.querySelectorAll('.' + className);
+        var values = [];
+
+        for (var i = 0, length = checkboxes.length; i < length; i++) {
+
+            if (checkboxes[i].checked) {
+                values.push(checkboxes[i].getAttribute('data-value'));
+            }
+        }
+
+        if (!values.length && defaultValue) {
+            values.push(defaultValue);
+        }
+
+        return values;
+    }
+
+    function setMultiCheckboxValues(view, className, values) {
+
+        values = values.split(',');
+        var checkboxes = view.querySelectorAll('.' + className);
+
+        for (var i = 0, length = checkboxes.length; i < length; i++) {
+
+            checkboxes[i].checked = values.indexOf(checkboxes[i].getAttribute('data-value')) !== -1;
+        }
+    }
+
     return function (view, params) {
 
         view.addEventListener('viewbeforeshow', function (e) {
@@ -23,17 +53,8 @@
             appSettings.set('mpv-drc', view.querySelector('.selectDrc').value);
             appSettings.set('mpv-speakerlayout', view.querySelector('.selectSpeakerLayout').value);
 
-            var spdifCheckboxes = view.querySelectorAll('.chkSpdif');
-            var spdif = [];
-
-            for (var i = 0, length = spdifCheckboxes.length; i < length; i++) {
-
-                if (spdifCheckboxes[i].checked) {
-                    spdif.push(spdifCheckboxes[i].getAttribute('data-value'));
-                }
-            }
-
-            appSettings.set('mpv-audiospdif', spdif.join(','));
+            appSettings.set('mpv-audiospdif', getMultiCheckboxValues(view, 'chkSpdif').join(','));
+            appSettings.set('mpv-upmixaudiofor', getMultiCheckboxValues(view, 'chkUpmixAudioFor').join(','));
         }
 
         function renderSettings() {
@@ -41,13 +62,8 @@
             view.querySelector('.selectSpeakerLayout').value = appSettings.get('mpv-speakerlayout') || '';
             view.querySelector('.selectDrc').value = appSettings.get('mpv-drc') || '';
 
-            var spdif = (appSettings.get('mpv-audiospdif') || '').split(',');
-            var spdifCheckboxes = view.querySelectorAll('.chkSpdif');
-
-            for (var i = 0, length = spdifCheckboxes.length; i < length; i++) {
-
-                spdifCheckboxes[i].checked = spdif.indexOf(spdifCheckboxes[i].getAttribute('data-value')) !== -1;
-            }
+            setMultiCheckboxValues(view, 'chkSpdif', appSettings.get('mpv-audiospdif') || '');
+            setMultiCheckboxValues(view, 'chkUpmixAudioFor', appSettings.get('mpv-upmixaudiofor') || 'music');
         }
     }
 

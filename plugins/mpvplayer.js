@@ -258,7 +258,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
                 path: url,
                 isVideo: isVideo,
                 //item: options.item,
-                mediaSource: JSON.stringify(mediaSource),
+                mediaSource: mediaSource,
                 startPositionTicks: options.playerStartPositionTicks || 0,
                 fullscreen: enableFullscreen,
                 mediaType: options.mediaType,
@@ -268,7 +268,9 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
                     audioSpdif: appSettings.get('mpv-audiospdif'),
                     videoOutputLevels: appSettings.get('mpv-outputlevels'),
                     deinterlace: appSettings.get('mpv-deinterlace'),
-                    hwdec: appSettings.get('mpv-hwdec')
+                    hwdec: appSettings.get('mpv-hwdec'),
+                    upmixAudioFor: appSettings.get('mpv-upmixaudiofor'),
+                    scale: appSettings.get('mpv-scale')
                 }
             };
 

@@ -24,6 +24,8 @@
             appSettings.set('mpv-hwdec', view.querySelector('.selectHwaMode').value);
             appSettings.set('mpv-outputlevels', view.querySelector('.selectNominalRange').value);
             appSettings.set('mpv-refreshrate', view.querySelector('.selectRefreshRateMode').value);
+            appSettings.set('mpv-scale', view.querySelector('.selectScale').value);
+            appSettings.set('mpv-deinterlace', view.querySelector('.selectDeinterlace').value);
         }
 
         function renderSettings() {
@@ -31,6 +33,8 @@
             view.querySelector('.selectHwaMode').value = appSettings.get('mpv-hwdec') || '';
             view.querySelector('.selectNominalRange').value = appSettings.get('mpv-outputlevels') || '';
             view.querySelector('.selectRefreshRateMode').value = appSettings.get('mpv-refreshrate') || '';
+            view.querySelector('.selectScale').value = appSettings.get('mpv-scale') || '';
+            view.querySelector('.selectDeinterlace').value = appSettings.get('mpv-deinterlace') || '';
         }
     }
 

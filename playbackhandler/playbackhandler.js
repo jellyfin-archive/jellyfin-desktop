@@ -42,7 +42,7 @@ function play(path) {
         mpvPlayer.loadFile(path);
 
         (function checkStarted(i) {
-            setTimeout(function() {
+            setTimeout(function () {
                 if (playerStarted) resolve();
                 if (--i) checkStarted(i);
                 else reject();
@@ -61,6 +61,10 @@ function pause() {
 
 function pause_toggle() {
     mpvPlayer.togglePause();
+}
+
+function unpause() {
+    mpvPlayer.resume();
 }
 
 function set_position(data) {
@@ -136,16 +140,32 @@ function set_subtitlestream(index) {
     }
 }
 
-function setMpvVideoOptions(player, options) {
+function setMpvVideoOptions(player, options, mediaSource) {
 
     player.setProperty("hwdec", options.hwdec || 'no');
     player.setProperty("video-output-levels", options.videoOutputLevels || 'auto');
-    player.setProperty("deinterlace", options.deinterlace || 'no');
+    player.setProperty("scale", options.scale || '');
+
+    var deinterlace = options.deinterlace || 'yes';
+    if (deinterlace !== 'no') {
+        var interlacedVideoFound = false;
+
+        for (var i = 0, length = mediaSource.MediaStreams.length; i < length; i++) {
+            if (mediaSource.MediaStreams[i].Type === 'Video' && mediaSource.MediaStreams[i].IsInterlaced) {
+                interlacedVideoFound = true;
+                break;
+            }
+        }
+        deinterlace = interlacedVideoFound ? 'yes' : 'no';
+    }
+
+    player.setProperty("deinterlace", deinterlace);
 }
 
 function setMpvVideoAudioOptions(player, options) {
 
     var audioChannels = options.audioChannels || 'auto-safe';
+    var audioFilters = [];
     if (audioChannels === '5.1') {
         audioChannels = '5.1,stereo';
     }
@@ -153,6 +173,12 @@ function setMpvVideoAudioOptions(player, options) {
         audioChannels = '7.1,5.1,stereo';
     }
 
+    var audioChannelsFilter = getAudioChannelsFilter(options, 'Video');
+    if (audioChannelsFilter) {
+        audioFilters.push(audioChannelsFilter);
+    }
+
+    player.setProperty("af", audioFilters.join(','));
     player.setProperty("audio-channels", audioChannels);
 
     player.setProperty("audio-spdif", options.audioSpdif || '');
@@ -161,6 +187,38 @@ function setMpvVideoAudioOptions(player, options) {
 
 function setMpvMusicOptions(player, options) {
 
+    var audioFilters = [];
+
+    var audioChannelsFilter = getAudioChannelsFilter(options, 'Audio');
+    if (audioChannelsFilter) {
+        audioFilters.push(audioChannelsFilter);
+    }
+
+    player.setProperty("af", audioFilters.join(','));
+}
+
+function getAudioChannelsFilter(options, mediaType, itemType) {
+
+    var enableFilter = false;
+    var upmixFor = (options.upmixAudioFor || '').split(',');
+
+    if (mediaType === 'Audio') {
+        if (upmixFor.indexOf('music') !== -1) {
+            enableFilter = true;
+        }
+    }
+
+    if (enableFilter) {
+        var audioChannels = options.audioChannels || 'auto-safe';
+        if (audioChannels === '5.1') {
+            return 'channels=6';
+        }
+        else if (audioChannels === '7.1') {
+            return 'channels=8';
+        }
+    }
+
+    return '';
 }
 
 function getReturnJson(positionTicks) {
@@ -201,17 +259,17 @@ function processRequest(request, body, callback) {
         case 'play':
             createMpv();
             var data = JSON.parse(body);
+            playMediaSource = data.mediaSource;
 
             if (data.mediaType === 'Audio') {
                 setMpvMusicOptions(mpvPlayer, data.playerOptions);
             } else {
-                setMpvVideoOptions(mpvPlayer, data.playerOptions);
+                setMpvVideoOptions(mpvPlayer, data.playerOptions, playMediaSource);
                 setMpvVideoAudioOptions(mpvPlayer, data.playerOptions);
             }
 
             externalSubIndexes = {};
             var startPositionTicks = data["startPositionTicks"];
-            playMediaSource = JSON.parse(data.mediaSource);
 
             play(data.path).then(() => {
                 if (playMediaSource.DefaultAudioStreamIndex != null) {
@@ -252,7 +310,7 @@ function processRequest(request, body, callback) {
             getReturnJson().then(callback);
             break;
         case 'unpause':
-            pause_toggle();
+            unpause();
             getReturnJson().then(callback);
             break;
         case 'playpause':
