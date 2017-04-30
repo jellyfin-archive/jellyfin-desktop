@@ -91,6 +91,7 @@
 
     function onLeaveFullscreen() {
         onWindowStateChanged('Normal');
+        playerWindow.setFullScreen(false);
     }
 
     function onRestore() {
@@ -195,6 +196,8 @@
                     setWindowState('Minimized');
                     break;
                 case 'exit':
+                    mainWindow.close();
+                    playerWindow.close();
                     app.quit();
                     break;
                 case 'sleep':
@@ -626,7 +629,6 @@
     }
 
     function onWindowClose() {
-
         if (hasAppLoaded) {
             var data = mainWindow.getBounds();
             data.state = currentWindowState;
@@ -784,6 +786,10 @@
         } else {
             windowOptions.width = previousWindowInfo.width || 1280;
             windowOptions.height = previousWindowInfo.height || 720;
+            if (previousWindowInfo.x != null && previousWindowInfo.y) {
+                windowOptions.x = previousWindowInfo.x;
+                windowOptions.y = previousWindowInfo.y;
+            }
         }
 
         playerWindow = new BrowserWindow(windowOptions);
