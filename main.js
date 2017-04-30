@@ -776,22 +776,21 @@
             icon: __dirname + '/icon.ico'
         };
 
-        if (previousWindowInfo.state == 'Fullscreen') {
-            windowOptions.fullscreen = true;
-            if (previousWindowInfo.x != null && previousWindowInfo.y != null) {
-                windowOptions.x = previousWindowInfo.x;
-                windowOptions.y = previousWindowInfo.y;
-            }
-        } else {
-            windowOptions.width = previousWindowInfo.width || 1280;
-            windowOptions.height = previousWindowInfo.height || 720;
-            if (previousWindowInfo.x != null && previousWindowInfo.y != null) {
-                windowOptions.x = previousWindowInfo.x;
-                windowOptions.y = previousWindowInfo.y;
-            }
+        windowOptions.width = previousWindowInfo.width || 1280;
+        windowOptions.height = previousWindowInfo.height || 720;
+        if (previousWindowInfo.x != null && previousWindowInfo.y != null) {
+            windowOptions.x = previousWindowInfo.x;
+            windowOptions.y = previousWindowInfo.y;
         }
 
         playerWindow = new BrowserWindow(windowOptions);
+
+        // Only the main window should be set to full screen
+        if (previousWindowInfo.state == 'Fullscreen') {
+            windowOptions.fullscreen = true;
+            windowOptions.width = null;
+            windowOptions.height = null;
+        }
         windowOptions.parent = playerWindow;
         windowOptions.transparent = true;
         windowOptions.resizable = true;
