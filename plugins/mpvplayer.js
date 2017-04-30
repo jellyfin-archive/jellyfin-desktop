@@ -270,7 +270,8 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
                     deinterlace: appSettings.get('mpv-deinterlace'),
                     hwdec: appSettings.get('mpv-hwdec'),
                     upmixAudioFor: appSettings.get('mpv-upmixaudiofor'),
-                    scale: appSettings.get('mpv-scale')
+                    scale: appSettings.get('mpv-scale'),
+                    openglhq: appSettings.get('mpv-openglhq')
                 }
             };
 

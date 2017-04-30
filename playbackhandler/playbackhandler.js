@@ -142,6 +142,12 @@ function set_subtitlestream(index) {
 
 function setMpvVideoOptions(player, options, mediaSource) {
 
+    if (options.openglhq === 'yes') {
+        player.setProperty("profile", 'opengl-hq');
+    } else {
+        player.setProperty("profile", '');
+    }
+
     player.setProperty("hwdec", options.hwdec || 'no');
     player.setProperty("video-output-levels", options.videoOutputLevels || 'auto');
     player.setProperty("scale", options.scale || '');
@@ -211,10 +217,12 @@ function getAudioChannelsFilter(options, mediaType, itemType) {
     if (enableFilter) {
         var audioChannels = options.audioChannels || 'auto-safe';
         if (audioChannels === '5.1') {
-            return 'channels=6';
+            //return 'channels=6';
+            return 'channels=6:[0-0,0-1,0-2,0-3,0-4,0-5]';
         }
         else if (audioChannels === '7.1') {
-            return 'channels=8';
+            //return 'channels=8';
+            return 'channels=8:[0-0,0-1,0-2,0-3,0-4,0-5,0-6,0-7]';
         }
     }
 

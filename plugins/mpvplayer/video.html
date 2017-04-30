@@ -9,6 +9,13 @@
     </div>
 
     <div class="selectContainer">
+        <select is="emby-select" class="selectOpenglhq" label="Enable OpenGL high quality profile:">
+            <option value="yes">${Yes}</option>
+            <option value="">${No}</option>
+        </select>
+    </div>
+
+    <div class="selectContainer">
         <select is="emby-select" class="selectNominalRange" label="${OutputRange}">
             <option value="">${Auto}</option>
             <option value="pc">PC (0-255)</option>
@@ -24,13 +31,6 @@
     </div>
 
     <div class="selectContainer">
-        <select is="emby-select" class="selectRefreshRateMode" label="${ChangeRefreshRate}">
-            <option value="true">${Yes}</option>
-            <option value="">${No}</option>
-        </select>
-    </div>
-
-    <div class="selectContainer">
         <select is="emby-select" class="selectScale" label="Video scaler:">
             <option value="">${Auto}</option>
             <option value="bilinear">bilinear</option>
@@ -41,6 +41,13 @@
             <option value="mitchell">mitchell</option>
             <option value="oversample">oversample</option>
             <option value="linear">linear</option>
+        </select>
+    </div>
+
+    <div class="selectContainer">
+        <select is="emby-select" class="selectRefreshRateMode" label="${ChangeRefreshRate}">
+            <option value="true">${Yes}</option>
+            <option value="">${No}</option>
         </select>
     </div>
 </div>

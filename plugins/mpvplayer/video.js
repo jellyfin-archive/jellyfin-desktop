@@ -26,6 +26,7 @@
             appSettings.set('mpv-refreshrate', view.querySelector('.selectRefreshRateMode').value);
             appSettings.set('mpv-scale', view.querySelector('.selectScale').value);
             appSettings.set('mpv-deinterlace', view.querySelector('.selectDeinterlace').value);
+            appSettings.set('mpv-openglhq', view.querySelector('.selectOpenglhq').value);
         }
 
         function renderSettings() {
@@ -35,6 +36,7 @@
             view.querySelector('.selectRefreshRateMode').value = appSettings.get('mpv-refreshrate') || '';
             view.querySelector('.selectScale').value = appSettings.get('mpv-scale') || '';
             view.querySelector('.selectDeinterlace').value = appSettings.get('mpv-deinterlace') || '';
+            view.querySelector('.selectOpenglhq').value = appSettings.get('mpv-openglhq') || '';
         }
     }
 
