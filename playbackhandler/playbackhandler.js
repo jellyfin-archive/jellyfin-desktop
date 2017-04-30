@@ -6,12 +6,12 @@ var mpvPlayer;
 var playerWindowId;
 var mpvPath;
 var playMediaSource;
+var playMediaType;
 var playerStatus;
 var externalSubIndexes;
 var fadeTimeout;
 var currentVolume;
 var playerStarted = false;
-var playerStopped = false;
 
 function alert(text) {
     require('electron').dialog.showMessageBox(mainWindowRef, {
@@ -94,7 +94,7 @@ function set_audiostream(index) {
         stream = streams[i];
         if (stream.Type === 'Audio') {
             audioIndex++;
-            if (stream.Index === index) {
+            if (stream.Index == index) {
                 break;
             }
         }
@@ -115,7 +115,7 @@ function set_subtitlestream(index) {
             if (stream.Type === 'Subtitle') {
                 subIndex++;
 
-                if (stream.Index === index) {
+                if (stream.Index == index) {
                     if (stream.DeliveryMethod === 'External') {
                         if (stream.Index in externalSubIndexes) {
                             mpvPlayer.setProperty("sid", externalSubIndexes[stream.Index]);
@@ -296,6 +296,7 @@ function processRequest(request, body) {
                 createMpv();
                 var data = JSON.parse(body);
                 playMediaSource = data.mediaSource;
+                playMediaType = data.mediaType;
 
                 if (data.mediaType === 'Audio') {
                     setMpvMusicOptions(mpvPlayer, data.playerOptions);
@@ -334,16 +335,20 @@ function processRequest(request, body) {
                 getReturnJson().then(resolve);
                 break;
             case 'stopfade':
-                currentVolume = playerStatus.volume || 100;
-                fade(currentVolume).then(() => {
+                if (playMediaType.toLowerCase() === 'audio') {
+                    currentVolume = playerStatus.volume || 100;
+                    fade(currentVolume).then(() => {
+                        stop();
+                        set_volume(currentVolume);
+                        currentVolume = null;                     
+                    }).catch(() => {
+                        reject();
+                    });
+                } else {
                     stop();
-                    set_volume(currentVolume);
-                    currentVolume = null;
-                    delete mpvPlayer;
-                    getReturnJson().then(resolve);
-                }).catch(() => {
-                    reject();
-                });
+                }
+                //delete mpvPlayer;
+                getReturnJson().then(resolve);
                 break;
             case 'positionticks':
                 var data = url_parts.query["val"];
@@ -437,7 +442,6 @@ function createMpv() {
 
     mpvPlayer.on('started', function () {
         playerStarted = true;
-        playerStopped = false;
         mainWindowRef.focus();
     });
 
@@ -447,7 +451,6 @@ function createMpv() {
 
     mpvPlayer.on('stopped', function () {
         timeposition = 0;
-        playerStopped = true;
     });
 }
 
