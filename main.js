@@ -776,17 +776,16 @@
             icon: __dirname + '/icon.ico'
         };
 
-        if (previousWindowInfo.state == 'Maximized') {
-            windowOptions.width = 1280;
-            windowOptions.height = 720;
-        } else if (previousWindowInfo.state == 'Fullscreen') {
+        if (previousWindowInfo.state == 'Fullscreen') {
             windowOptions.fullscreen = true;
-            windowOptions.width = 1280;
-            windowOptions.height = 720;
+            if (previousWindowInfo.x != null && previousWindowInfo.y != null) {
+                windowOptions.x = previousWindowInfo.x;
+                windowOptions.y = previousWindowInfo.y;
+            }
         } else {
             windowOptions.width = previousWindowInfo.width || 1280;
             windowOptions.height = previousWindowInfo.height || 720;
-            if (previousWindowInfo.x != null && previousWindowInfo.y) {
+            if (previousWindowInfo.x != null && previousWindowInfo.y != null) {
                 windowOptions.x = previousWindowInfo.x;
                 windowOptions.y = previousWindowInfo.y;
             }
