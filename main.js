@@ -785,12 +785,6 @@
 
         playerWindow = new BrowserWindow(windowOptions);
 
-        // Only the main window should be set to full screen
-        if (previousWindowInfo.state == 'Fullscreen') {
-            windowOptions.fullscreen = true;
-            windowOptions.width = null;
-            windowOptions.height = null;
-        }
         windowOptions.parent = playerWindow;
         windowOptions.transparent = true;
         windowOptions.resizable = true;
@@ -830,6 +824,13 @@
 
         playerWindow.show();
         mainWindow.show();
+
+        // Only the main window should be set to full screen.
+        // This is done after the window is shown because the
+        // player window otherwise is shown behind the task bar.
+        if (previousWindowInfo.state == 'Fullscreen') {
+            mainWindow.setFullScreen(true);
+        }
 
         registerAppHost();
         registerFileSystem();
