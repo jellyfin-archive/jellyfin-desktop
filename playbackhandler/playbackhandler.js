@@ -154,18 +154,18 @@ function setMpvVideoOptions(player, options, mediaSource) {
     player.setProperty("video-output-levels", options.videoOutputLevels || 'auto');
     player.setProperty("scale", options.scale || '');
 
-    var deinterlace = options.deinterlace || 'yes';
-    if (deinterlace !== 'no') {
-        var interlacedVideoFound = false;
+    var deinterlace = options.deinterlace || 'auto';
+    //if (deinterlace != 'no') {
+    //    var interlacedVideoFound = false;
 
-        for (var i = 0, length = mediaSource.MediaStreams.length; i < length; i++) {
-            if (mediaSource.MediaStreams[i].Type === 'Video' && mediaSource.MediaStreams[i].IsInterlaced) {
-                interlacedVideoFound = true;
-                break;
-            }
-        }
-        deinterlace = interlacedVideoFound ? 'yes' : 'no';
-    }
+    //    for (var i = 0, length = mediaSource.MediaStreams.length; i < length; i++) {
+    //        if (mediaSource.MediaStreams[i].Type === 'Video' && mediaSource.MediaStreams[i].IsInterlaced) {
+    //            interlacedVideoFound = true;
+    //            break;
+    //        }
+    //    }
+    //    deinterlace = interlacedVideoFound ? 'yes' : 'auto';
+    //}
 
     player.setProperty("deinterlace", deinterlace);
 }
@@ -340,7 +340,7 @@ function processRequest(request, body) {
                     fade(currentVolume).then(() => {
                         stop();
                         set_volume(currentVolume);
-                        currentVolume = null;                     
+                        currentVolume = null;
                     }).catch(() => {
                         reject();
                     });

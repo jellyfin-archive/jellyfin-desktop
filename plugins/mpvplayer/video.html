@@ -18,14 +18,15 @@
     <div class="selectContainer">
         <select is="emby-select" class="selectNominalRange" label="${OutputRange}">
             <option value="">${Auto}</option>
-            <option value="pc">PC (0-255)</option>
-            <option value="video">Video (16-235)</option>
+            <option value="full">PC (0-255)</option>
+            <option value="limited">Video (16-235)</option>
         </select>
     </div>
 
     <div class="selectContainer">
         <select is="emby-select" class="selectDeinterlace" label="Enable deinterlacing:">
-            <option value="">${Yes}</option>
+            <option value="">${Auto}</option>
+            <option value="yes">${Yes}</option>
             <option value="no">${No}</option>
         </select>
     </div>
@@ -44,7 +45,7 @@
         </select>
     </div>
 
-    <div class="selectContainer">
+    <div class="selectContainer hide">
         <select is="emby-select" class="selectRefreshRateMode" label="${ChangeRefreshRate}">
             <option value="true">${Yes}</option>
             <option value="">${No}</option>
