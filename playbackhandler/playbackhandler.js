@@ -147,7 +147,7 @@ function setMpvVideoOptions(player, options, mediaSource) {
     if (options.openglhq === 'yes') {
         player.setProperty("profile", 'opengl-hq');
     } else {
-        player.setProperty("profile", '');
+        player.setProperty("profile", 'default');
     }
 
     player.setProperty("hwdec", options.hwdec || 'no');
