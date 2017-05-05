@@ -144,15 +144,15 @@ function set_subtitlestream(index) {
 
 function setMpvVideoOptions(player, options, mediaSource) {
 
+    var properties = {};
+
     if (options.openglhq === 'yes') {
-        player.setProperty("profile", 'opengl-hq');
+        properties.profile = 'opengl-hq';
     } else {
-        player.setProperty("profile", 'default');
+        properties.profile = 'default';
     }
 
-    player.setProperty("hwdec", options.hwdec || 'no');
-    player.setProperty("video-output-levels", options.videoOutputLevels || 'auto');
-    player.setProperty("scale", options.scale || '');
+    properties["video-output-levels"] = options.videoOutputLevels || 'auto';
 
     var deinterlace = options.deinterlace || 'auto';
     //if (deinterlace != 'no') {
@@ -167,10 +167,7 @@ function setMpvVideoOptions(player, options, mediaSource) {
     //    deinterlace = interlacedVideoFound ? 'yes' : 'auto';
     //}
 
-    player.setProperty("deinterlace", deinterlace);
-}
-
-function setMpvVideoAudioOptions(player, options) {
+    properties.deinterlace = deinterlace;
 
     var audioChannels = options.audioChannels || 'auto-safe';
     var audioFilters = [];
@@ -186,11 +183,12 @@ function setMpvVideoAudioOptions(player, options) {
         audioFilters.push(audioChannelsFilter);
     }
 
-    player.setProperty("af", audioFilters.join(','));
-    player.setProperty("audio-channels", audioChannels);
+    properties.af = audioFilters.join(',');
+    properties["audio-channels"] = audioChannels;
+    properties["audio-spdif"] = options.audioSpdif || '';
+    properties["ad-lavc-ac3drc"] = options.dynamicRangeCompression || 0;
 
-    player.setProperty("audio-spdif", options.audioSpdif || '');
-    player.setProperty("ad-lavc-ac3drc", options.dynamicRangeCompression || 0);
+    player.setMultipleProperties(properties);
 }
 
 function setMpvMusicOptions(player, options) {
@@ -202,7 +200,9 @@ function setMpvMusicOptions(player, options) {
         audioFilters.push(audioChannelsFilter);
     }
 
-    player.setProperty("af", audioFilters.join(','));
+    player.setMultipleProperties({
+        "af": audioFilters.join(',')
+    });
 }
 
 function getAudioChannelsFilter(options, mediaType, itemType) {
@@ -302,7 +302,6 @@ function processRequest(request, body) {
                     setMpvMusicOptions(mpvPlayer, data.playerOptions);
                 } else {
                     setMpvVideoOptions(mpvPlayer, data.playerOptions, playMediaSource);
-                    setMpvVideoAudioOptions(mpvPlayer, data.playerOptions);
                 }
 
                 externalSubIndexes = {};
