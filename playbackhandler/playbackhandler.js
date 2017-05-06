@@ -146,28 +146,15 @@ function setMpvVideoOptions(player, options, mediaSource) {
 
     var properties = {};
 
-    if (options.openglhq === 'yes') {
-        properties.profile = 'opengl-hq';
-    } else {
-        properties.profile = 'default';
-    }
+    //if (options.openglhq === 'yes') {
+    //    properties.profile = 'opengl-hq';
+    //} else {
+    //    properties.profile = 'default';
+    //}
 
     properties["video-output-levels"] = options.videoOutputLevels || 'auto';
 
-    var deinterlace = options.deinterlace || 'auto';
-    //if (deinterlace != 'no') {
-    //    var interlacedVideoFound = false;
-
-    //    for (var i = 0, length = mediaSource.MediaStreams.length; i < length; i++) {
-    //        if (mediaSource.MediaStreams[i].Type === 'Video' && mediaSource.MediaStreams[i].IsInterlaced) {
-    //            interlacedVideoFound = true;
-    //            break;
-    //        }
-    //    }
-    //    deinterlace = interlacedVideoFound ? 'yes' : 'auto';
-    //}
-
-    properties.deinterlace = deinterlace;
+    properties.deinterlace = options.deinterlace || 'auto';
 
     var audioChannels = options.audioChannels || 'auto-safe';
     var audioFilters = [];
@@ -293,8 +280,8 @@ function processRequest(request, body) {
         switch (action) {
 
             case 'play':
-                createMpv();
                 var data = JSON.parse(body);
+                createMpv(data.playerOptions);
                 playMediaSource = data.mediaSource;
                 playMediaType = data.mediaType;
 
@@ -403,7 +390,7 @@ function initialize(playerWindowIdString, mpvBinaryPath) {
     mpvPath = mpvBinaryPath;
 }
 
-function createMpv() {
+function createMpv(options) {
     if (mpvPlayer) return;
     var isWindows = require('is-windows');
 
@@ -411,6 +398,10 @@ function createMpv() {
             "--wid=" + playerWindowId,
             "--no-osc"
     ];
+
+    if (options.openglhq === 'yes') {
+        mpvOptions.push('--profile=opengl-hq');
+    }
 
     var mpvInitOptions = {
         "debug": false
