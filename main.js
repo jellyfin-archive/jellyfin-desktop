@@ -311,8 +311,14 @@
 
                     var path = request.url.split('=')[1];
 
-                    fs.exists(path, function (exists) {
-                        callback(exists.toString());
+                    fs.access(path, (err) => {
+                        if (err) {
+                            console.error('fs access result for path: ' + err);
+
+                            callback('false');
+                        } else {
+                            callback('true');
+                        }
                     });
                     break;
                 default:
