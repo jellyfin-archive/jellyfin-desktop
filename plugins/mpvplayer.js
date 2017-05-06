@@ -92,6 +92,11 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
                 path: pluginManager.mapPath(self, 'mpvplayer/strings/sv.json')
             });
 
+            files.push({
+                lang: 'zh-CN',
+                path: pluginManager.mapPath(self, 'mpvplayer/strings/zh-CN.json')
+            });
+
             return files;
         };
 
