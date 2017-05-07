@@ -276,8 +276,9 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
                     hwdec: appSettings.get('mpv-hwdec'),
                     upmixAudioFor: appSettings.get('mpv-upmixaudiofor'),
                     openglhq: appSettings.get('mpv-openglhq'),
+                    exclusiveAudio: appSettings.get('mpv-exclusiveaudio'),
                     videoSync: appSettings.get('mpv-displaysync') === 'yes' ? 'display-resample' : null,
-                    scale: appSettings.get('mpv-madvr') === 'yes' ? 'oversample' : null,
+                    //scale: appSettings.get('mpv-madvr') === 'yes' ? 'oversample' : null,
                     tscale: appSettings.get('mpv-madvr') === 'yes' ? 'oversample' : null,
                     interpolation: appSettings.get('mpv-madvr') === 'yes' ? 'yes' : null
                 }
@@ -328,6 +329,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
         self.stop = function (destroyPlayer) {
 
             var cmd = destroyPlayer ? 'stopdestroy' : 'stop';
+
             return sendCommand(cmd).then(function () {
 
                 onEnded();

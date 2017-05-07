@@ -221,6 +221,10 @@ function getMpvMusicOptions(options) {
         list.push('--af=' + audioFilters.join(','));
     }
 
+    if (options.exclusiveAudio) {
+        list.push('--audio-exclusive=yes');
+    }
+
     return list;
 }
 
@@ -280,10 +284,10 @@ function cleanup() {
 
     var player = mpvPlayer;
 
-    player.off('timeposition', onMpvTimePosition);
-    player.off('started', onMpvStarted);
-    player.off('statuschange', onMpvStatusChange);
-    player.off('stopped', onMpvStopped);
+    player.removeAllListeners('timeposition');
+    player.removeAllListeners('started');
+    player.removeAllListeners('statuschange');
+    player.removeAllListeners('stopped');
 
     player.quit();
     delete mpvPlayer;
@@ -364,19 +368,24 @@ function processRequest(request, body) {
                 getReturnJson().then(resolve);
                 break;
             case 'stopdestroy':
-                if (playMediaType.toLowerCase() === 'audio') {
-                    currentVolume = playerStatus.volume || 100;
-                    fade(currentVolume).then(() => {
+
+                getReturnJson().then(function(returnJson) {
+                    if (playMediaType.toLowerCase() === 'audio') {
+                        currentVolume = playerStatus.volume || 100;
+                        fade(currentVolume).then(() => {
+                            stop();
+                            set_volume(currentVolume);
+                            currentVolume = null;
+                            cleanup();
+                        }).catch(reject);
+                    } else {
                         stop();
-                        set_volume(currentVolume);
-                        currentVolume = null;
                         cleanup();
-                    }).catch(reject);
-                } else {
-                    stop();
-                    cleanup();
-                }
-                getReturnJson().then(resolve);
+                    }
+
+                    resolve(returnJson);
+                });
+
                 break;
             case 'positionticks':
                 var data = url_parts.query["val"];
