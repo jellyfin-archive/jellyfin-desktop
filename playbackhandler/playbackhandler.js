@@ -150,6 +150,8 @@ function getMpvVideoOptions(options) {
         list.push('--profile=opengl-hq');
     }
 
+    list.push('--hwdec=' + (options.hwdec || 'no'));
+
     list.push('--deinterlace=' + (options.deinterlace || 'auto'));
 
     list.push('--video-output-levels=' + (options.videoOutputLevels || 'auto'));
