@@ -23,18 +23,20 @@
 
             appSettings.set('mpv-hwdec', view.querySelector('.selectHwaMode').value);
             appSettings.set('mpv-outputlevels', view.querySelector('.selectNominalRange').value);
-            appSettings.set('mpv-refreshrate', view.querySelector('.selectRefreshRateMode').value);
+            appSettings.set('mpv-displaysync', view.querySelector('.selectRefreshRateMode').value);
             appSettings.set('mpv-deinterlace', view.querySelector('.selectDeinterlace').value);
             appSettings.set('mpv-openglhq', view.querySelector('.selectOpenglhq').value);
+            appSettings.set('mpv-madvr', view.querySelector('.selectMadvr').value);
         }
 
         function renderSettings() {
 
             view.querySelector('.selectHwaMode').value = appSettings.get('mpv-hwdec') || '';
             view.querySelector('.selectNominalRange').value = appSettings.get('mpv-outputlevels') || '';
-            view.querySelector('.selectRefreshRateMode').value = appSettings.get('mpv-refreshrate') || '';
+            view.querySelector('.selectRefreshRateMode').value = appSettings.get('mpv-displaysync') || '';
             view.querySelector('.selectDeinterlace').value = appSettings.get('mpv-deinterlace') || '';
             view.querySelector('.selectOpenglhq').value = appSettings.get('mpv-openglhq') || '';
+            view.querySelector('.selectMadvr').value = appSettings.get('mpv-madvr') || '';
         }
     }
 

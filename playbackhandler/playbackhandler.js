@@ -146,15 +146,33 @@ function getMpvVideoOptions(options) {
 
     var list = [];
 
-    list.push({
-        name: 'deinterlace',
-        value: options.deinterlace || 'auto'
-    });
+    if (options.openglhq === 'yes') {
+        list.push('--profile=opengl-hq');
+    }
 
-    list.push({
-        name: 'video-output-levels',
-        value: options.videoOutputLevels || 'auto'
-    });
+    list.push('--deinterlace=' + (options.deinterlace || 'auto'));
+
+    list.push('--video-output-levels=' + (options.videoOutputLevels || 'auto'));
+
+    if (options.videoSync) {
+
+        list.push('--video-sync=' + (options.videoSync));
+    }
+
+    if (options.scale) {
+
+        list.push('--scale=' + (options.scale));
+    }
+
+    if (options.interpolation == 'yes') {
+
+        list.push('--interpolation');
+
+        if (options.tscale) {
+
+            list.push('--tscale=' + (options.tscale));
+        }
+    }
 
     var audioChannels = options.audioChannels || 'auto-safe';
     var audioFilters = [];
@@ -171,26 +189,18 @@ function getMpvVideoOptions(options) {
     }
 
     if (audioFilters.length) {
-        list.push({
-            name: 'af',
-            value: audioFilters.join(',')
-        });
+
+        list.push('--af=' + (audioFilters.join(',')));
     }
 
-    list.push({
-        name: 'audio-channels',
-        value: audioChannels
-    });
+    list.push('--audio-channels=' + (audioChannels));
 
-    list.push({
-        name: 'audio-spdif',
-        value: options.audioSpdif || ''
-    });
+    if (options.audioSpdif) {
+        list.push('--audio-spdif=' + (options.audioSpdif));
+    }
 
-    list.push({
-        name: 'ad-lavc-ac3drc',
-        value: options.dynamicRangeCompression || 0
-    });
+    list.push('--ad-lavc-ac3drc=' + (options.dynamicRangeCompression || 0));
+
 
     return list;
 }
@@ -206,10 +216,7 @@ function getMpvMusicOptions(options) {
     }
 
     if (audioFilters.length) {
-        list.push({
-            name: 'af',
-            value: audioFilters.join(',')
-        });
+        list.push('--af=' + audioFilters.join(','));
     }
 
     return list;
@@ -353,7 +360,7 @@ function processRequest(request, body) {
                 } else {
                     stop();
                     cleanup();
-                }  
+                }
                 getReturnJson().then(resolve);
                 break;
             case 'positionticks':
@@ -414,21 +421,10 @@ function createMpv(options, mediaType) {
     if (mpvPlayer) return;
     var isWindows = require('is-windows');
 
-    var mpvOptions = [
-            "--wid=" + playerWindowId,
-            "--no-osc"
-    ];
+    var mpvOptions = mediaType === 'Audio' ? getMpvMusicOptions(options) : getMpvVideoOptions(options);
 
-    if (options.openglhq === 'yes') {
-        mpvOptions.push('--profile=opengl-hq');
-    }
-
-    var videoOptions = mediaType === 'Audio' ? getMpvMusicOptions(options) : getMpvVideoOptions(options);
-    for (var i = 0, length = videoOptions.length; i < length; i++) {
-        if (videoOptions[i].value) {
-            mpvOptions.push('--' + videoOptions[i].name + '=' + videoOptions[i].value);
-        }
-    }
+    mpvOptions.push('--wid=' + playerWindowId);
+    mpvOptions.push('--no-osc');
 
     var mpvInitOptions = {
         "debug": false

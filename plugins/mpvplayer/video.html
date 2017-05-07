@@ -31,9 +31,16 @@
         </select>
     </div>
 
-    <div class="selectContainer hide">
-        <select is="emby-select" class="selectRefreshRateMode" label="${ChangeRefreshRate}">
-            <option value="true">${Yes}</option>
+    <div class="selectContainer">
+        <select is="emby-select" class="selectMadvr" label="${EnableMadvrFilters}">
+            <option value="yes">${Yes}</option>
+            <option value="">${No}</option>
+        </select>
+    </div>
+
+    <div class="selectContainer">
+        <select is="emby-select" class="selectRefreshRateMode" label="${EnableVideoDisplaySyncing}">
+            <option value="yes">${Yes}</option>
             <option value="">${No}</option>
         </select>
     </div>

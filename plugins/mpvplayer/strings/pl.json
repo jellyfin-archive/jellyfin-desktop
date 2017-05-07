@@ -10,6 +10,8 @@
     "EnableAudioPassthroughFor": "Enable audio passthrough for",
     "EnableOpenGlHq": "Enable OpenGL high quality profile",
     "EnableDeinterlacing": "Enable deinterlacing",
+    "EnableVideoDisplaySyncing": "Enable video display syncing",
+    "EnableMadvrFilters": "Enable MadVR-like smooth motion",
     "HardwareAccelerationMode": "Tryb akceleracji sprz\u0119towej",
     "Auto": "Automatyczny",
     "Disabled": "Wy\u0142\u0105czone",
