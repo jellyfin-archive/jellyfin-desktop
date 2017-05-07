@@ -275,9 +275,22 @@ function cancelFadeTimeout() {
 }
 
 function cleanup() {
-    mpvPlayer.quit();
+
+    var player = mpvPlayer;
+
+    player.off('timeposition', onMpvTimePosition);
+    player.off('started', onMpvStarted);
+    player.off('statuschange', onMpvStatusChange);
+    player.off('stopped', onMpvStopped);
+
+    player.quit();
     delete mpvPlayer;
+
     mpvPlayer = null;
+    playMediaSource = null;
+    playMediaType = null;
+    playerStatus = null;
+    externalSubIndexes = null;
 }
 
 function getReturnJson(positionTicks) {
@@ -417,6 +430,23 @@ function initialize(playerWindowIdString, mpvBinaryPath) {
     mpvPath = mpvBinaryPath;
 }
 
+function onMpvTimePosition(data) {
+    timeposition = data * 10000000;
+}
+
+function onMpvStarted() {
+    playerStarted = true;
+    mainWindowRef.focus();
+}
+
+function onMpvStatusChange(status) {
+    playerStatus = status;
+}
+
+function onMpvStopped() {
+    timeposition = 0;
+}
+
 function createMpv(options, mediaType) {
     if (mpvPlayer) return;
     var isWindows = require('is-windows');
@@ -449,22 +479,10 @@ function createMpv(options, mediaType) {
     mpvPlayer.observeProperty('idle-active', 13);
     mpvPlayer.observeProperty('demuxer-cache-time', 14);
 
-    mpvPlayer.on('timeposition', function (data) {
-        timeposition = data * 10000000;
-    });
-
-    mpvPlayer.on('started', function () {
-        playerStarted = true;
-        mainWindowRef.focus();
-    });
-
-    mpvPlayer.on('statuschange', function (status) {
-        playerStatus = status;
-    });
-
-    mpvPlayer.on('stopped', function () {
-        timeposition = 0;
-    });
+    mpvPlayer.on('timeposition', onMpvTimePosition);
+    mpvPlayer.on('started', onMpvStarted);
+    mpvPlayer.on('statuschange', onMpvStatusChange);
+    mpvPlayer.on('stopped', onMpvStopped);
 }
 
 function processNodeRequest(req, res) {

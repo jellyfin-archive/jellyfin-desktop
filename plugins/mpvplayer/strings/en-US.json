@@ -6,9 +6,6 @@
   "None": "None",
   "Default": "Default",
   "ChangeRefreshRate": "Change monitor refresh rate to match video",
-  "Always": "Always",
-  "AlmostAlways": "Almost Always",
-  "AvoidJudder": "Avoid Judder",
   "SpeakerLayout": "Speaker layout",
   "Stereo": "Stereo",
   "Quadraphonic": "Quadraphonic",
@@ -19,5 +16,5 @@
   "EnableDeinterlacing": "Enable deinterlacing",
   "EnableOpenGlHq": "Enable OpenGL high quality profile",
   "EnableVideoDisplaySyncing": "Enable video display syncing",
-  "EnableMadvrFilters": "Enable MadVR-like smooth motion"
+  "EnableMadvrFilters": "Enable MadVR-like scaling and smooth motion"
 }
