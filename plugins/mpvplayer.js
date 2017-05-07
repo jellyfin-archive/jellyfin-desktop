@@ -323,7 +323,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
 
         self.stop = function (destroyPlayer) {
 
-            var cmd = destroyPlayer ? 'stopfade' : 'stop';
+            var cmd = destroyPlayer ? 'stopdestroy' : 'stop';
             return sendCommand(cmd).then(function () {
 
                 onEnded();

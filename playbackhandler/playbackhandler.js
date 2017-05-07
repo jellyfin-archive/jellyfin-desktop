@@ -37,11 +37,11 @@ function download(url, dest) {
     });
 }
 
-function play(path) {
+function play(player, path) {
     return new Promise(function (resolve, reject) {
         console.log('Play URL : ' + path);
         playerStarted = false;
-        mpvPlayer.loadFile(path);
+        player.loadFile(path);
 
         (function checkStarted(i) {
             setTimeout(function () {
@@ -85,7 +85,7 @@ function unmute() {
     mpvPlayer.unmute();
 }
 
-function set_audiostream(index) {
+function set_audiostream(player, index) {
 
     var audioIndex = 0;
     var i, length, stream;
@@ -99,13 +99,13 @@ function set_audiostream(index) {
             }
         }
     }
-    mpvPlayer.setProperty("aid", audioIndex);
+    player.setProperty("aid", audioIndex);
 }
 
-function set_subtitlestream(index) {
+function set_subtitlestream(player, index) {
 
     if (index < 0) {
-        mpvPlayer.setProperty("sid", "no");
+        player.setProperty("sid", "no");
     } else {
         var subIndex = 0;
         var i, length, stream;
@@ -118,13 +118,13 @@ function set_subtitlestream(index) {
                 if (stream.Index == index) {
                     if (stream.DeliveryMethod === 'External') {
                         if (stream.Index in externalSubIndexes) {
-                            mpvPlayer.setProperty("sid", externalSubIndexes[stream.Index]);
+                            player.setProperty("sid", externalSubIndexes[stream.Index]);
                         } else {
                             var os = require('os');
                             var subtitlefile = os.tmpdir() + "/" + "subtitle" + new Date().getTime() + "." + stream.Codec.toLowerCase();
                             download(stream.DeliveryUrl, subtitlefile).then(() => {
-                                mpvPlayer.addSubtitles(subtitlefile, "select", stream.DisplayTitle, stream.Language);
-                                mpvPlayer.getProperty('sid').then(function (sid) {
+                                player.addSubtitles(subtitlefile, "select", stream.DisplayTitle, stream.Language);
+                                player.getProperty('sid').then(function (sid) {
                                     externalSubIndexes[stream.Index] = sid;
                                 }).catch(() => {
                                     console.log("Failed to download " + stream.DeliveryUrl);
@@ -132,7 +132,7 @@ function set_subtitlestream(index) {
                             });
                         }
                     } else {
-                        mpvPlayer.setProperty("sid", subIndex);
+                        player.setProperty("sid", subIndex);
                     }
 
                     break;
@@ -142,19 +142,19 @@ function set_subtitlestream(index) {
     }
 }
 
-function setMpvVideoOptions(player, options, mediaSource) {
+function getMpvVideoOptions(options) {
 
-    var properties = {};
+    var list = [];
 
-    //if (options.openglhq === 'yes') {
-    //    properties.profile = 'opengl-hq';
-    //} else {
-    //    properties.profile = 'default';
-    //}
+    list.push({
+        name: 'deinterlace',
+        value: options.deinterlace || 'auto'
+    });
 
-    properties["video-output-levels"] = options.videoOutputLevels || 'auto';
-
-    properties.deinterlace = options.deinterlace || 'auto';
+    list.push({
+        name: 'video-output-levels',
+        value: options.videoOutputLevels || 'auto'
+    });
 
     var audioChannels = options.audioChannels || 'auto-safe';
     var audioFilters = [];
@@ -170,16 +170,34 @@ function setMpvVideoOptions(player, options, mediaSource) {
         audioFilters.push(audioChannelsFilter);
     }
 
-    properties.af = audioFilters.join(',');
-    properties["audio-channels"] = audioChannels;
-    properties["audio-spdif"] = options.audioSpdif || '';
-    properties["ad-lavc-ac3drc"] = options.dynamicRangeCompression || 0;
+    if (audioFilters.length) {
+        list.push({
+            name: 'af',
+            value: audioFilters.join(',')
+        });
+    }
 
-    player.setMultipleProperties(properties);
+    list.push({
+        name: 'audio-channels',
+        value: audioChannels
+    });
+
+    list.push({
+        name: 'audio-spdif',
+        value: options.audioSpdif || ''
+    });
+
+    list.push({
+        name: 'ad-lavc-ac3drc',
+        value: options.dynamicRangeCompression || 0
+    });
+
+    return list;
 }
 
-function setMpvMusicOptions(player, options) {
+function getMpvMusicOptions(options) {
 
+    var list = [];
     var audioFilters = [];
 
     var audioChannelsFilter = getAudioChannelsFilter(options, 'Audio');
@@ -187,12 +205,17 @@ function setMpvMusicOptions(player, options) {
         audioFilters.push(audioChannelsFilter);
     }
 
-    player.setMultipleProperties({
-        "af": audioFilters.join(',')
-    });
+    if (audioFilters.length) {
+        list.push({
+            name: 'af',
+            value: audioFilters.join(',')
+        });
+    }
+
+    return list;
 }
 
-function getAudioChannelsFilter(options, mediaType, itemType) {
+function getAudioChannelsFilter(options, mediaType) {
 
     var enableFilter = false;
     var upmixFor = (options.upmixAudioFor || '').split(',');
@@ -281,29 +304,23 @@ function processRequest(request, body) {
 
             case 'play':
                 var data = JSON.parse(body);
-                createMpv(data.playerOptions);
+                createMpv(data.playerOptions, data.mediaType);
                 playMediaSource = data.mediaSource;
                 playMediaType = data.mediaType;
-
-                if (data.mediaType === 'Audio') {
-                    setMpvMusicOptions(mpvPlayer, data.playerOptions);
-                } else {
-                    setMpvVideoOptions(mpvPlayer, data.playerOptions, playMediaSource);
-                }
 
                 externalSubIndexes = {};
                 var startPositionTicks = data["startPositionTicks"];
 
-                play(data.path).then(() => {
+                play(mpvPlayer, data.path).then(() => {
                     if (playMediaSource.DefaultAudioStreamIndex != null) {
-                        set_audiostream(playMediaSource.DefaultAudioStreamIndex);
+                        set_audiostream(mpvPlayer, playMediaSource.DefaultAudioStreamIndex);
                     }
 
                     if (playMediaSource.DefaultSubtitleStreamIndex != null) {
-                        set_subtitlestream(playMediaSource.DefaultSubtitleStreamIndex);
+                        set_subtitlestream(mpvPlayer, playMediaSource.DefaultSubtitleStreamIndex);
                     }
                     else {
-                        set_subtitlestream(-1);
+                        set_subtitlestream(mpvPlayer, -1);
                     }
 
                     if (startPositionTicks != 0) {
@@ -311,29 +328,25 @@ function processRequest(request, body) {
                     }
 
                     getReturnJson(startPositionTicks).then(resolve);
-                }).catch(() => {
-                    reject();
-                });
+                }).catch(reject);
 
                 break;
             case 'stop':
                 stop();
                 getReturnJson().then(resolve);
                 break;
-            case 'stopfade':
+            case 'stopdestroy':
                 if (playMediaType.toLowerCase() === 'audio') {
                     currentVolume = playerStatus.volume || 100;
                     fade(currentVolume).then(() => {
                         stop();
                         set_volume(currentVolume);
                         currentVolume = null;
-                    }).catch(() => {
-                        reject();
-                    });
+                    }).catch(reject);
                 } else {
                     stop();
                 }
-                //delete mpvPlayer;
+                // todo: cleanup mpv player
                 getReturnJson().then(resolve);
                 break;
             case 'positionticks':
@@ -369,12 +382,12 @@ function processRequest(request, body) {
                 break;
             case 'setaudiostreamindex':
                 var data = url_parts.query["index"];
-                set_audiostream(data);
+                set_audiostream(mpvPlayer, data);
                 getReturnJson().then(resolve);
                 break;
             case 'setsubtitlestreamindex':
                 var data = url_parts.query["index"];
-                set_subtitlestream(data);
+                set_subtitlestream(mpvPlayer, data);
                 getReturnJson().then(resolve);
                 break;
             default:
@@ -390,7 +403,7 @@ function initialize(playerWindowIdString, mpvBinaryPath) {
     mpvPath = mpvBinaryPath;
 }
 
-function createMpv(options) {
+function createMpv(options, mediaType) {
     if (mpvPlayer) return;
     var isWindows = require('is-windows');
 
@@ -401,6 +414,13 @@ function createMpv(options) {
 
     if (options.openglhq === 'yes') {
         mpvOptions.push('--profile=opengl-hq');
+    }
+
+    var videoOptions = mediaType === 'Audio' ? getMpvMusicOptions(options) : getMpvVideoOptions(options);
+    for (var i = 0, length = videoOptions.length; i < length; i++) {
+        if (videoOptions[i].value) {
+            mpvOptions.push('--' + videoOptions[i].name + '=' + videoOptions[i].value);
+        }
     }
 
     var mpvInitOptions = {
