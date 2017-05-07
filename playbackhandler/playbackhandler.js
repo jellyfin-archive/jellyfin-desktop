@@ -267,6 +267,12 @@ function cancelFadeTimeout() {
     }
 }
 
+function cleanup() {
+    mpvPlayer.quit();
+    delete mpvPlayer;
+    mpvPlayer = null;
+}
+
 function getReturnJson(positionTicks) {
     var playState = "playing";
     if (playerStatus.pause) {
@@ -342,11 +348,12 @@ function processRequest(request, body) {
                         stop();
                         set_volume(currentVolume);
                         currentVolume = null;
+                        cleanup();
                     }).catch(reject);
                 } else {
                     stop();
-                }
-                // todo: cleanup mpv player
+                    cleanup();
+                }  
                 getReturnJson().then(resolve);
                 break;
             case 'positionticks':
