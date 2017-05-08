@@ -223,6 +223,8 @@ function getMpvMusicOptions(options) {
 
     if (options.exclusiveAudio) {
         list.push('--audio-exclusive=yes');
+    } else {
+        list.push('--audio-exclusive=no');
     }
 
     return list;

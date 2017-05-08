@@ -49,9 +49,19 @@
             mainWindow.setAlwaysOnTop(false);
             mainWindow.minimize();
         } else if (state == 'Maximized') {
+
+            if (previousState == "Minimized") {
+                mainWindow.restore();
+            }
+
             mainWindow.maximize();
             mainWindow.setAlwaysOnTop(false);
         } else if (state == 'Fullscreen') {
+
+            if (previousState == "Minimized") {
+                mainWindow.restore();
+            }
+
             mainWindow.setFullScreen(true);
             mainWindow.setAlwaysOnTop(true);
         } else {
