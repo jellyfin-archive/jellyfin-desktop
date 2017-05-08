@@ -1,8 +1,11 @@
 require(['playbackManager', 'events'], function (playbackManager, events) {
     'use strict';
 
+    var videoOn;
+
     events.on(playbackManager, "playbackstart", function (e, player) {
-        if (player.requiresVideoTransparency && playbackManager.isPlayingVideo()) {
+        if (playbackManager.isPlayingVideo()) {
+            videoOn = true;
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "electronapphost://video-on", true);
             xhr.send();
@@ -10,7 +13,8 @@ require(['playbackManager', 'events'], function (playbackManager, events) {
     });
     events.on(playbackManager, "playbackstop", function (e, stopInfo) {
         var player = stopInfo.player;
-        if (player.requiresVideoTransparency) {
+        if (videoOn) {
+            videoOn = false;
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "electronapphost://video-off", true);
             xhr.send();
