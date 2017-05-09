@@ -207,7 +207,6 @@
                     break;
                 case 'exit':
                     mainWindow.close();
-                    playerWindow.close();
                     app.quit();
                     break;
                 case 'sleep':
@@ -645,6 +644,7 @@
     }
 
     function onWindowClose() {
+
         if (hasAppLoaded) {
             var data = mainWindow.getBounds();
             data.state = currentWindowState;
@@ -656,6 +656,8 @@
 
         // Unregister all shortcuts.
         electron.globalShortcut.unregisterAll();
+
+        playerWindow.close();
     }
 
     function parseCommandLine() {

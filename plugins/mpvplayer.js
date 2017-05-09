@@ -277,9 +277,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
                     upmixAudioFor: appSettings.get('mpv-upmixaudiofor'),
                     openglhq: appSettings.get('mpv-openglhq'),
                     exclusiveAudio: appSettings.get('mpv-exclusiveaudio'),
-                    videoSync: appSettings.get('mpv-displaysync') === 'yes' ? 'display-resample' : null,
-                    //scale: appSettings.get('mpv-madvr') === 'yes' ? 'oversample' : null,
-                    tscale: appSettings.get('mpv-madvr') === 'yes' ? 'oversample' : null,
+                    videoSync: appSettings.get('mpv-displaysync') === 'yes' || appSettings.get('mpv-madvr') === 'yes' ? 'display-resample' : null,
                     interpolation: appSettings.get('mpv-madvr') === 'yes' ? 'yes' : null
                 }
             };
