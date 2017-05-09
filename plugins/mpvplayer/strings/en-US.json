@@ -17,5 +17,6 @@
   "EnableOpenGlHq": "Enable OpenGL high quality profile",
   "EnableVideoDisplaySyncing": "Enable video display syncing",
   "EnableMadvrFilters": "Enable MadVR-like smooth motion",
-  "EnableExclusiveAudioMode": "Enable exclusive audio mode"
+  "EnableExclusiveAudioMode": "Enable exclusive audio mode",
+  "SettingRequiresHighEnd": "This setting requires a high end system."
 }
