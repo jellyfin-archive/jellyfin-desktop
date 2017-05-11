@@ -55,7 +55,7 @@
             appSettings.set('mpv-exclusiveaudio', view.querySelector('.selectExclusiveMode').value);
 
             appSettings.set('mpv-audiospdif', getMultiCheckboxValues(view, 'chkSpdif').join(','));
-            appSettings.set('mpv-upmixaudiofor', getMultiCheckboxValues(view, 'chkUpmixAudioFor').join(','));
+            appSettings.set('mpv-upmixaudiofor', getMultiCheckboxValues(view, 'chkUpmixAudioFor', 'none').join(','));
         }
 
         function renderSettings() {

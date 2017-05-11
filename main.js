@@ -172,6 +172,15 @@
         });
     }
 
+    function setMainWindowResizable(resizable) {
+
+        try {
+            mainWindow.setResizable(resizable);
+        } catch (err) {
+            console.log('Error in setResizable:' + err);
+        }
+    }
+
     var isTransparencyRequired = false;
     var windowStateOnLoad;
     function registerAppHost() {
@@ -190,16 +199,16 @@
 
                 case 'windowstate-Normal':
 
-                    mainWindow.setResizable(!isTransparencyRequired);
+                    setMainWindowResizable(!isTransparencyRequired);
                     setWindowState('Normal');
 
                     break;
                 case 'windowstate-Maximized':
-                    mainWindow.setResizable(false);
+                    setMainWindowResizable(false);
                     setWindowState('Maximized');
                     break;
                 case 'windowstate-Fullscreen':
-                    mainWindow.setResizable(false);
+                    setMainWindowResizable(false);
                     setWindowState('Fullscreen');
                     break;
                 case 'windowstate-Minimized':
@@ -232,11 +241,11 @@
                     return;
                 case 'video-on':
                     isTransparencyRequired = true;
-                    mainWindow.setResizable(false);
+                    setMainWindowResizable(false);
                     break;
                 case 'video-off':
                     isTransparencyRequired = false;
-                    mainWindow.setResizable(true);
+                    setMainWindowResizable(true);
                     break;
                 case 'loaded':
 
@@ -630,6 +639,11 @@
             app.commandLine.appendSwitch('enable-transparent-visuals');
             app.commandLine.appendSwitch('disable-gpu');
         }
+
+        //if (process.platform === 'win32') {
+        //    app.commandLine.appendSwitch('high-dpi-support', 'true');
+        //    app.commandLine.appendSwitch('force-device-scale-factor', '1');
+        //}
     }
 
     function supportsTransparentWindow() {
