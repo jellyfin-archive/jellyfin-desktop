@@ -166,7 +166,17 @@ function getMpvVideoOptions(options) {
         list.push('--scale=' + (options.scale));
     }
 
-    if (options.interpolation == 'yes') {
+    if (options.cscale) {
+
+        list.push('--cscale=' + (options.cscale));
+    }
+
+    if (options.dscale) {
+
+        list.push('--dscale=' + (options.dscale));
+    }
+
+    if (options.interpolation == 'true') {
 
         list.push('--interpolation');
 
@@ -174,6 +184,21 @@ function getMpvVideoOptions(options) {
 
             list.push('--tscale=' + (options.tscale));
         }
+    }
+
+    if (options.correctdownscaling == 'true') {
+
+        list.push('--correct-downscaling');
+    }
+
+    if (options.sigmoidupscaling == 'true') {
+
+        list.push('--sigmoid-upscaling');
+    }
+
+    if (options.ditherdepth) {
+
+        list.push('--dither-depth=' + (options.ditherdepth));
     }
 
     var audioChannels = options.audioChannels || 'auto-safe';
@@ -371,7 +396,7 @@ function processRequest(request, body) {
                 break;
             case 'stopdestroy':
 
-                getReturnJson().then(function(returnJson) {
+                getReturnJson().then(function (returnJson) {
                     if (playMediaType.toLowerCase() === 'audio') {
                         currentVolume = playerStatus.volume || 100;
                         fade(currentVolume).then(() => {

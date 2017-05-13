@@ -1,7 +1,7 @@
 ﻿<div class="pageContainer smoothScrollY vertical centered">
 
     <div class="selectContainer">
-        <select is="emby-select" class="selectSpeakerLayout" label="${SpeakerLayout}">
+        <select is="emby-select" class="selectSpeakerLayout" label="${LabelSpeakerLayout}">
             <option value="">${Auto}</option>
             <option value="stereo">${Stereo}</option>
             <option value="5.1">5.1</option>
@@ -10,11 +10,15 @@
     </div>
 
     <div class="checkboxListContainer">
-        <label class="checkboxListLabel">${EnableAudioPassthroughFor}</label>
+        <label class="checkboxListLabel">${LabelEnableAudioPassthroughFor}</label>
         <div class="checkboxList">
             <label>
                 <input type="checkbox" is="emby-checkbox" class="chkSpdif" data-value="ac3" />
                 <span>AC3</span>
+            </label>
+            <label>
+                <input type="checkbox" is="emby-checkbox" class="chkSpdif" data-value="eac3" />
+                <span>EAC3</span>
             </label>
             <label>
                 <input type="checkbox" is="emby-checkbox" class="chkSpdif" data-value="dts" />
@@ -32,7 +36,7 @@
     </div>
 
     <div class="selectContainer">
-        <select is="emby-select" class="selectDrc" label="${DynamicRangeCompression}">
+        <select is="emby-select" class="selectDrc" label="${LabelDynamicRangeCompression}">
             <option value="">${None}</option>
             <option value="10">10%</option>
             <option value="20">20%</option>
@@ -47,15 +51,13 @@
         </select>
     </div>
 
-    <div class="selectContainer">
-        <select is="emby-select" class="selectExclusiveMode" label="${EnableExclusiveAudioMode}">
-            <option value="yes">${Yes}</option>
-            <option value="">${No}</option>
-        </select>
-    </div>
+    <label class="checkboxContainer">
+        <input type="checkbox" is="emby-checkbox" class="chkExclusiveMode"/>
+        <span>${EnableExclusiveAudioMode}</span>
+    </label>
 
     <div class="checkboxListContainer">
-        <label class="checkboxListLabel">${UpmixAudioFor}</label>
+        <label class="checkboxListLabel">${LabelUpmixAudioFor}</label>
         <div class="checkboxList">
             <label>
                 <input type="checkbox" is="emby-checkbox" class="chkUpmixAudioFor" data-value="music" />
