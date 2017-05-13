@@ -285,7 +285,8 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
                     videoSync: appSettings.get('mpv-displaysync') === 'yes' || appSettings.get('mpv-madvr') === 'yes' ? 'display-resample' : null,
                     interpolation: appSettings.get('mpv-interpolation') === 'true',
                     correctdownscaling: appSettings.get('mpv-correctdownscaling') === 'true',
-                    sigmoidupscaling: appSettings.get('mpv-sigmoidupscaling') === 'true'
+                    sigmoidupscaling: appSettings.get('mpv-sigmoidupscaling') === 'true',
+                    deband: appSettings.get('mpv-deband') === 'true'
                 }
             };
 

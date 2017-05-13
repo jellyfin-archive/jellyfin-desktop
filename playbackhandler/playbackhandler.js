@@ -146,7 +146,7 @@ function getMpvVideoOptions(options) {
 
     var list = [];
 
-    if (options.openglhq === 'yes') {
+    if (options.openglhq) {
         list.push('--profile=opengl-hq');
     }
 
@@ -176,7 +176,7 @@ function getMpvVideoOptions(options) {
         list.push('--dscale=' + (options.dscale));
     }
 
-    if (options.interpolation == 'true') {
+    if (options.interpolation) {
 
         list.push('--interpolation');
 
@@ -186,14 +186,19 @@ function getMpvVideoOptions(options) {
         }
     }
 
-    if (options.correctdownscaling == 'true') {
+    if (options.correctdownscaling) {
 
         list.push('--correct-downscaling');
     }
 
-    if (options.sigmoidupscaling == 'true') {
+    if (options.sigmoidupscaling) {
 
         list.push('--sigmoid-upscaling');
+    }
+
+    if (options.deband) {
+
+        list.push('--deband');
     }
 
     if (options.ditherdepth) {

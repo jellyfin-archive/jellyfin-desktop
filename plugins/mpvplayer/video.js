@@ -35,6 +35,7 @@
             appSettings.set('mpv-openglhq', view.querySelector('.chkOpenglhq').checked);
             appSettings.set('mpv-correctdownscaling', view.querySelector('.chkCorrectDownscaling').checked);
             appSettings.set('mpv-sigmoidupscaling', view.querySelector('.chkSigmoid').checked);
+            appSettings.set('mpv-deband', view.querySelector('.chkDeband').checked);
         }
 
         function renderSettings() {
@@ -53,6 +54,7 @@
             view.querySelector('.chkInterpolation').checked = appSettings.get('mpv-interpolation') === 'true';
             view.querySelector('.chkCorrectDownscaling').checked = appSettings.get('mpv-correctdownscaling') === 'true';
             view.querySelector('.chkSigmoid').checked = appSettings.get('mpv-sigmoidupscaling') === 'true';
+            view.querySelector('.chkDeband').checked = appSettings.get('mpv-deband') === 'true';
         }
     }
 
