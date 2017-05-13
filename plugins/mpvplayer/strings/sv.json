@@ -1,4 +1,6 @@
 {
+    "EnableDeband": "Enable the debanding algorithm",
+    "EnableDebandHelp": "This greatly reduces the amount of visible banding, blocking and other quantization artifacts, at the expensive of performance and very slightly blurring some of the finest details.",
     "LabelOutputRange": "Output range:",
     "LabelHardwareAccelerationMode": "Hardware acceleration mode:",
     "Auto": "Auto",
