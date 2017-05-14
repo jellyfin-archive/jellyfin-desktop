@@ -1,6 +1,4 @@
 {
-    "EnableDeband": "Enable the debanding algorithm",
-    "EnableDebandHelp": "This greatly reduces the amount of visible banding, blocking and other quantization artifacts, at the expensive of performance and very slightly blurring some of the finest details.",
     "LabelOutputRange": "Output range:",
     "LabelHardwareAccelerationMode": "Hardware acceleration mode:",
     "Auto": "Auto",
@@ -26,6 +24,8 @@
     "TScalingMethod": "Temporal axis scaling method:",
     "ForceCorrectDownscaling": "Force correct downscaling",
     "ForceCorrectDownscalingHelp": "When using convolution based filters, extend the filter size when downscaling. Increases quality, but reduces performance while downscaling.",
+    "EnableDeband": "Enable the debanding algorithm",
+    "EnableDebandHelp": "This greatly reduces the amount of visible banding, blocking and other quantization artifacts, at the expense of performance and very slight blurring of some of the finest details.",
     "EnableSigmoid": "Enable sigmoidal color transform",
     "EnableSigmoidHelp": "When upscaling, use a sigmoidal color transform to avoid emphasizing ringing artifacts.",
     "LabelOutputRangeHelp": "It is advisable to use your graphics driver's color range option instead, if available.",
