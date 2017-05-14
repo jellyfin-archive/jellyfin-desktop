@@ -9,7 +9,6 @@
     var mainWindow = null;
     var playerWindow = null;
     var hasAppLoaded = false;
-    var enableSplash = false;
 
     // Quit when all windows are closed.
     app.on('window-all-closed', function () {
@@ -382,8 +381,6 @@
         return str.split(find).join(replace);
     }
 
-    var firstDomDone;
-
     function getAppBaseUrl() {
 
         var url = 'https://tv.emby.media';
@@ -399,61 +396,64 @@
         return url;
     }
 
-    function setStartInfo() {
+    var startInfoJson;
+    function loadStartInfo() {
 
-        if (!firstDomDone) {
-            firstDomDone = true;
+        return new Promise(function (resolve, reject) {
 
-            mainWindow.loadURL(getAppUrl());
-            return;
-        }
+            var os = require("os");
 
-        var os = require("os");
+            var path = require('path');
+            var fs = require('fs');
 
-        var path = require('path');
-        var fs = require('fs');
+            var topDirectory = path.normalize(__dirname);
+            var pluginDirectory = path.normalize(__dirname + '/plugins');
+            var scriptsDirectory = path.normalize(__dirname + '/scripts');
 
-        var topDirectory = path.normalize(__dirname);
-        var pluginDirectory = path.normalize(__dirname + '/plugins');
-        var scriptsDirectory = path.normalize(__dirname + '/scripts');
+            fs.readdir(pluginDirectory, function (err, pluginFiles) {
 
-        fs.readdir(pluginDirectory, function (err, pluginFiles) {
+                fs.readdir(scriptsDirectory, function (err, scriptFiles) {
 
-            fs.readdir(scriptsDirectory, function (err, scriptFiles) {
+                    pluginFiles = pluginFiles || [];
+                    scriptFiles = scriptFiles || [];
 
-                pluginFiles = pluginFiles || [];
-                scriptFiles = scriptFiles || [];
+                    var startInfo = {
+                        paths: {
+                            apphost: customFileProtocol + '://apphost',
+                            shell: customFileProtocol + '://shell',
+                            serverdiscovery: customFileProtocol + '://serverdiscovery/serverdiscovery',
+                            fullscreenmanager: 'file://' + replaceAll(path.normalize(topDirectory + '/fullscreenmanager.js'), '\\', '/'),
+                            filesystem: customFileProtocol + '://filesystem'
+                        },
+                        name: app.getName(),
+                        version: app.getVersion(),
+                        deviceName: os.hostname(),
+                        deviceId: os.hostname(),
+                        supportsTransparentWindow: supportsTransparentWindow(),
+                        plugins: pluginFiles.filter(function (f) {
 
-                var startInfo = {
-                    paths: {
-                        apphost: customFileProtocol + '://apphost',
-                        shell: customFileProtocol + '://shell',
-                        serverdiscovery: customFileProtocol + '://serverdiscovery/serverdiscovery',
-                        fullscreenmanager: 'file://' + replaceAll(path.normalize(topDirectory + '/fullscreenmanager.js'), '\\', '/'),
-                        filesystem: customFileProtocol + '://filesystem'
-                    },
-                    name: app.getName(),
-                    version: app.getVersion(),
-                    deviceName: os.hostname(),
-                    deviceId: os.hostname(),
-                    supportsTransparentWindow: supportsTransparentWindow(),
-                    plugins: pluginFiles.filter(function (f) {
+                            return f.indexOf('.js') != -1;
 
-                        return f.indexOf('.js') != -1;
+                        }).map(function (f) {
 
-                    }).map(function (f) {
+                            return 'file://' + replaceAll(path.normalize(pluginDirectory + '/' + f), '\\', '/');
+                        }),
+                        scripts: scriptFiles.map(function (f) {
 
-                        return 'file://' + replaceAll(path.normalize(pluginDirectory + '/' + f), '\\', '/');
-                    }),
-                    scripts: scriptFiles.map(function (f) {
+                            return 'file://' + replaceAll(path.normalize(scriptsDirectory + '/' + f), '\\', '/');
+                        })
+                    };
 
-                        return 'file://' + replaceAll(path.normalize(scriptsDirectory + '/' + f), '\\', '/');
-                    })
-                };
-
-                sendJavascript('var appStartInfo=' + JSON.stringify(startInfo) + ';');
+                    startInfoJson = JSON.stringify(startInfo);
+                    resolve();
+                });
             });
         });
+    }
+
+    function setStartInfo() {
+
+        sendJavascript('var appStartInfo=' + startInfoJson + ';');
     }
 
     function sendCommand(cmd) {
@@ -822,54 +822,52 @@
         windowOptions.resizable = true;
         windowOptions.skipTaskbar = false;
         // Create the browser window.
-        mainWindow = new BrowserWindow(windowOptions);
 
-        //mainWindow.openDevTools();
-        mainWindow.webContents.on('dom-ready', setStartInfo);
+        loadStartInfo().then(function () {
 
-        var url = enableSplash ?
-            'file://' + __dirname + '/splash.html' :
-            getAppUrl();
+            mainWindow = new BrowserWindow(windowOptions);
 
-        if (!enableSplash) {
-            firstDomDone = true;
-        }
+            //mainWindow.openDevTools();
+            mainWindow.webContents.on('dom-ready', setStartInfo);
 
-        windowStateOnLoad = previousWindowInfo.state;
+            var url = getAppUrl();
 
-        addPathIntercepts();
+            windowStateOnLoad = previousWindowInfo.state;
 
-        // and load the index.html of the app.
-        mainWindow.loadURL(url);
+            addPathIntercepts();
 
-        mainWindow.setMenu(null);
-        mainWindow.on('move', onWindowMoved);
-        mainWindow.on('app-command', onAppCommand);
-        mainWindow.on("close", onWindowClose);
-        mainWindow.on("minimize", onMinimize);
-        mainWindow.on("maximize", onMaximize);
-        mainWindow.on("enter-full-screen", onEnterFullscreen);
-        mainWindow.on("restore", onRestore);
-        mainWindow.on("unmaximize", onUnMaximize);
-        mainWindow.on("leave-full-screen", onLeaveFullscreen);
-        mainWindow.on("resize", onWindowResize);
+            // and load the index.html of the app.
+            mainWindow.loadURL(url);
 
-        playerWindow.show();
-        mainWindow.show();
+            mainWindow.setMenu(null);
+            mainWindow.on('move', onWindowMoved);
+            mainWindow.on('app-command', onAppCommand);
+            mainWindow.on("close", onWindowClose);
+            mainWindow.on("minimize", onMinimize);
+            mainWindow.on("maximize", onMaximize);
+            mainWindow.on("enter-full-screen", onEnterFullscreen);
+            mainWindow.on("restore", onRestore);
+            mainWindow.on("unmaximize", onUnMaximize);
+            mainWindow.on("leave-full-screen", onLeaveFullscreen);
+            mainWindow.on("resize", onWindowResize);
 
-        // Only the main window should be set to full screen.
-        // This is done after the window is shown because the
-        // player window otherwise is shown behind the task bar.
-        if (previousWindowInfo.state == 'Fullscreen') {
-            mainWindow.setFullScreen(true);
-        }
+            playerWindow.show();
+            mainWindow.show();
 
-        registerAppHost();
-        registerFileSystem();
-        registerServerdiscovery();
+            // Only the main window should be set to full screen.
+            // This is done after the window is shown because the
+            // player window otherwise is shown behind the task bar.
+            if (previousWindowInfo.state == 'Fullscreen') {
+                mainWindow.setFullScreen(true);
+            }
 
-        initCec();
+            registerAppHost();
+            registerFileSystem();
+            registerServerdiscovery();
 
-        initPlaybackHandler(commandLineOptions.mpvPath);
+            initCec();
+
+            initPlaybackHandler(commandLineOptions.mpvPath);
+        });
     });
 })();
