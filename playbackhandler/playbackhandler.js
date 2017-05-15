@@ -233,6 +233,11 @@ function getMpvVideoOptions(options) {
 
     list.push('--ad-lavc-ac3drc=' + (options.dynamicRangeCompression || 0));
 
+    if (options.exclusiveAudio) {
+        list.push('--audio-exclusive=yes');
+    } else {
+        list.push('--audio-exclusive=no');
+    }
 
     return list;
 }
@@ -249,12 +254,6 @@ function getMpvMusicOptions(options) {
 
     if (audioFilters.length) {
         list.push('--af=' + audioFilters.join(','));
-    }
-
-    if (options.exclusiveAudio) {
-        list.push('--audio-exclusive=yes');
-    } else {
-        list.push('--audio-exclusive=no');
     }
 
     return list;
