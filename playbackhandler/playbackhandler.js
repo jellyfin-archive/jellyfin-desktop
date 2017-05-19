@@ -11,7 +11,8 @@ var playerStatus;
 var externalSubIndexes;
 var fadeTimeout;
 var currentVolume;
-var playerStarted = false;
+var currentPlayResolve;
+var currentPlayReject;
 
 function alert(text) {
     require('electron').dialog.showMessageBox(mainWindowRef, {
@@ -40,16 +41,9 @@ function download(url, dest) {
 function play(player, path) {
     return new Promise(function (resolve, reject) {
         console.log('Play URL : ' + path);
-        playerStarted = false;
+        currentPlayResolve = resolve;
+        currentPlayReject = reject;
         player.loadFile(path);
-
-        (function checkStarted(i) {
-            setTimeout(function () {
-                if (playerStarted) resolve();
-                if (--i) checkStarted(i);
-                else reject();
-            }, 100);
-        })(100);
     });
 }
 
@@ -237,6 +231,17 @@ function getMpvVideoOptions(options) {
         list.push('--audio-exclusive=yes');
     } else {
         list.push('--audio-exclusive=no');
+    }
+
+    if (options.genPts) {
+
+        list.push('--demuxer-lavf-genpts-mode=lavf');
+    }
+
+    if (options.largeCache) {
+
+        list.push('--demuxer-readahead-secs=20');
+        list.push('--cache-secs=20');
     }
 
     return list;
@@ -477,7 +482,12 @@ function onMpvTimePosition(data) {
 }
 
 function onMpvStarted() {
-    playerStarted = true;
+    var resolve = currentPlayResolve;
+    if (resolve) {
+        currentPlayResolve = null;
+        currentPlayReject = null;
+        resolve();
+    }
     mainWindowRef.focus();
 }
 

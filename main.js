@@ -391,7 +391,7 @@
 
     function getAppUrl() {
 
-        var url = getAppBaseUrl() + '/index.html';
+        var url = getAppBaseUrl() + '/index.html?autostart=false';
         //url += '?v=' + new Date().getTime();
         return url;
     }
@@ -453,7 +453,9 @@
 
     function setStartInfo() {
 
-        sendJavascript('var appStartInfo=' + startInfoJson + ';');
+        var script = 'function startWhenReady(){if (self.Emby && self.Emby.App){self.appStartInfo=' + startInfoJson + ';Emby.App.start(appStartInfo);} else {setTimeout(startWhenReady, 50);}} startWhenReady();';
+        sendJavascript(script);
+        //sendJavascript('var appStartInfo=' + startInfoJson + ';');
     }
 
     function sendCommand(cmd) {

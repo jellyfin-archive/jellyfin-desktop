@@ -115,7 +115,6 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
 
         self.getDeviceProfile = function () {
 
-
             var profile = {};
 
             profile.MaxStreamingBitrate = 100000000;
@@ -137,7 +136,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
             profile.TranscodingProfiles = [];
 
             profile.TranscodingProfiles.push({
-                Container: 'ts',
+                Container: 'mkv',
                 Type: 'Video',
                 AudioCodec: 'ac3,mp3,aac',
                 VideoCodec: 'h264,mpeg2video',
@@ -145,7 +144,8 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
                 Protocol: 'hls',
                 MaxAudioChannels: '6',
                 MinSegments: '2',
-                BreakOnNonKeyFrames: false
+                BreakOnNonKeyFrames: false,
+                SegmentLength: '3'
             });
 
             profile.TranscodingProfiles.push({
@@ -249,7 +249,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
 
             // Update the text url in the media source with the full url from the options object
             mediaSource.MediaStreams.forEach(function (ms) {
-                var textTrack = options.tracks.filter(function (t) {
+                var textTrack = options.textTracks.filter(function (t) {
                     return t.index == ms.Index;
 
                 })[0];
@@ -282,11 +282,13 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
                     ditherdepth: appSettings.get('mpv-ditherdepth'),
                     openglhq: appSettings.get('mpv-openglhq') === 'true',
                     exclusiveAudio: appSettings.get('mpv-exclusiveaudio') === 'true',
-                    videoSync: appSettings.get('mpv-displaysync') === 'yes' || appSettings.get('mpv-madvr') === 'yes' ? 'display-resample' : null,
+                    videoSync: appSettings.get('mpv-displaysync') === 'yes' ? 'display-resample' : null,
                     interpolation: appSettings.get('mpv-interpolation') === 'true',
                     correctdownscaling: appSettings.get('mpv-correctdownscaling') === 'true',
                     sigmoidupscaling: appSettings.get('mpv-sigmoidupscaling') === 'true',
-                    deband: appSettings.get('mpv-deband') === 'true'
+                    deband: appSettings.get('mpv-deband') === 'true',
+                    genPts: mediaSource.RunTimeTicks ? false : true,
+                    largeCache: mediaSource.RunTimeTicks ? false : true
                 }
             };
 
@@ -321,6 +323,18 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
             }
 
             return (playerState.positionTicks || 0) / 10000;
+        };
+
+        self.supportsPlayMethod = function (playMethod, item) {
+
+            // force these through hls so that we can seek
+            if (item.Type === 'TvChannel') {
+                if (playMethod === 'DirectStream') {
+                    return false;
+                }
+            }
+
+            return true;
         };
 
         self.duration = function (val) {
