@@ -10,6 +10,9 @@
     var playerWindow = null;
     var hasAppLoaded = false;
 
+    var enableDevTools = false;
+    var enableDevToolsOnStartup = false;
+
     // Quit when all windows are closed.
     app.on('window-all-closed', function () {
         // On OS X it is common for applications and their menu bar
@@ -804,7 +807,7 @@
                 allowRunningInsecureContent: true,
                 experimentalFeatures: false,
                 blinkFeatures: 'CSSOMSmoothScroll',
-                backgroundThrottling: false
+                devTools: enableDevTools
             },
 
             icon: __dirname + '/icon.ico'
@@ -829,7 +832,10 @@
 
             mainWindow = new BrowserWindow(windowOptions);
 
-            //mainWindow.openDevTools();
+            if (enableDevToolsOnStartup) {
+                mainWindow.openDevTools();
+            }
+
             mainWindow.webContents.on('dom-ready', setStartInfo);
 
             var url = getAppUrl();
