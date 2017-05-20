@@ -642,13 +642,15 @@
 
         if (isLinux()) {
             app.commandLine.appendSwitch('enable-transparent-visuals');
-            app.commandLine.appendSwitch('disable-gpu');
+            app.disableHardwareAcceleration();
         }
 
-        //if (process.platform === 'win32') {
-        //    app.commandLine.appendSwitch('high-dpi-support', 'true');
-        //    app.commandLine.appendSwitch('force-device-scale-factor', '1');
-        //}
+        else if (process.platform === 'win32') {
+            app.disableHardwareAcceleration();
+
+            app.commandLine.appendSwitch('high-dpi-support', 'true');
+            app.commandLine.appendSwitch('force-device-scale-factor', '1');
+        }
     }
 
     function supportsTransparentWindow() {
@@ -798,7 +800,7 @@
 
             webPreferences: {
                 webSecurity: false,
-                webgl: true,
+                webgl: false,
                 nodeIntegration: false,
                 plugins: false,
                 webaudio: true,
