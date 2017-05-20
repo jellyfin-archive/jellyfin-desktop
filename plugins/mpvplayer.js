@@ -416,7 +416,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
         var timeUpdateInterval;
         function startTimeUpdateInterval() {
             stopTimeUpdateInterval();
-            timeUpdateInterval = setInterval(onTimeUpdate, 200);
+            timeUpdateInterval = setInterval(onTimeUpdate, 250);
         }
 
         function stopTimeUpdateInterval() {

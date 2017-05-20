@@ -43,7 +43,13 @@ function play(player, path) {
         console.log('Play URL : ' + path);
         currentPlayResolve = resolve;
         currentPlayReject = reject;
-        player.loadFile(path);
+
+        if (path.toLowerCase('http').indexOf() != -1) {
+            //player.loadStream(path);
+            player.loadFile(path);
+        } else {
+            player.loadFile(path);
+        }
     });
 }
 
@@ -64,7 +70,7 @@ function unpause() {
 }
 
 function set_position(data) {
-    mpvPlayer.goToPosition(data / 10000000);
+    mpvPlayer.goToPosition(Math.round(data / 10000000));
 }
 
 function set_volume(data) {
@@ -243,6 +249,9 @@ function getMpvVideoOptions(options) {
         list.push('--demuxer-readahead-secs=20');
         list.push('--cache-secs=20');
     }
+
+    //list.push('--force-seekable=yes');
+    //list.push('--hr-seek=no');
 
     return list;
 }
