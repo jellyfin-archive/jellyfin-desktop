@@ -1,4 +1,4 @@
-define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], function (appHost, pluginManager, events, embyRouter, appSettings) {
+define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'loading', 'dom', 'require'], function (appHost, pluginManager, events, embyRouter, appSettings, loading, dom, require) {
     'use strict';
 
     return function () {
@@ -13,6 +13,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
         var currentSrc;
         var playerState = {};
         var ignoreEnded;
+        var videoDialog;
 
         self.getRoutes = function () {
 
@@ -233,7 +234,72 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
             return currentSrc;
         };
 
+        function onNavigatedToOsd() {
+
+            if (videoDialog) {
+                videoDialog.classList.remove('mpv-videoPlayerContainer-withBackdrop');
+                videoDialog.classList.remove('mpv-videoPlayerContainer-onTop');
+            }
+        }
+
+        function createMediaElement(options) {
+
+            return new Promise(function (resolve, reject) {
+
+                var dlg = document.querySelector('.mpv-videoPlayerContainer');
+
+                if (!dlg) {
+
+                    require(['css!./mpvplayer'], function () {
+
+                        loading.show();
+
+                        var dlg = document.createElement('div');
+
+                        dlg.classList.add('mpv-videoPlayerContainer');
+
+                        if (options.backdropUrl) {
+
+                            dlg.classList.add('mpv-videoPlayerContainer-withBackdrop');
+                            dlg.style.backgroundImage = "url('" + options.backdropUrl + "')";
+                        }
+
+                        if (options.fullscreen) {
+                            dlg.classList.add('mpv-videoPlayerContainer-onTop');
+                        }
+
+                        document.body.insertBefore(dlg, document.body.firstChild);
+                        videoDialog = dlg;
+
+                        if (options.fullscreen) {
+                            zoomIn(dlg).then(resolve);
+                        } else {
+                            resolve();
+                        }
+
+                    });
+
+                } else {
+
+                    if (options.backdropUrl) {
+
+                        dlg.classList.add('mpv-videoPlayerContainer-withBackdrop');
+                        dlg.style.backgroundImage = "url('" + options.backdropUrl + "')";
+                    }
+
+                    resolve();
+                }
+            });
+        }
+
         self.play = function (options) {
+
+            return createMediaElement(options).then(function () {
+                return playInternal(options);
+            });
+        };
+
+        function playInternal(options) {
 
             var mediaSource = JSON.parse(JSON.stringify(options.mediaSource));
 
@@ -297,10 +363,15 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
                 if (isVideo) {
                     if (enableFullscreen) {
 
-                        embyRouter.showVideoOsd();
+                        embyRouter.showVideoOsd().then(onNavigatedToOsd);
 
                     } else {
                         embyRouter.setTransparency('backdrop');
+
+                        if (videoDialog) {
+                            videoDialog.classList.remove('mpv-videoPlayerContainer-withBackdrop');
+                            videoDialog.classList.remove('mpv-videoPlayerContainer-onTop');
+                        }
                     }
                 }
 
@@ -312,7 +383,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
                 stopTimeUpdateInterval();
                 throw err;
             });
-        };
+        }
 
         // Save this for when playback stops, because querying the time at that point might return 0
         self.currentTime = function (val) {
@@ -361,7 +432,16 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
         };
 
         self.destroy = function () {
+
             embyRouter.setTransparency('none');
+
+            var dlg = videoDialog;
+            if (dlg) {
+
+                videoDialog = null;
+
+                dlg.parentNode.removeChild(dlg);
+            }
         };
 
         self.playPause = function () {
@@ -460,20 +540,16 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
             events.trigger(self, 'error');
         }
 
-        function paramsToString(params) {
+        function zoomIn(elem) {
 
-            var values = [];
+            return new Promise(function (resolve, reject) {
 
-            for (var key in params) {
-
-                var value = params[key];
-
-                if (value !== null && value !== undefined && value !== '') {
-                    //values.push(encodeURIComponent(key) + "=" + encodeURIComponent(value));
-                    values.push(encodeURIComponent(key) + "=" + value);
-                }
-            }
-            return values.join('&');
+                var duration = 240;
+                elem.style.animation = 'mpvvideoplayer-zoomin ' + duration + 'ms ease-in normal';
+                dom.addEventListener(elem, dom.whichAnimationEvent(), resolve, {
+                    once: true
+                });
+            });
         }
 
         function sendCommand(name, body) {
@@ -481,10 +557,6 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings'], func
             return new Promise(function (resolve, reject) {
 
                 var xhr = new XMLHttpRequest();
-
-                //if (body) {
-                //    name += '?' + paramsToString(body);
-                //}
 
                 xhr.open('POST', 'http://127.0.0.1:8023/' + name, true);
 

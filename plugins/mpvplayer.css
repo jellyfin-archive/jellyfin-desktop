@@ -1,0 +1,37 @@
+.mpv-videoPlayerContainer {
+    position: fixed !important;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+}
+
+    .mpv-videoPlayerContainer:not(.mpv-videoPlayerContainer-withBackdrop):not(.mpv-videoPlayerContainer-onTop) {
+        display: none;
+    }
+
+.mpv-videoPlayerContainer-withBackdrop {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    background-attachment: fixed;
+    background-color: #000;
+}
+
+.mpv-videoPlayerContainer-onTop {
+    z-index: 1000;
+}
+
+@keyframes mpvvideoplayer-zoomin {
+    from {
+        transform: scale3d(.2, .2, .2);
+        opacity: .6;
+    }
+
+    to {
+        transform: none;
+        opacity: initial;
+    }
+}
