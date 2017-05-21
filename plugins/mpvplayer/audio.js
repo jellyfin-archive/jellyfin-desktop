@@ -1,6 +1,6 @@
 ﻿define(['loading', 'scrollHelper', 'appSettings', 'emby-select', 'emby-checkbox'], function (loading, scrollHelper, appSettings) {
 
-    function getMultiCheckboxValues(view, className, defaultValue) {
+    function getMultiCheckboxValues(view, className) {
 
         var checkboxes = view.querySelectorAll('.' + className);
         var values = [];
@@ -10,10 +10,6 @@
             if (checkboxes[i].checked) {
                 values.push(checkboxes[i].getAttribute('data-value'));
             }
-        }
-
-        if (!values.length && defaultValue) {
-            values.push(defaultValue);
         }
 
         return values;
@@ -55,7 +51,7 @@
             appSettings.set('mpv-exclusiveaudio', view.querySelector('.chkExclusiveMode').checked);
 
             appSettings.set('mpv-audiospdif', getMultiCheckboxValues(view, 'chkSpdif').join(','));
-            appSettings.set('mpv-upmixaudiofor', getMultiCheckboxValues(view, 'chkUpmixAudioFor', 'none').join(','));
+            appSettings.set('mpv-upmixaudiofor', getMultiCheckboxValues(view, 'chkUpmixAudioFor').join(','));
         }
 
         function renderSettings() {
@@ -65,7 +61,7 @@
             view.querySelector('.chkExclusiveMode').checked = appSettings.get('mpv-exclusiveaudio') === 'true';
 
             setMultiCheckboxValues(view, 'chkSpdif', appSettings.get('mpv-audiospdif') || '');
-            setMultiCheckboxValues(view, 'chkUpmixAudioFor', appSettings.get('mpv-upmixaudiofor') || 'music');
+            setMultiCheckboxValues(view, 'chkUpmixAudioFor', appSettings.get('mpv-upmixaudiofor') || '');
         }
     }
 
