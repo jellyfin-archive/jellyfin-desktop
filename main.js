@@ -768,6 +768,26 @@
 
     setCommandLineSwitches();
 
+    var fullscreenOnShow = false;
+    var windowShowCount = 0;
+    function onWindowShow() {
+
+        windowShowCount++;
+        if (windowShowCount == 2) {
+
+            mainWindow.setFullScreen(true);
+
+            if (!fullscreenOnShow) {
+                // hack alert. in electron 1.4 under windows, the app starts up black. changing window state seems to resolve it.
+                mainWindow.setFullScreen(false);
+            }
+
+            fullscreenOnShow = false;
+
+            mainWindow.center();
+        }
+    }
+
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     app.on('ready', function () {
@@ -846,6 +866,10 @@
 
             addPathIntercepts();
 
+            registerAppHost();
+            registerFileSystem();
+            registerServerdiscovery();
+
             // and load the index.html of the app.
             mainWindow.loadURL(url);
 
@@ -861,19 +885,18 @@
             mainWindow.on("leave-full-screen", onLeaveFullscreen);
             mainWindow.on("resize", onWindowResize);
 
-            playerWindow.show();
-            mainWindow.show();
+            playerWindow.on("show", onWindowShow);
+            mainWindow.on("show", onWindowShow);
 
             // Only the main window should be set to full screen.
             // This is done after the window is shown because the
             // player window otherwise is shown behind the task bar.
             if (previousWindowInfo.state == 'Fullscreen') {
-                mainWindow.setFullScreen(true);
+                fullscreenOnShow = true;
             }
 
-            registerAppHost();
-            registerFileSystem();
-            registerServerdiscovery();
+            playerWindow.show();
+            mainWindow.show();
 
             initCec();
 
