@@ -244,6 +244,10 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
 
         function createMediaElement(options) {
 
+            if (options.mediaType !== 'Video') {
+                return Promise.resolve();
+            }
+
             return new Promise(function (resolve, reject) {
 
                 var dlg = document.querySelector('.mpv-videoPlayerContainer');
