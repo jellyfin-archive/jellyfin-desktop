@@ -141,7 +141,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
             });
 
             profile.DirectPlayProfiles.push({
-                Container: 'aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus,flac',
+                Container: 'aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus,alac,flac',
                 Type: 'Audio'
             });
 
@@ -157,6 +157,16 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
                 MaxAudioChannels: '6',
                 MinSegments: '1',
                 BreakOnNonKeyFrames: false,
+                SegmentLength: '3'
+            });
+
+            profile.TranscodingProfiles.push({
+
+                Container: 'ts',
+                Type: 'Audio',
+                AudioCodec: 'aac',
+                Context: 'Streaming',
+                Protocol: 'hls',
                 SegmentLength: '3'
             });
 
