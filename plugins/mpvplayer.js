@@ -111,6 +111,17 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
         };
 
         self.canPlayItem = function (item) {
+
+            if (item.Type != 'TvChannel') {
+                return true;
+            }
+
+            var serviceName = (item.ServiceName || '').toLowerCase();
+
+            if (serviceName.indexOf('emby') === -1) {
+                return false;
+            }
+
             return true;
         };
 
@@ -144,7 +155,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
                 Context: 'Streaming',
                 Protocol: 'hls',
                 MaxAudioChannels: '6',
-                MinSegments: '2',
+                MinSegments: '1',
                 BreakOnNonKeyFrames: false,
                 SegmentLength: '3'
             });
@@ -400,17 +411,17 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
             return (playerState.positionTicks || 0) / 10000;
         };
 
-        self.supportsPlayMethod = function (playMethod, item) {
+        //self.supportsPlayMethod = function (playMethod, item) {
 
-            // force these through hls so that we can seek
-            if (item.Type === 'TvChannel') {
-                if (playMethod === 'DirectStream') {
-                    return false;
-                }
-            }
+        //    // force these through hls so that we can seek
+        //    if (item.Type === 'TvChannel') {
+        //        if (playMethod === 'DirectStream') {
+        //            //return false;
+        //        }
+        //    }
 
-            return true;
-        };
+        //    return true;
+        //};
 
         self.duration = function (val) {
 

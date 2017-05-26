@@ -217,8 +217,7 @@
                     setWindowState('Minimized');
                     break;
                 case 'exit':
-                    mainWindow.close();
-                    app.quit();
+                    closeWindow(mainWindow);
                     break;
                 case 'sleep':
                     sleepSystem();
@@ -664,6 +663,15 @@
         return path.join(app.getPath('userData'), "windowstate.json");
     }
 
+    function closeWindow(win) {
+
+        try {
+            win.close();
+        } catch (err) {
+            console.log('Error closing window. It may have already been closed. ' + err);
+        }
+    }
+
     function onWindowClose() {
 
         if (hasAppLoaded) {
@@ -677,8 +685,9 @@
 
         // Unregister all shortcuts.
         electron.globalShortcut.unregisterAll();
+        closeWindow(playerWindow);
 
-        playerWindow.close();
+        app.quit();
     }
 
     function parseCommandLine() {
@@ -787,6 +796,10 @@
             mainWindow.center();
         }
     }
+
+    app.on('quit', function () {
+        closeWindow(mainWindow);
+    });
 
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
