@@ -141,7 +141,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
             });
 
             profile.DirectPlayProfiles.push({
-                Container: 'aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus,alac,flac',
+                Container: 'aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus,alac,flac,m4a',
                 Type: 'Audio'
             });
 
