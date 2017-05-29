@@ -8,7 +8,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
         self.name = 'MPV Media Player';
         self.type = 'mediaplayer';
         self.id = 'mpvmediaplayer';
-        self.priority = -1;
+        self.priority = -2;
 
         var currentSrc;
         var playerState = {};
@@ -414,7 +414,11 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
         self.currentTime = function (val) {
 
             if (val != null) {
-                sendCommand('positionticks?val=' + (val * 10000)).then(onTimeUpdate);
+                sendCommand('positionticks?val=' + (val * 10000)).then(function (state) {
+
+                    events.trigger(self, 'seek');
+                    onTimeUpdate(state);
+                });
                 return;
             }
 
@@ -470,7 +474,15 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
         };
 
         self.playPause = function () {
-            sendCommand('playpause');
+
+            sendCommand('playpause').then(function (state) {
+
+                if (state.isPaused) {
+                    onPause();
+                } else {
+                    onPlaying();
+                }
+            });
         };
 
         self.pause = function () {
