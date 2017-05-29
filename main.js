@@ -888,7 +888,7 @@
 
             mainWindow.setMenu(null);
             mainWindow.on('move', onWindowMoved);
-            mainWindow.on('app-command', onAppCommand);
+            //mainWindow.on('app-command', onAppCommand);
             mainWindow.on("close", onWindowClose);
             mainWindow.on("minimize", onMinimize);
             mainWindow.on("maximize", onMaximize);
