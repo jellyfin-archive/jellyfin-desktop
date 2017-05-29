@@ -8,7 +8,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
         self.name = 'MPV Media Player';
         self.type = 'mediaplayer';
         self.id = 'mpvmediaplayer';
-        self.priority = -2;
+        self.priority = -1;
 
         var currentSrc;
         var playerState = {};
