@@ -480,7 +480,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
                 if (state.isPaused) {
                     onPause();
                 } else {
-                    onPlaying();
+                    onUnpause();
                 }
             });
         };
@@ -490,7 +490,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
         };
 
         self.unpause = function () {
-            sendCommand('unpause').then(onPlaying);
+            sendCommand('unpause').then(onUnpause);
         };
 
         self.paused = function () {
@@ -562,9 +562,9 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
             events.trigger(self, 'volumechange');
         }
 
-        function onPlaying() {
+        function onUnpause() {
 
-            events.trigger(self, 'playing');
+            events.trigger(self, 'unpause');
         }
 
         function onPause() {
@@ -620,7 +620,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
                             if (state.isPaused) {
                                 onPause();
                             } else if (previousPlayerState.isPaused) {
-                                onPlaying();
+                                onUnpause();
                             }
                         }
 
