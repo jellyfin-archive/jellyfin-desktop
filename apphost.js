@@ -139,7 +139,6 @@
         },
 
         moreIcon: 'dots-vert',
-        handleMultiMediaKeys: true,
         getKeyOptions: function () {
 
             return {

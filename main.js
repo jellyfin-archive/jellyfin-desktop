@@ -558,7 +558,6 @@
                 sendCommand("stop");
                 break;
             case 'browser-search':
-            case 'find':
                 sendCommand("search");
                 break;
             case 'browser-favorites':
@@ -566,6 +565,12 @@
                 break;
             case 'browser-home':
                 sendCommand("home");
+                break;
+            case 'browser-refresh':
+                sendCommand("refresh");
+                break;
+            case 'find':
+                sendCommand("search");
                 break;
             case 'volume-mute':
                 sendCommand("togglemute");
@@ -609,26 +614,9 @@
             case 'media-channel-down':
                 sendCommand("channeldown");
                 break;
-                //case AppCommand.APPCOMMAND_OPENRECORDED:
-                //    sendCommand("recordedtv");
-                //    break;
-                //case AppCommand.APPCOMMAND_LIVETV:
-                //    sendCommand("livetv");
-                //    break;
             case 'menu':
                 sendCommand("menu");
                 break;
-                //case AppCommand.APPCOMMAND_GUIDEMENU:
-                //case AppCommand.APPCOMMAND_EPG:
-                //case AppCommand.APPCOMMAND_CHANNELS:
-                //    sendCommand("guide");
-                //    break;
-                //case 'asp-toggle':
-                //    sendCommand("changezoom");
-                //    break;
-                //case 'cc':
-                //    sendCommand("changesubtitletrack");
-                //    break;
             case 'info':
                 sendCommand("info");
                 break;
@@ -888,7 +876,7 @@
 
             mainWindow.setMenu(null);
             mainWindow.on('move', onWindowMoved);
-            //mainWindow.on('app-command', onAppCommand);
+            mainWindow.on('app-command', onAppCommand);
             mainWindow.on("close", onWindowClose);
             mainWindow.on("minimize", onMinimize);
             mainWindow.on("maximize", onMaximize);
