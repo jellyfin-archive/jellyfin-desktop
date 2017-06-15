@@ -14,7 +14,7 @@ const parseCmd = require("./command-map");
 var
     cecProcess,         // cec process
     cecEmitter,         // cec event emitter
-    CEC_ADAPTER = {}   // logical address of cec adapter
+    CEC_ADAPTER = {}    // logical address of cec adapter
 ;
 
 var initialized = false;    // indicates if the CEC module is initialized
@@ -110,7 +110,6 @@ function registerEvents(cecProcess) {
                 CEC_ADAPTER.device = cecAdapterVals[1].substr(4);
                 CEC_ADAPTER.lAddr = cecAdapterVals[2][0];
                 console.log("CEC Adapter Device:\t" + JSON.stringify(CEC_ADAPTER, null, "  "));
-                console.log("CEC Base Device:\t" + JSON.stringify(CEC_BASE, null, "  "));
                 initialized = true;
                 // run after-init functions here:
                 testTVOn(cecProcess);
