@@ -58,6 +58,7 @@
 
             mainWindow.maximize();
             mainWindow.setAlwaysOnTop(false);
+
         } else if (state == 'Fullscreen') {
 
             if (previousState == "Minimized") {
@@ -66,6 +67,7 @@
 
             mainWindow.setFullScreen(true);
             mainWindow.setAlwaysOnTop(true);
+
         } else {
 
             var setSize = false;
@@ -782,12 +784,17 @@
             fullscreenOnShow = false;
 
             mainWindow.center();
+            mainWindow.focus();
         }
     }
 
     app.on('quit', function () {
         closeWindow(mainWindow);
     });
+
+    function onPlayerWindowRestore() {
+        mainWindow.focus();
+    }
 
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
@@ -885,6 +892,11 @@
             mainWindow.on("unmaximize", onUnMaximize);
             mainWindow.on("leave-full-screen", onLeaveFullscreen);
             mainWindow.on("resize", onWindowResize);
+
+            playerWindow.on("restore", onPlayerWindowRestore);
+            playerWindow.on("enter-full-screen", onPlayerWindowRestore);
+            playerWindow.on("maximize", onPlayerWindowRestore);
+            playerWindow.on("focus", onPlayerWindowRestore);
 
             playerWindow.on("show", onWindowShow);
             mainWindow.on("show", onWindowShow);
