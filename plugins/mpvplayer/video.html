@@ -35,6 +35,16 @@
 
     <h1>${Advanced}</h1>
 
+    <div class="inputContainer">
+        <input is="emby-input" type="number" step="1" class="txtDefaultAudioDelay" label="${DefaultAudioDelay}"/>
+        <div class="fieldDescription">${DefaultAudioDelayHelp}</div>
+    </div>
+
+    <div class="inputContainer">
+        <input is="emby-input" type="number" step="1" class="txtAudioDelay2325" label="${AudioDelay2325}" />
+        <div class="fieldDescription">${AudioDelay2325Help}</div>
+    </div>
+
     <div class="selectContainer">
         <select is="emby-select" class="selectRefreshRateMode" label="${EnableVideoDisplaySyncing}">
             <option value="yes">${Yes}</option>

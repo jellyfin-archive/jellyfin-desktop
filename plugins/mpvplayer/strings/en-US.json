@@ -31,5 +31,9 @@
   "LabelOutputRangeHelp": "It is advisable to use your graphics driver's color range option instead, if available.",
   "LabelDitherDepth": "Dither depth:",
   "LabelDitherDepthHelp": "Note that the depth of the connected video display device cannot be detected. Often, LCD panels will do dithering on their own, which conflicts with this option and leads to ugly output.",
-  "Dither8": "Dither to 8 bit output"
+  "Dither8": "Dither to 8 bit output",
+  "DefaultAudioDelay": "Default audio delay:",
+  "DefaultAudioDelayHelp": "Audio delay in milliseconds.",
+  "AudioDelay2325": "Audio delay (23-25 fps):",
+  "AudioDelay2325Help": "Audio delay in milliseconds for videos with framerates from 23-25 fps."
 }

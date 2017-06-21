@@ -118,7 +118,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
 
             var serviceName = (item.ServiceName || '').toLowerCase();
 
-            if (serviceName.indexOf('emby') === -1) {
+            if (serviceName.indexOf('emby') === -1 && serviceName.indexOf('wmc') === -1) {
                 return false;
             }
 
@@ -379,7 +379,9 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
                     sigmoidupscaling: appSettings.get('mpv-sigmoidupscaling') === 'true',
                     deband: appSettings.get('mpv-deband') === 'true',
                     genPts: mediaSource.RunTimeTicks ? false : true,
-                    largeCache: mediaSource.RunTimeTicks ? false : true
+                    audioDelay: parseInt(appSettings.get('mpv-audiodelay') || '0'),
+                    audioDelay2325: parseInt(appSettings.get('mpv-audiodelay2325') || 0),
+                    largeCache: false
                 }
             };
 

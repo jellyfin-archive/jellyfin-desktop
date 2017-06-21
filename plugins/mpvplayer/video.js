@@ -1,4 +1,4 @@
-﻿define(['loading', 'pluginManager', 'scrollHelper', 'appSettings', 'emby-select', 'emby-checkbox'], function (loading, pluginManager, scrollHelper, appSettings) {
+﻿define(['loading', 'pluginManager', 'scrollHelper', 'appSettings', 'emby-select', 'emby-checkbox', 'emby-input'], function (loading, pluginManager, scrollHelper, appSettings) {
 
     return function (view, params) {
 
@@ -31,6 +31,9 @@
             appSettings.set('mpv-tscale', view.querySelector('.selectTScale').value);
             appSettings.set('mpv-ditherdepth', view.querySelector('.selectDitherDepth').value);
 
+            appSettings.set('mpv-audiodelay', view.querySelector('.txtDefaultAudioDelay').value);
+            appSettings.set('mpv-audiodelay2325', view.querySelector('.txtAudioDelay2325').value);
+
             appSettings.set('mpv-interpolation', view.querySelector('.chkInterpolation').checked);
             appSettings.set('mpv-openglhq', view.querySelector('.chkOpenglhq').checked);
             appSettings.set('mpv-correctdownscaling', view.querySelector('.chkCorrectDownscaling').checked);
@@ -49,6 +52,9 @@
             view.querySelector('.selectDScale').value = appSettings.get('mpv-dscale') || '';
             view.querySelector('.selectTScale').value = appSettings.get('mpv-tscale') || '';
             view.querySelector('.selectDitherDepth').value = appSettings.get('mpv-ditherdepth') || '';
+
+            view.querySelector('.txtDefaultAudioDelay').value = appSettings.get('mpv-audiodelay') || '0';
+            view.querySelector('.txtAudioDelay2325').value = appSettings.get('mpv-audiodelay2325') || '0';
 
             view.querySelector('.chkOpenglhq').checked = appSettings.get('mpv-openglhq') === 'true';
             view.querySelector('.chkInterpolation').checked = appSettings.get('mpv-interpolation') === 'true';
