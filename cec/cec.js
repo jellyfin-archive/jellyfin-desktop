@@ -14,8 +14,7 @@ const parseCmd = require("./command-map");
 var
     cecProcess,         // cec process
     cecEmitter,         // cec event emitter
-    CEC_ADAPTER = {},   // logical address of cec adapter
-    CEC_BASE = {}       // logical address of base device - will be TV (0) or audio receiver (5)
+    CEC_ADAPTER = {}    // logical address of cec adapter
 ;
 
 var initialized = false;    // indicates if the CEC module is initialized
@@ -110,10 +109,7 @@ function registerEvents(cecProcess) {
                 var cecBaseVals = initVals[5].split("(");
                 CEC_ADAPTER.device = cecAdapterVals[1].substr(4);
                 CEC_ADAPTER.lAddr = cecAdapterVals[2][0];
-                CEC_BASE.device = cecBaseVals[0].substr(11);
-                CEC_BASE.lAddr = cecBaseVals[1][0];
                 console.log("CEC Adapter Device:\t" + JSON.stringify(CEC_ADAPTER, null, "  "));
-                console.log("CEC Base Device:\t" + JSON.stringify(CEC_BASE, null, "  "));
                 initialized = true;
                 // run after-init functions here:
                 testTVOn(cecProcess);
@@ -125,7 +121,7 @@ function registerEvents(cecProcess) {
         if (data.toString().includes(">>")) {
             var cecCmd = data.toString().split(">>")[1].replace(/\s+/g, "").split(":");
             // console.log(cecCmd);
-            if (cecCmd[0][0] == CEC_BASE.lAddr && cecCmd[0][1] == CEC_ADAPTER.lAddr) {  // device => adapter
+            if ((cecCmd[0][0] == 0 || cecCmd[0][0] == 5) && cecCmd[0][1] == CEC_ADAPTER.lAddr) {  // device => adapter
                 if (cecCmd[1] == "44") {    // key pressed
                     console.log("remote control button pressed");
                     remoteButton.state = 1;
