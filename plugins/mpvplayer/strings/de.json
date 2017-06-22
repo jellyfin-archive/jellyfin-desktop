@@ -31,5 +31,9 @@
     "LabelOutputRangeHelp": "Es wird dazu geraten, die Einstellung zum Ausgabebereich im Grafikkartentreiber zu verwenden, falls verf\u00fcgbar.",
     "LabelDitherDepth": "Dither Tiefe:",
     "LabelDitherDepthHelp": "Es ist zu beachten, dass die Tiefe des verbundenem Displays nciht erkannt werden kann. H\u00e4ufig erledigen LCD Displays das Dithering selbst, was zu Konflikten mit dieser Option f\u00fchrt und die Ausgabe verschlechtert.",
-    "Dither8": "Dither auf 8 bit Ausgabe"
+    "Dither8": "Dither auf 8 bit Ausgabe",
+    "DefaultAudioDelay": "Standard Audioverz\u00f6gerung:",
+    "DefaultAudioDelayHelp": "Audioverz\u00f6gerung in Millisekunden:",
+    "AudioDelay2325": "Audioverz\u00f6gerung (23-25 Bilder\/Sekunde)",
+    "AudioDelay2325Help": "Audioverz\u00f6gerung f\u00fcr Videos mit Bildraten von 23-25 Bilder\/Sekunde."
 }

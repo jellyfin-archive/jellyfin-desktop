@@ -31,5 +31,9 @@
     "LabelOutputRangeHelp": "Es recomendable usar el rango de color usado por el driver de video, si esta disponible.",
     "LabelDitherDepth": "Profundidad de interpolado:",
     "LabelDitherDepthHelp": "Note que la profundidad de la pantalla conectada no puede ser detectada. Frecuentemente, los paneles LCD har\u00e1n interpolado por si mismos, lo cual entra en conflicto con esta opci\u00f3n llevando a una mala calidad de imagen.",
-    "Dither8": "Interpolar a salida de 8 bit"
+    "Dither8": "Interpolar a salida de 8 bit",
+    "DefaultAudioDelay": "Retraso de audio por defecto:",
+    "DefaultAudioDelayHelp": "Retraso de audio en milisegundos.",
+    "AudioDelay2325": "Retraso de audio (23-25 fps):",
+    "AudioDelay2325Help": "Retraso de audio en milisegundos para videos de 23-25 fps (cuadros por segundo)."
 }
