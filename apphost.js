@@ -83,6 +83,7 @@
         features.push('multiserver');
         features.push('imageanalysis');
         features.push('remotemedia');
+        features.push('screensaver');
 
         features.push('otherapppromotions');
 
