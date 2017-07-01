@@ -12,6 +12,7 @@
 
     var enableDevTools = false;
     var enableDevToolsOnStartup = false;
+    var initialShowEventsComplete = false;
 
     // Quit when all windows are closed.
     app.on('window-all-closed', function () {
@@ -103,11 +104,6 @@
         onWindowStateChanged('Minimized');
     }
 
-    function onLeaveFullscreen() {
-        onWindowStateChanged('Normal');
-        playerWindow.setFullScreen(false);
-    }
-
     function onRestore() {
 
         var restoreState = restoreWindowState;
@@ -127,6 +123,21 @@
 
     function onEnterFullscreen() {
         onWindowStateChanged('Fullscreen');
+
+        if (initialShowEventsComplete) {
+            playerWindow.setFullScreen(true);
+            mainWindow.setMovable(false);
+        }
+    }
+
+    function onLeaveFullscreen() {
+
+        onWindowStateChanged('Normal');
+
+        if (initialShowEventsComplete) {
+            playerWindow.setFullScreen(false);
+            mainWindow.setMovable(true);
+        }
     }
 
     function onUnMaximize() {
@@ -785,6 +796,7 @@
 
             mainWindow.center();
             mainWindow.focus();
+            initialShowEventsComplete = true;
         }
     }
 
@@ -852,6 +864,7 @@
 
         playerWindow = new BrowserWindow(windowOptions);
 
+        windowOptions.backgroundColor = '#00000000';
         windowOptions.parent = playerWindow;
         windowOptions.transparent = true;
         windowOptions.resizable = true;
@@ -888,9 +901,9 @@
             mainWindow.on("minimize", onMinimize);
             mainWindow.on("maximize", onMaximize);
             mainWindow.on("enter-full-screen", onEnterFullscreen);
+            mainWindow.on("leave-full-screen", onLeaveFullscreen);
             mainWindow.on("restore", onRestore);
             mainWindow.on("unmaximize", onUnMaximize);
-            mainWindow.on("leave-full-screen", onLeaveFullscreen);
             mainWindow.on("resize", onWindowResize);
 
             playerWindow.on("restore", onPlayerWindowRestore);
