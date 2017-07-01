@@ -51,10 +51,13 @@
         </select>
     </div>
 
-    <label class="checkboxContainer">
-        <input type="checkbox" is="emby-checkbox" class="chkExclusiveMode"/>
-        <span>${EnableExclusiveAudioMode}</span>
-    </label>
+    <div class="checkboxContainer checkboxContainer-withDescription">
+        <label>
+            <input type="checkbox" is="emby-checkbox" class="chkExclusiveMode" />
+            <span>${EnableExclusiveAudioMode}</span>
+        </label>
+        <div class="fieldDescription checkboxFieldDescription">${EnableExclusiveAudioModeHelp}</div>
+    </div>
 
     <div class="checkboxListContainer">
         <label class="checkboxListLabel">${LabelUpmixAudioFor}</label>
@@ -64,5 +67,6 @@
                 <span>Music</span>
             </label>
         </div>
+        <div class="fieldDescription">${LabelUpmixAudioForHelp}</div>
     </div>
 </div>
