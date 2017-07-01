@@ -1,4 +1,6 @@
 {
+    "LabelUpmixAudioForHelp": "Upmix audio to utilize all speaker channels.",
+    "EnableExclusiveAudioModeHelp": "Enable exclusive output mode. In this mode, the system is usually locked out, and only Emby will be able to output audio.",
     "LabelOutputRange": "Alcance da sa\u00edda",
     "LabelHardwareAccelerationMode": "Modo de acelera\u00e7\u00e3o de hardware",
     "Auto": "Auto",
@@ -32,8 +34,8 @@
     "LabelDitherDepth": "Profundidade do dither:",
     "LabelDitherDepthHelp": "Observe que a profundidade do dispositivo de exibi\u00e7\u00e3o de v\u00eddeo conectado n\u00e3o pode ser detectada. Muitas vezes, os pain\u00e9is LCD ir\u00e3o definir por conta pr\u00f3pria, o que entra em conflito com esta op\u00e7\u00e3o e leva a uma m\u00e1 sa\u00edda.",
     "Dither8": "Dither para sa\u00edda de 8 bits",
-    "DefaultAudioDelay": "Default audio delay:",
-    "DefaultAudioDelayHelp": "Audio delay in milliseconds.",
-    "AudioDelay2325": "Audio delay (23-25 fps):",
-    "AudioDelay2325Help": "Audio delay in milliseconds for videos with framerates from 23-25 fps."
+    "DefaultAudioDelay": "Atraso do \u00e1udio padr\u00e3o:",
+    "DefaultAudioDelayHelp": "Atraso do \u00e1udio em milissegundos.",
+    "AudioDelay2325": "Atraso do \u00e1udio (23-25 fps):",
+    "AudioDelay2325Help": "Atraso do \u00e1udio em milissegundos para v\u00eddeos com taxa de 23-35 fps."
 }

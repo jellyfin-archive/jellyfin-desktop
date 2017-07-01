@@ -11,6 +11,7 @@
   "LabelDynamicRangeCompression": "Dynamic range compression:",
   "LabelEnableAudioPassthroughFor": "Enable audio passthrough for:",
   "LabelUpmixAudioFor": "Upmix audio channels for:",
+  "LabelUpmixAudioForHelp": "Upmix audio to utilize all speaker channels.",
   "EnableDeinterlacing": "Enable deinterlacing",
   "EnableOpenGlHq": "Enable OpenGL high quality profile",
   "EnableVideoDisplaySyncing": "Enable video display syncing",
@@ -35,5 +36,6 @@
   "DefaultAudioDelay": "Default audio delay:",
   "DefaultAudioDelayHelp": "Audio delay in milliseconds.",
   "AudioDelay2325": "Audio delay (23-25 fps):",
-  "AudioDelay2325Help": "Audio delay in milliseconds for videos with framerates from 23-25 fps."
+  "AudioDelay2325Help": "Audio delay in milliseconds for videos with framerates from 23-25 fps.",
+  "EnableExclusiveAudioModeHelp": "Enable exclusive output mode. In this mode, the system is usually locked out, and only Emby will be able to output audio."
 }

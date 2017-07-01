@@ -1,4 +1,6 @@
 {
+    "LabelUpmixAudioForHelp": "Upmix audio to utilize all speaker channels.",
+    "EnableExclusiveAudioModeHelp": "Enable exclusive output mode. In this mode, the system is usually locked out, and only Emby will be able to output audio.",
     "LabelOutputRange": "\u0412\u044b\u0445\u043e\u0434\u043d\u043e\u0439 \u0434\u0438\u0430\u043f\u0430\u0437\u043e\u043d:",
     "LabelHardwareAccelerationMode": "\u0420\u0435\u0436\u0438\u043c \u0430\u043f\u043f\u0430\u0440\u0430\u0442\u043d\u043e\u0433\u043e \u0443\u0441\u043a\u043e\u0440\u0435\u043d\u0438\u044f:",
     "Auto": "\u0410\u0432\u0442\u043e",
