@@ -125,7 +125,7 @@
         onWindowStateChanged('Fullscreen');
 
         if (initialShowEventsComplete) {
-            playerWindow.setFullScreen(true);
+            //playerWindow.setFullScreen(true);
             mainWindow.setMovable(false);
         }
     }
