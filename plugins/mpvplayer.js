@@ -5,7 +5,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
 
         var self = this;
 
-        self.name = 'MPV Media Player';
+        self.name = 'MPV';
         self.type = 'mediaplayer';
         self.id = 'mpvmediaplayer';
         self.priority = -1;
@@ -532,6 +532,11 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
             return playerState.isMuted || false;
         };
 
+        self.getStats = function () {
+
+            return sendCommand('stats');
+        };
+
         var timeUpdateInterval;
         function startTimeUpdateInterval() {
             stopTimeUpdateInterval();
@@ -601,6 +606,12 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
 
                 xhr.onload = function () {
                     if (this.responseText && this.status >= 200 && this.status <= 400) {
+
+                        if (name === 'stats') {
+
+                            resolve(JSON.parse(this.responseText));
+                            return;
+                        }
 
                         var state = JSON.parse(this.responseText);
                         var previousPlayerState = playerState;
