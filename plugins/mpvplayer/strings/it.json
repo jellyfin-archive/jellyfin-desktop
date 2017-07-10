@@ -1,6 +1,6 @@
 {
-    "LabelUpmixAudioForHelp": "Upmix audio to utilize all speaker channels.",
-    "EnableExclusiveAudioModeHelp": "Enable exclusive output mode. In this mode, the system is usually locked out, and only Emby will be able to output audio.",
+    "LabelUpmixAudioForHelp": "Upmix audio per utilizzare tutti i canali degli altoparlanti.",
+    "EnableExclusiveAudioModeHelp": "Abilita la modalit\u00e0 di output esclusiva. In questa modalit\u00e0, il sistema \u00e8 di solito bloccato e solo Emby sar\u00e0 in grado di emettere audio.",
     "LabelOutputRange": "Gamma output:",
     "LabelHardwareAccelerationMode": "Accelerazione Hardware:",
     "Auto": "Auto",
