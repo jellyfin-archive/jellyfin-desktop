@@ -110,21 +110,6 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
             return (mediaType || '').toLowerCase() == 'audio';
         };
 
-        self.canPlayItem = function (item) {
-
-            if (item.Type != 'TvChannel') {
-                return true;
-            }
-
-            var serviceName = (item.ServiceName || '').toLowerCase();
-
-            if (serviceName.indexOf('emby') === -1 && serviceName.indexOf('wmc') === -1 && serviceName.indexOf('portal') === -1) {
-                return false;
-            }
-
-            return true;
-        };
-
         self.getDeviceProfile = function () {
 
             var profile = {};
