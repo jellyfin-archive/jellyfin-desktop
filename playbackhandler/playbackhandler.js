@@ -229,12 +229,21 @@ function getMpvOptions(options, mediaType, mediaSource) {
 
     if (options.largeCache) {
 
-        list.push('--demuxer-readahead-secs=20');
-        list.push('--cache-secs=20');
+        list.push('--demuxer-readahead-secs=1800');
+        list.push('--cache-secs=1800');
+
+        var cacheSize = 2097152;
+        var backBuffer = Math.round(cacheSize * .8);
+        list.push('--cache=' + cacheSize.toString());
+        list.push('--cache-backbuffer=' + backBuffer.toString());
+        list.push('--force-seekable=yes');
+        list.push('--hr-seek=yes');
+        //list.push('--demuxer-lavf-hacks=no');
     }
 
-    //list.push('--force-seekable=yes');
-    //list.push('--hr-seek=no');
+    if (mediaSource.RunTimeTicks == null) {
+        list.push('--demuxer-lavf-analyzeduration=3');
+    }
 
     return list;
 }
@@ -701,6 +710,12 @@ function processRequest(request, body) {
                 var data = url_parts.query["val"];
                 set_position(data);
                 timeposition = data;
+                getReturnJson().then(resolve);
+                break;
+            case 'seekrelative':
+                var data = url_parts.query["val"];
+                mpvPlayer.seek(Math.round(data / 10000000));
+                //timeposition = (timeposition || 0) + data;
                 getReturnJson().then(resolve);
                 break;
             case 'unpause':

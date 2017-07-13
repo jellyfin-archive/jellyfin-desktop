@@ -118,7 +118,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
 
             var serviceName = (item.ServiceName || '').toLowerCase();
 
-            if (serviceName.indexOf('emby') === -1 && serviceName.indexOf('wmc') === -1) {
+            if (serviceName.indexOf('emby') === -1 && serviceName.indexOf('wmc') === -1 && serviceName.indexOf('portal') === -1) {
                 return false;
             }
 
@@ -378,10 +378,10 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
                     correctdownscaling: appSettings.get('mpv-correctdownscaling') === 'true',
                     sigmoidupscaling: appSettings.get('mpv-sigmoidupscaling') === 'true',
                     deband: appSettings.get('mpv-deband') === 'true',
-                    genPts: mediaSource.RunTimeTicks ? false : true,
+                    //genPts: mediaSource.RunTimeTicks ? false : true,
                     audioDelay: parseInt(appSettings.get('mpv-audiodelay') || '0'),
                     audioDelay2325: parseInt(appSettings.get('mpv-audiodelay2325') || 0),
-                    largeCache: false
+                    largeCache: mediaSource.RunTimeTicks == null || options.item.Type === 'Recording' ? true : false
                 }
             };
 
@@ -427,6 +427,22 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
             return (playerState.positionTicks || 0) / 10000;
         };
 
+        function seekRelative(offsetMs) {
+            sendCommand('seekrelative?val=' + (offsetMs * 10000)).then(function (state) {
+
+                events.trigger(self, 'seek');
+                onTimeUpdate(state);
+            });
+        }
+
+        self.rewind = function (offsetMs) {
+            return seekRelative(0 - offsetMs);
+        };
+
+        self.fastForward = function (offsetMs) {
+            return seekRelative(offsetMs);
+        };
+
         //self.supportsPlayMethod = function (playMethod, item) {
 
         //    // force these through hls so that we can seek
@@ -438,6 +454,12 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
 
         //    return true;
         //};
+
+        self.enableMediaProbe = function () {
+
+            // We expect to direct play everything with mpv
+            return false;
+        };
 
         self.duration = function (val) {
 
