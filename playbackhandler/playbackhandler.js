@@ -23,7 +23,7 @@ function alert(text) {
 
 function download(url, dest) {
     return new Promise(function (resolve, reject) {
-        var http = require('http');
+        var http = url.toLowerCase().indexOf('https:') == -1 ? require('http') : require('https');
         var fs = require('fs');
         var file = fs.createWriteStream(dest);
         var request = http.get(url, function (response) {

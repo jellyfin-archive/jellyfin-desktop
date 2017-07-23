@@ -1,4 +1,4 @@
-define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'loading', 'dom', 'require'], function (appHost, pluginManager, events, embyRouter, appSettings, loading, dom, require) {
+define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'loading', 'dom', 'require', 'connectionManager'], function (appHost, pluginManager, events, embyRouter, appSettings, loading, dom, require, connectionManager) {
     'use strict';
 
     return function () {
@@ -110,7 +110,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
             return (mediaType || '').toLowerCase() == 'audio';
         };
 
-        self.getDeviceProfile = function () {
+        self.getDeviceProfile = function (item) {
 
             var profile = {};
 
@@ -120,11 +120,30 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
 
             profile.DirectPlayProfiles = [];
 
+            var apiClient = item && item.ServerId ? connectionManager.getApiClient(item.ServerId) : null;
+            var supportsEmptyContainer = apiClient ? apiClient.isMinServerVersion('3.2.26.0') : false;
+
+            if (supportsEmptyContainer) {
+                // leave container null for all
+                profile.DirectPlayProfiles.push({
+                    Type: 'Video'
+                });
+            }
+
+            // for older servers that don't support leaving container blank
             profile.DirectPlayProfiles.push({
                 Container: 'm4v,mpegts,ts,3gp,mov,xvid,vob,mkv,wmv,asf,ogm,ogv,m2v,avi,mpg,mpeg,mp4,webm,wtv,iso,m2ts,dvr-ms',
                 Type: 'Video'
             });
 
+            if (supportsEmptyContainer) {
+                // leave container null for all
+                profile.DirectPlayProfiles.push({
+                    Type: 'Audio'
+                });
+            }
+
+            // for older servers that don't support leaving container blank
             profile.DirectPlayProfiles.push({
                 Container: 'aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus,alac,flac,m4a',
                 Type: 'Audio'
@@ -427,18 +446,6 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
         self.fastForward = function (offsetMs) {
             return seekRelative(offsetMs);
         };
-
-        //self.supportsPlayMethod = function (playMethod, item) {
-
-        //    // force these through hls so that we can seek
-        //    if (item.Type === 'TvChannel') {
-        //        if (playMethod === 'DirectStream') {
-        //            //return false;
-        //        }
-        //    }
-
-        //    return true;
-        //};
 
         self.enableMediaProbe = function () {
 
