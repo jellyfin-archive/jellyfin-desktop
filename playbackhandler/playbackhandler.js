@@ -206,6 +206,16 @@ function getMpvOptions(options, mediaType, mediaSource) {
         list.push('--dither-depth=' + (options.ditherdepth));
     }
 
+    if (options.subtitleFontFamily) {
+
+        list.push('--sub-font=' + options.subtitleFontFamily);
+    }
+
+    if (options.subtitleFontSize) {
+
+        list.push('--sub-font-size=' + options.subtitleFontSize);
+    }
+
     var audioOptions = getMpvAudioOptions(options, mediaType);
     for (var i = 0, length = audioOptions.length; i < length; i++) {
         list.push(audioOptions[i]);

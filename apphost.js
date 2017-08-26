@@ -90,6 +90,7 @@
 
         features.push('nativeblurayplayback');
         features.push('nativedvdplayback');
+        features.push('subtitleappearancesettings');
 
         return features;
     }();

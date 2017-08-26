@@ -1,4 +1,4 @@
-define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'loading', 'dom', 'require', 'connectionManager'], function (appHost, pluginManager, events, embyRouter, appSettings, loading, dom, require, connectionManager) {
+define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'userSettings', 'loading', 'dom', 'require', 'connectionManager'], function (appHost, pluginManager, events, embyRouter, appSettings, userSettings, loading, dom, require, connectionManager) {
     'use strict';
 
     return function () {
@@ -354,6 +354,46 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
                 }
             });
 
+            var subtitleAppearanceSettings = userSettings.getSubtitleAppearanceSettings();
+            var fontSize;
+            switch (subtitleAppearanceSettings.textSize || '') {
+
+                case 'small':
+                    fontSize = 50;
+                    break;
+                case 'larger':
+                    fontSize = 65;
+                    break;
+                case 'extralarge':
+                    fontSize = 70;
+                    break;
+                case 'large':
+                    fontSize = 60;
+                    break;
+                default:
+                    break;
+            }
+            var fontFamily;
+            switch (subtitleAppearanceSettings.font || '') {
+
+                case 'smallcaps':
+                case 'typewriter':
+                case 'console':
+                    fontFamily = 'monospace';
+                    break;
+                case 'print':
+                    fontFamily = 'Times New Roman';
+                    break;
+                case 'cursive':
+                    fontFamily = 'cursive';
+                    break;
+                case 'casual':
+                    fontFamily = 'Comic Sans MS';
+                    break;
+                default:
+                    break;
+            }
+
             var requestBody = {
                 path: url,
                 isVideo: isVideo,
@@ -385,7 +425,9 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'load
                     //genPts: mediaSource.RunTimeTicks ? false : true,
                     audioDelay: parseInt(appSettings.get('mpv-audiodelay') || '0'),
                     audioDelay2325: parseInt(appSettings.get('mpv-audiodelay2325') || 0),
-                    largeCache: mediaSource.RunTimeTicks == null || options.item.Type === 'Recording' ? true : false
+                    largeCache: mediaSource.RunTimeTicks == null || options.item.Type === 'Recording' ? true : false,
+                    subtitleFontSize: fontSize,
+                    subtitleFontFamily: fontFamily
                 }
             };
 
