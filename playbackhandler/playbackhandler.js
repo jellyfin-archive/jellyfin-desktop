@@ -281,8 +281,6 @@ function getMpvAudioOptions(options, mediaType) {
 
     if (options.exclusiveAudio && mediaType === 'Video') {
         list.push('--audio-exclusive=yes');
-    } else {
-        list.push('--audio-exclusive=no');
     }
 
     return list;

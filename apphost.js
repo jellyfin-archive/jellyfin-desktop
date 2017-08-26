@@ -86,6 +86,10 @@
         features.push('screensaver');
 
         features.push('otherapppromotions');
+        features.push('fileinput');
+
+        features.push('nativeblurayplayback');
+        features.push('nativedvdplayback');
 
         return features;
     }();
