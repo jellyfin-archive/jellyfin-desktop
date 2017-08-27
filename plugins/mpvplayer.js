@@ -359,16 +359,16 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
             switch (subtitleAppearanceSettings.textSize || '') {
 
                 case 'small':
-                    fontSize = 50;
+                    fontSize = 45;
                     break;
                 case 'larger':
-                    fontSize = 65;
+                    fontSize = 75;
                     break;
                 case 'extralarge':
-                    fontSize = 70;
+                    fontSize = 85;
                     break;
                 case 'large':
-                    fontSize = 60;
+                    fontSize = 65;
                     break;
                 default:
                     break;
