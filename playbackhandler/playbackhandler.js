@@ -152,7 +152,9 @@ function getMpvOptions(options, mediaType, mediaSource) {
 
     list.push('--hwdec=' + (options.hwdec || 'no'));
 
-    list.push('--deinterlace=' + (options.deinterlace || 'auto'));
+    if (options.deinterlace == 'yes') {
+        list.push('--deinterlace=' + (options.deinterlace || 'auto'));
+    }
 
     list.push('--video-output-levels=' + (options.videoOutputLevels || 'auto'));
 
