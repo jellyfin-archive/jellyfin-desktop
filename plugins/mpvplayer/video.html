@@ -70,6 +70,28 @@
     </div>
 
     <div class="selectContainer">
+        <select is="emby-select" class="selectVideoStereoMode" label="${ThreeDMode}">
+            <option value="">${Auto}</option>
+            <option value="no">${None}</option>
+            <option value="mono">${MonoConvertTo2D}</option>
+            <option value="sbs2l">sbs2l</option>
+            <option value="ab2r">ab2r</option>
+            <option value="ab2l">ab2l</option>
+            <option value="checkr">checkr</option>
+            <option value="checkl">checkl</option>
+            <option value="irr">irr</option>
+            <option value="irl">irl</option>
+            <option value="icr">icr</option>
+            <option value="icl">icl</option>
+            <option value="arcc">arcc</option>
+            <option value="sbs2r">sbs2r</option>
+            <option value="agmc">agmc</option>
+            <option value="al">al</option>
+            <option value="ar">ar</option>
+        </select>
+    </div>
+
+    <div class="selectContainer">
         <select is="emby-select" class="selectScale" label="${DefaultScalingMethod}">
             <option value="">${Auto}</option>
             <option value="bilinear">bilinear</option>

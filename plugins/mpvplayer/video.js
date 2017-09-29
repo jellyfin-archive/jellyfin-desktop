@@ -39,6 +39,7 @@
             appSettings.set('mpv-correctdownscaling', view.querySelector('.chkCorrectDownscaling').checked);
             appSettings.set('mpv-sigmoidupscaling', view.querySelector('.chkSigmoid').checked);
             appSettings.set('mpv-deband', view.querySelector('.chkDeband').checked);
+            appSettings.set('mpv-videostereomode', view.querySelector('.selectVideoStereoMode').value);
         }
 
         function renderSettings() {
@@ -51,6 +52,7 @@
             view.querySelector('.selectCScale').value = appSettings.get('mpv-cscale') || '';
             view.querySelector('.selectDScale').value = appSettings.get('mpv-dscale') || '';
             view.querySelector('.selectTScale').value = appSettings.get('mpv-tscale') || '';
+            view.querySelector('.selectVideoStereoMode').value = appSettings.get('mpv-videostereomode') || '';
             view.querySelector('.selectDitherDepth').value = appSettings.get('mpv-ditherdepth') || '';
 
             view.querySelector('.txtDefaultAudioDelay').value = appSettings.get('mpv-audiodelay') || '0';

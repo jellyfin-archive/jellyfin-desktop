@@ -208,6 +208,11 @@ function getMpvOptions(options, mediaType, mediaSource) {
         list.push('--dither-depth=' + (options.ditherdepth));
     }
 
+    if (options.videoStereoMode) {
+
+        list.push('--video-stereo-mode=' + options.videoStereoMode);
+    }
+
     if (options.subtitleFontFamily) {
 
         list.push('--sub-font=' + options.subtitleFontFamily);
