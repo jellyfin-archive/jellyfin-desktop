@@ -1,6 +1,4 @@
 {
-    "LabelUpmixAudioForHelp": "Volver a mezclar audio para usar todas las bocinas.",
-    "EnableExclusiveAudioModeHelp": "Habilita el modo de salida exclusivo. En este modo, el sistema esta usualmente bloqueado, y solo Emby podr\u00e1 reproducir audio.",
     "LabelOutputRange": "Rango de salida:",
     "LabelHardwareAccelerationMode": "Modo de aceleraci\u00f3n por hardware:",
     "Auto": "Autom\u00e1tico",
@@ -13,6 +11,7 @@
     "LabelDynamicRangeCompression": "Compresi\u00f3n de rango din\u00e1mico:",
     "LabelEnableAudioPassthroughFor": "Habilitar traspasar audio para:",
     "LabelUpmixAudioFor": "Volver a mezclar canales de audio a:",
+    "LabelUpmixAudioForHelp": "Volver a mezclar audio para usar todas las bocinas.",
     "EnableDeinterlacing": "Habilitar des-entrelazado",
     "EnableOpenGlHq": "Habilitar perfil de alta calidad de OpenGL",
     "EnableVideoDisplaySyncing": "Habilitar sincronizacion de video y pantalla",
@@ -37,5 +36,8 @@
     "DefaultAudioDelay": "Retraso de audio por defecto:",
     "DefaultAudioDelayHelp": "Retraso de audio en milisegundos.",
     "AudioDelay2325": "Retraso de audio (23-25 fps):",
-    "AudioDelay2325Help": "Retraso de audio en milisegundos para videos de 23-25 fps (cuadros por segundo)."
+    "AudioDelay2325Help": "Retraso de audio en milisegundos para videos de 23-25 fps (cuadros por segundo).",
+    "EnableExclusiveAudioModeHelp": "Habilita el modo de salida exclusivo. En este modo, el sistema esta usualmente bloqueado, y solo Emby podr\u00e1 reproducir audio.",
+    "ThreeDMode": "3D conversion mode:",
+    "MonoConvertTo2D": "mono (convert to 2D)"
 }

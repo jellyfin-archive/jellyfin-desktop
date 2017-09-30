@@ -1,6 +1,4 @@
 {
-    "LabelUpmixAudioForHelp": "Upmix audio per utilizzare tutti i canali degli altoparlanti.",
-    "EnableExclusiveAudioModeHelp": "Abilita la modalit\u00e0 di output esclusiva. In questa modalit\u00e0, il sistema \u00e8 di solito bloccato e solo Emby sar\u00e0 in grado di emettere audio.",
     "LabelOutputRange": "Gamma output:",
     "LabelHardwareAccelerationMode": "Accelerazione Hardware:",
     "Auto": "Auto",
@@ -13,6 +11,7 @@
     "LabelDynamicRangeCompression": "Compressione dinamica:",
     "LabelEnableAudioPassthroughFor": "Attiva il passthrough audio per:",
     "LabelUpmixAudioFor": "Upmix canali audio per:",
+    "LabelUpmixAudioForHelp": "Upmix audio per utilizzare tutti i canali degli altoparlanti.",
     "EnableDeinterlacing": "Abilita deinterlacciamento",
     "EnableOpenGlHq": "Abilita profilo di alta qualit\u00e0 di OpenGL",
     "EnableVideoDisplaySyncing": "Abilita la sincronizzazione del video",
@@ -37,5 +36,8 @@
     "DefaultAudioDelay": "Ritardo audio predefinito:",
     "DefaultAudioDelayHelp": "Ritardo audio in millisecondi.",
     "AudioDelay2325": "Ritardo audio (23-25 \u200b\u200bfps):",
-    "AudioDelay2325Help": "Ritardo audio in millisecondi per i video con framerate da 23 a 25 fps."
+    "AudioDelay2325Help": "Ritardo audio in millisecondi per i video con framerate da 23 a 25 fps.",
+    "EnableExclusiveAudioModeHelp": "Abilita la modalit\u00e0 di output esclusiva. In questa modalit\u00e0, il sistema \u00e8 di solito bloccato e solo Emby sar\u00e0 in grado di emettere audio.",
+    "ThreeDMode": "3D conversion mode:",
+    "MonoConvertTo2D": "mono (convert to 2D)"
 }

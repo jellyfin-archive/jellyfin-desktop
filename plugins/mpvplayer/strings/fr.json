@@ -1,6 +1,4 @@
 {
-    "LabelUpmixAudioForHelp": "Activer l'upmix sur l'audio pour utiliser tous les canaux des hauts-parleurs.",
-    "EnableExclusiveAudioModeHelp": "Active le mode de sortie exclusif. Dans ce mode, le syst\u00e8me est g\u00e9n\u00e9ralement bloqu\u00e9, seul Emby pourra utiliser les sorties audio.",
     "LabelOutputRange": "Plage de sortie\u00a0:",
     "LabelHardwareAccelerationMode": "Mode d'acc\u00e9l\u00e9ration mat\u00e9rielle\u00a0:",
     "Auto": "Auto",
@@ -13,6 +11,7 @@
     "LabelDynamicRangeCompression": "Compression dynamique\u00a0:",
     "LabelEnableAudioPassthroughFor": "Activer le passthrough audio pour :",
     "LabelUpmixAudioFor": "Activer l'upmix des canaux audio pour\u00a0:",
+    "LabelUpmixAudioForHelp": "Activer l'upmix sur l'audio pour utiliser tous les canaux des hauts-parleurs.",
     "EnableDeinterlacing": "Activer le d\u00e9s-entrelacement",
     "EnableOpenGlHq": "Activer le profil haute qualit\u00e9 d'OpenGL",
     "EnableVideoDisplaySyncing": "Activer la synchronisation de l'affichage vid\u00e9o",
@@ -37,5 +36,8 @@
     "DefaultAudioDelay": "D\u00e9lai audio par d\u00e9faut :",
     "DefaultAudioDelayHelp": "D\u00e9lai audio en millisecondes.",
     "AudioDelay2325": "D\u00e9lai audio (23-25 ips) :",
-    "AudioDelay2325Help": "D\u00e9lai audio en millisecondes pour les vid\u00e9os avec un d\u00e9bit d'images de 23-25 images par seconde."
+    "AudioDelay2325Help": "D\u00e9lai audio en millisecondes pour les vid\u00e9os avec un d\u00e9bit d'images de 23-25 images par seconde.",
+    "EnableExclusiveAudioModeHelp": "Active le mode de sortie exclusif. Dans ce mode, le syst\u00e8me est g\u00e9n\u00e9ralement bloqu\u00e9, seul Emby pourra utiliser les sorties audio.",
+    "ThreeDMode": "Mode de conversion 3D\u00a0:",
+    "MonoConvertTo2D": "Mono (convertir en 2D)"
 }

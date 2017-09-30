@@ -1,6 +1,4 @@
 {
-    "LabelUpmixAudioForHelp": "Upmix\u97f3\u9891\u5229\u7528\u6240\u6709\u626c\u58f0\u5668\u901a\u9053\u3002",
-    "EnableExclusiveAudioModeHelp": "\u542f\u7528\u72ec\u5360\u8f93\u51fa\u6a21\u5f0f\u3002 \u5728\u8fd9\u79cd\u6a21\u5f0f\u4e0b\uff0c\u7cfb\u7edf\u901a\u5e38\u88ab\u9501\u5b9a\uff0c\u53ea\u6709Emby\u624d\u80fd\u8f93\u51fa\u97f3\u9891\u3002",
     "LabelOutputRange": "\u8f93\u51fa\u8303\u56f4\uff1a",
     "LabelHardwareAccelerationMode": "\u786c\u4ef6\u52a0\u901f\u6a21\u5f0f\uff1a",
     "Auto": "\u81ea\u52a8",
@@ -13,6 +11,7 @@
     "LabelDynamicRangeCompression": "Dynamic range compression:",
     "LabelEnableAudioPassthroughFor": "Enable audio passthrough for:",
     "LabelUpmixAudioFor": "Upmix audio channels for:",
+    "LabelUpmixAudioForHelp": "Upmix\u97f3\u9891\u5229\u7528\u6240\u6709\u626c\u58f0\u5668\u901a\u9053\u3002",
     "EnableDeinterlacing": "Enable deinterlacing",
     "EnableOpenGlHq": "Enable OpenGL high quality profile",
     "EnableVideoDisplaySyncing": "Enable video display syncing",
@@ -37,5 +36,8 @@
     "DefaultAudioDelay": "Default audio delay:",
     "DefaultAudioDelayHelp": "Audio delay in milliseconds.",
     "AudioDelay2325": "Audio delay (23-25 fps):",
-    "AudioDelay2325Help": "Audio delay in milliseconds for videos with framerates from 23-25 fps."
+    "AudioDelay2325Help": "Audio delay in milliseconds for videos with framerates from 23-25 fps.",
+    "EnableExclusiveAudioModeHelp": "\u542f\u7528\u72ec\u5360\u8f93\u51fa\u6a21\u5f0f\u3002 \u5728\u8fd9\u79cd\u6a21\u5f0f\u4e0b\uff0c\u7cfb\u7edf\u901a\u5e38\u88ab\u9501\u5b9a\uff0c\u53ea\u6709Emby\u624d\u80fd\u8f93\u51fa\u97f3\u9891\u3002",
+    "ThreeDMode": "3D conversion mode:",
+    "MonoConvertTo2D": "mono (convert to 2D)"
 }
