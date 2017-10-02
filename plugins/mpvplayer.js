@@ -415,6 +415,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
                     dscale: appSettings.get('mpv-dscale'),
                     tscale: appSettings.get('mpv-tscale'),
                     ditherdepth: appSettings.get('mpv-ditherdepth'),
+                    videoStereoMode: appSettings.get('mpv-videostereomode'),
                     openglhq: appSettings.get('mpv-openglhq') === 'true',
                     exclusiveAudio: appSettings.get('mpv-exclusiveaudio') === 'true',
                     videoSync: appSettings.get('mpv-displaysync') === 'yes' ? 'display-resample' : null,
