@@ -74,6 +74,11 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
             });
 
             files.push({
+                lang: 'lt-LT',
+                path: pluginManager.mapPath(self, 'mpvplayer/strings/lt-LT.json')
+            });
+
+            files.push({
                 lang: 'pl',
                 path: pluginManager.mapPath(self, 'mpvplayer/strings/pl.json')
             });
