@@ -166,10 +166,12 @@ function getMpvOptions(options, mediaType, mediaSource) {
     //limitation that until we can pass the Windows monitor# (not the display name that MPV returns), is limited to Primary monitor
     if (options.displaySync) {
 		var winPosition = mainWindowRef.getPosition();
+		var winBounds = mainWindowRef.getBounds();
 		var displayParams_primary = require('electron').screen.getPrimaryDisplay();
 		var displayParams_active = require('electron').screen.getDisplayNearestPoint({x:winPosition[0], y:winPosition[1]})
 		
-		if(displayParams_primary.id == displayParams_active.id){
+		//rough test for fullscreen on playback start
+		if((displayParams_primary.id == displayParams_active.id)&&(winBounds.width == displayParams_active.size.width)&&(displayParams_active.size.height == winBounds.height)){
 			var rf_speed = ',autospeed-speed=' + ((options.videoSync) ? 'false' : 'true');
 			var rf_width = ',autospeed-dwidth=' + displayParams_active.size.width;
 			var rf_height = ',autospeed-dheight=' + displayParams_active.size.height;
@@ -178,7 +180,7 @@ function getMpvOptions(options, mediaType, mediaSource) {
 
 			list.push('--script-opts=autospeed-nircmd=true' + rf_speed + rf_width + rf_height + rf_method + rf_monitor);
 		}
-    }  
+    }
 
     if (options.scale) {
 
