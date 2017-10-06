@@ -171,8 +171,8 @@ function getMpvOptions(options, mediaType, mediaSource) {
 		
 		if(displayParams_primary.id == displayParams_active.id){
 			var rf_speed = ',autospeed-speed=' + ((options.videoSync) ? 'false' : 'true');
-			var rf_width = ',autospeed-dwidth=' + displayParams.size.width;
-			var rf_height = ',autospeed-dheight=' + displayParams.size.height;
+			var rf_width = ',autospeed-dwidth=' + displayParams_active.size.width;
+			var rf_height = ',autospeed-dheight=' + displayParams_active.size.height;
 			var rf_method = ',autospeed-method=' + (options.displaySync);
 			var rf_monitor = ',autospeed-monitor="default"';
 
