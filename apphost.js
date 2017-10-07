@@ -72,6 +72,7 @@
         features.push('soundeffects');
         features.push('displaymode');
         features.push('plugins');
+        features.push('skins');
         features.push('exitmenu');
         features.push('htmlaudioautoplay');
         features.push('htmlvideoautoplay');
@@ -91,6 +92,8 @@
         features.push('nativeblurayplayback');
         features.push('nativedvdplayback');
         features.push('subtitleappearancesettings');
+
+        features.push('displaylanguage');
 
         return features;
     }();
