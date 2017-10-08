@@ -337,11 +337,11 @@ function getAudioChannelsFilter(options, mediaType) {
         var audioChannels = options.audioChannels || 'auto-safe';
         if (audioChannels === '5.1') {
             //return 'channels=6';
-            return 'channels=6:[0-0,0-1,0-2,0-3,0-4,0-5]';
+            return 'channels=6:[0-0,0-2,0-4,1-1,1-5]';
         }
         else if (audioChannels === '7.1') {
             //return 'channels=8';
-            return 'channels=8:[0-0,0-1,0-2,0-3,0-4,0-5,0-6,0-7]';
+            return 'channels=8:[0-0,0-2,0-4,1-1,1-5,0-6,1-7]';
         }
     }
 
