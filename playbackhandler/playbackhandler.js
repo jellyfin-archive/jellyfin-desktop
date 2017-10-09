@@ -179,7 +179,7 @@ function getMpvOptions(options, mediaType, mediaSource) {
 			var rf_monitor = ',autospeed-monitor="default"';
 			//var rf_rate = ((options.displayRates) ? ',autospeed-rates=' + (options.displayRates) : '');
 
-			list.push('--script-opts=autospeed-enabled=true' + rf_speed + rf_width + rf_height + rf_method + rf_monitor + rf_rate);
+			list.push('--script-opts=autospeed-enabled=true' + rf_speed + rf_width + rf_height + rf_method + rf_monitor);
 		}
     }
 
