@@ -563,6 +563,14 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
             return playerState.isPaused || false;
         };
 
+        self.volumeUp = function (val) {
+            sendCommand('volumeUp').then(onVolumeChange);
+        };
+
+        self.volumeDown = function (val) {
+            sendCommand('volumeDown').then(onVolumeChange);
+        };
+
         self.volume = function (val) {
             if (val != null) {
                 sendCommand('volume?val=' + val).then(onVolumeChange);

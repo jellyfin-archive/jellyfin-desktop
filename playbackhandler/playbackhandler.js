@@ -772,6 +772,14 @@ function processRequest(request, body) {
                 pause();
                 getReturnJson().then(resolve);
                 break;
+            case 'volumeup':
+                set_volume(Math.min(100, (currentVolume || playerStatus.volume || 100) + 2));
+                getReturnJson().then(resolve);
+                break;
+            case 'volumedown':
+                set_volume(Math.max(0, (currentVolume || playerStatus.volume || 100) - 2));
+                getReturnJson().then(resolve);
+                break;
             case 'volume':
                 var data = url_parts.query["val"];
                 set_volume(data);
