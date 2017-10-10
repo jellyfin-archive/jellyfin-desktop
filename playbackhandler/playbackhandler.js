@@ -162,25 +162,25 @@ function getMpvOptions(options, mediaType, mediaSource) {
 
         list.push('--video-sync=' + (options.videoSync));
     }
-    
+
     //limitation that until we can pass the Windows monitor# (not the display name that MPV returns), is limited to Primary monitor
     if (options.displaySync) {
-		var winPosition = mainWindowRef.getPosition();
-		var winBounds = mainWindowRef.getBounds();
-		var displayParams_primary = require('electron').screen.getPrimaryDisplay();
-		var displayParams_active = require('electron').screen.getDisplayNearestPoint({x:winPosition[0], y:winPosition[1]})
-		
-		//rough test for fullscreen on playback start
-		if((displayParams_primary.id == displayParams_active.id)&&(winBounds.width == displayParams_active.size.width)&&(displayParams_active.size.height == winBounds.height)){
-			var rf_speed = ',autospeed-speed=' + ((options.videoSync) ? 'false' : 'true');
-			var rf_width = ',autospeed-dwidth=' + displayParams_active.size.width;
-			var rf_height = ',autospeed-dheight=' + displayParams_active.size.height;
-			var rf_method = ',autospeed-method=' + (options.displaySync);
-			var rf_monitor = ',autospeed-monitor="default"';
-			//var rf_rate = ((options.displayRates) ? ',autospeed-rates=' + (options.displayRates) : '');
+        var winPosition = mainWindowRef.getPosition();
+        var winBounds = mainWindowRef.getBounds();
+        var displayParams_primary = require('electron').screen.getPrimaryDisplay();
+        var displayParams_active = require('electron').screen.getDisplayNearestPoint({ x: winPosition[0], y: winPosition[1] })
 
-			list.push('--script-opts=autospeed-enabled=true' + rf_speed + rf_width + rf_height + rf_method + rf_monitor);
-		}
+        //rough test for fullscreen on playback start
+        if ((displayParams_primary.id == displayParams_active.id) && (winBounds.width == displayParams_active.size.width) && (displayParams_active.size.height == winBounds.height)) {
+            var rf_speed = ',autospeed-speed=' + ((options.videoSync) ? 'false' : 'true');
+            var rf_width = ',autospeed-dwidth=' + displayParams_active.size.width;
+            var rf_height = ',autospeed-dheight=' + displayParams_active.size.height;
+            var rf_method = ',autospeed-method=' + (options.displaySync);
+            var rf_monitor = ',autospeed-monitor="default"';
+            var rf_rate = ((options.displaySync_Override != '') ? ',autospeed-rates="' + (options.displaySync_Override) + '"' : '');
+
+            list.push('--script-opts=autospeed-enabled=true' + rf_speed + rf_width + rf_height + rf_method + rf_monitor + rf_rate);
+        }
     }
 
     if (options.scale) {
@@ -565,14 +565,14 @@ function getVideoStats(player) {
             label: 'Dropped frames:',
             value: getDroppedFrames(responses)
         });
-		
+
         var winPosition = mainWindowRef.getPosition();
-		var displayParams = require('electron').screen.getDisplayNearestPoint({x:winPosition[0], y:winPosition[1]})
+        var displayParams = require('electron').screen.getDisplayNearestPoint({ x: winPosition[0], y: winPosition[1] })
 
         stats.push({
             label: 'Display Fullscreen Resolution:',
             value: displayParams.size.width + ' x ' + displayParams.size.height
-        });	        
+        });
 
         if (videoParams.w && videoParams.h) {
             stats.push({
@@ -645,7 +645,7 @@ function getMediaStats(player) {
 
         var stats = [];
 
-        for (var i = 0, length = properties.length ; i < length; i++) {
+        for (var i = 0, length = properties.length; i < length; i++) {
 
             var name = properties[i].name;
 
