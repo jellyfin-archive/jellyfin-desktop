@@ -45,21 +45,34 @@
         <div class="fieldDescription">${AudioDelay2325Help}</div>
     </div>
 
-    <div class="selectContainer">
-        <select is="emby-select" class="selectRefreshRateMode" label="${ChangeRefreshRate}">
-            <option value="once">${Yes}</option>
-            <option value="">${No}</option>
-            <div class="fieldDescription">${ChangeRefreshRateHelp}</div>
-        </select>
+    <div class="checkboxContainer checkboxContainer-withDescription">
+        <label>
+            <input type="checkbox" is="emby-checkbox" class="chkRefreshRateMode" />
+            <span>${ChangeRefreshRate}</span>
+        </label>
+        <div class="fieldDescription checkboxFieldDescription">${ChangeRefreshRateHelp}</div>
     </div>
-     
-    <div class="selectContainer">
-        <select is="emby-select" class="selectVideoSync" label="${EnableVideoDisplaySyncing}">
-            <option value="yes">${Yes}</option>
-            <option value="">${No}</option>
-        </select>
-        <div class="fieldDescription">Resample audio to match the video. This mode will also try to adjust audio speed to compensate for other drift. (This means it will play the audio at a different speed every once in a while to reduce the A/V difference.)</div>
-    </div>     
+
+    <div class="inputContainer">
+        <input is="emby-input" type="text" step="1" class="txtUserRefreshRate" label="${UserRefreshRate}" />
+        <div class="fieldDescription">${UserRefreshRateHelp}</div>
+    </div>
+
+    <div class="checkboxContainer checkboxContainer-withDescription">
+        <label>
+            <input type="checkbox" is="emby-checkbox" class="chkVideoSync" />
+            <span>${EnableVideoDisplaySyncing}</span>
+        </label>
+        <div class="fieldDescription checkboxFieldDescription">${EnableVideoDisplaySyncingHelp}</div>
+    </div>
+
+    <div class="checkboxContainer checkboxContainer-withDescription">
+        <label>
+            <input type="checkbox" is="emby-checkbox" class="chkExclusiveMode" />
+            <span>${EnableExclusiveAudioMode}</span>
+        </label>
+        <div class="fieldDescription checkboxFieldDescription">${EnableExclusiveAudioModeHelp}</div>
+    </div>
 
     <div class="checkboxContainer checkboxContainer-withDescription">
         <label>

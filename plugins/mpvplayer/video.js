@@ -23,8 +23,9 @@
 
             appSettings.set('mpv-hwdec', view.querySelector('.selectHwaMode').value);
             appSettings.set('mpv-outputlevels', view.querySelector('.selectNominalRange').value);
-            appSettings.set('mpv-displaysync', view.querySelector('.selectRefreshRateMode').value);
-            appSettings.set('mpv-videosync', view.querySelector('.selectVideoSync').value);
+            appSettings.set('mpv-displaysync', view.querySelector('.chkRefreshRateMode').checked);
+            appSettings.set('mpv-displaysync_override', view.querySelector('.txtUserRefreshRate').value);
+            appSettings.set('mpv-videosync', view.querySelector('.chkVideoSync').checked);
             appSettings.set('mpv-deinterlace', view.querySelector('.selectDeinterlace').value);
             appSettings.set('mpv-scale', view.querySelector('.selectScale').value);
             appSettings.set('mpv-cscale', view.querySelector('.selectCScale').value);
@@ -47,8 +48,9 @@
 
             view.querySelector('.selectHwaMode').value = appSettings.get('mpv-hwdec') || '';
             view.querySelector('.selectNominalRange').value = appSettings.get('mpv-outputlevels') || '';
-            view.querySelector('.selectRefreshRateMode').value = appSettings.get('mpv-displaysync') || '';
-            view.querySelector('.selectVideoSync').value = appSettings.get('mpv-videosync') || '';
+            view.querySelector('.chkRefreshRateMode').checked = appSettings.get('mpv-displaysync') === 'true';
+            view.querySelector('.txtUserRefreshRate').value = appSettings.get('mpv-displaysync_override') || '';
+            view.querySelector('.chkVideoSync').checked = appSettings.get('mpv-videosync') === 'true';
             view.querySelector('.selectDeinterlace').value = appSettings.get('mpv-deinterlace') || '';
             view.querySelector('.selectScale').value = appSettings.get('mpv-scale') || '';
             view.querySelector('.selectCScale').value = appSettings.get('mpv-cscale') || '';
