@@ -1,9 +1,13 @@
 {
+    "UserRefreshRate": "Override automatically generated Refresh Rates",
+    "UserRefreshRateHelp": "Add Refresh Rates in the order of preference and separate with semicolon (ex. 50;60;23)",
+    "EnableVideoDisplaySyncingHelp": "Resample audio to match the video. This mode will also try to adjust audio speed to compensate for other drift. (This means it will play the audio at a different speed every once in a while to reduce the A\/V difference.)",
     "LabelOutputRange": "Rango de salida:",
     "LabelHardwareAccelerationMode": "Modo de aceleraci\u00f3n por hardware:",
     "Auto": "Autom\u00e1tico",
     "None": "Ninguno",
     "ChangeRefreshRate": "Cambiar el refresco del monitor para que coincida con el del v\u00eddeo.",
+    "ChangeRefreshRateHelp": "Changes the primary display refresh rate to closer align with the currently playing video stream. Reportedly works better when Video Display Sync is enabled as well.",
     "LabelSpeakerLayout": "Configuraci\u00f3n de Altavoces:",
     "Stereo": "Est\u00e9reo",
     "Quadraphonic": "Cuadraf\u00f3nico",
@@ -38,6 +42,6 @@
     "AudioDelay2325": "Retraso de audio (23-25 fps):",
     "AudioDelay2325Help": "Retraso de audio en milisegundos para videos de 23-25 fps (cuadros por segundo).",
     "EnableExclusiveAudioModeHelp": "Habilita el modo de salida exclusivo. En este modo, el sistema esta usualmente bloqueado, y solo Emby podr\u00e1 reproducir audio.",
-    "ThreeDMode": "3D conversion mode:",
-    "MonoConvertTo2D": "mono (convert to 2D)"
+    "ThreeDMode": "Modo de conversi\u00f3n 3D:",
+    "MonoConvertTo2D": "mono (convertir a 2D)"
 }
