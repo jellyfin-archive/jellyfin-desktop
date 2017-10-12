@@ -1,13 +1,13 @@
 {
-    "UserRefreshRate": "Override automatically generated Refresh Rates",
-    "UserRefreshRateHelp": "Add Refresh Rates in the order of preference and separate with semicolon (ex. 50;60;23)",
-    "EnableVideoDisplaySyncingHelp": "Resample audio to match the video. This mode will also try to adjust audio speed to compensate for other drift. (This means it will play the audio at a different speed every once in a while to reduce the A\/V difference.)",
+    "UserRefreshRate": "Ignoriere automatisch generierte Bildwiederholraten",
+    "UserRefreshRateHelp": "F\u00fcge Bildwiederholraten in der bevorzugten Reihenfolge getrennt mit einem Semikolon ein. (z.B. 50;60;23) ",
+    "EnableVideoDisplaySyncingHelp": "Resample die Audiospur um sie passend zum Video zu machen. Dieser Modus versucht zudem die Audio Geschwindigkeit anzupassen. (Das Bedeutet, die Audiospur wird ab und an mit einer anderen Geschwindigkeit gespielt um die Differenz zum Video auszugleichen) ",
     "LabelOutputRange": "Ausgabebereich:",
     "LabelHardwareAccelerationMode": "Hardwarebeschleunigung:",
     "Auto": "Auto",
     "None": "Keine",
     "ChangeRefreshRate": "\u00c4ndere Bildwiederholfrequenz passend zum Video",
-    "ChangeRefreshRateHelp": "Changes the primary display refresh rate to closer align with the currently playing video stream. Reportedly works better when Video Display Sync is enabled as well.",
+    "ChangeRefreshRateHelp": "Ver\u00e4ndern Sie die Bildwiederholrate des Hauptbildschirms, um ihn besser an die des laufenden Video-Streams anzupassen. Erfahrungsgem\u00e4\u00df klappt das am besten wenn die \"Video Display Synchronisation\" ebenso eingeschaltet ist.",
     "LabelSpeakerLayout": "Lautsprecheranordnung:",
     "Stereo": "Stereo",
     "Quadraphonic": "Quadrophonisch",
@@ -15,7 +15,7 @@
     "LabelDynamicRangeCompression": "Dynamische Kompression:",
     "LabelEnableAudioPassthroughFor": "Aktiviere Audio-Passthrough f\u00fcr:",
     "LabelUpmixAudioFor": "Audio Upmix f\u00fcr:",
-    "LabelUpmixAudioForHelp": "Upmix audio to utilize all speaker channels.",
+    "LabelUpmixAudioForHelp": "Upmix der Audiospur zur Verwendung aller Lautsprecherkan\u00e4le.",
     "EnableDeinterlacing": "Aktiviere Deinterlacing",
     "EnableOpenGlHq": "Aktiviere OpenGL High Quality Profil",
     "EnableVideoDisplaySyncing": "Aktiviere Video Display Synchronisierung",
@@ -41,7 +41,7 @@
     "DefaultAudioDelayHelp": "Audioverz\u00f6gerung in Millisekunden:",
     "AudioDelay2325": "Audioverz\u00f6gerung (23-25 Bilder\/Sekunde)",
     "AudioDelay2325Help": "Audioverz\u00f6gerung f\u00fcr Videos mit Bildraten von 23-25 Bilder\/Sekunde.",
-    "EnableExclusiveAudioModeHelp": "Enable exclusive output mode. In this mode, the system is usually locked out, and only Emby will be able to output audio.",
-    "ThreeDMode": "3D conversion mode:",
-    "MonoConvertTo2D": "mono (convert to 2D)"
+    "EnableExclusiveAudioModeHelp": "Verwende Exklusiven Audio Ausgabe Modus. In diesem Modus ist das System f\u00fcr weitere Audioausgaben gesperrt und nur Emby kann Audio wiedergeben.",
+    "ThreeDMode": "3D Konversion Modus",
+    "MonoConvertTo2D": "Mono (Konvertiere zu 2D)"
 }

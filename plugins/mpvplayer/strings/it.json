@@ -6,7 +6,7 @@
     "LabelHardwareAccelerationMode": "Accelerazione Hardware:",
     "Auto": "Auto",
     "None": "Nessuno",
-    "ChangeRefreshRate": "Modifica frequenza di rinfresco del monitor in base al video",
+    "ChangeRefreshRate": "Modifica frequenza di refresh del display in base al video",
     "ChangeRefreshRateHelp": "Changes the primary display refresh rate to closer align with the currently playing video stream. Reportedly works better when Video Display Sync is enabled as well.",
     "LabelSpeakerLayout": "Layout Speaker:",
     "Stereo": "Stereo",
@@ -42,6 +42,6 @@
     "AudioDelay2325": "Ritardo audio (23-25 \u200b\u200bfps):",
     "AudioDelay2325Help": "Ritardo audio in millisecondi per i video con framerate da 23 a 25 fps.",
     "EnableExclusiveAudioModeHelp": "Abilita la modalit\u00e0 di output esclusiva. In questa modalit\u00e0, il sistema \u00e8 di solito bloccato e solo Emby sar\u00e0 in grado di emettere audio.",
-    "ThreeDMode": "3D conversion mode:",
-    "MonoConvertTo2D": "mono (convert to 2D)"
+    "ThreeDMode": "modalit\u00e0 conversione 3D:",
+    "MonoConvertTo2D": "mono (converti in 2D)"
 }
