@@ -698,6 +698,8 @@ function processRequest(request, body) {
                 externalSubIndexes = {};
                 var startPositionTicks = data["startPositionTicks"];
 
+                mpvPlayer.volume(data.playerOptions.volume || 100);
+
                 play(mpvPlayer, data.path).then(() => {
                     if (playMediaSource.DefaultAudioStreamIndex != null) {
                         set_audiostream(mpvPlayer, playMediaSource.DefaultAudioStreamIndex);

@@ -11,7 +11,9 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
         self.priority = -1;
 
         var currentSrc;
-        var playerState = {};
+        var playerState = {
+            volume: parseInt(appSettings.get('mpv-volume') || '100')
+        };
         var ignoreEnded;
         var videoDialog;
 
@@ -435,9 +437,12 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
                     audioDelay2325: parseInt(appSettings.get('mpv-audiodelay2325') || 0),
                     largeCache: mediaSource.RunTimeTicks == null || options.item.Type === 'Recording' ? true : false,
                     subtitleFontSize: fontSize,
-                    subtitleFontFamily: fontFamily
+                    subtitleFontFamily: fontFamily,
+                    volume: playerState.volume || 100
                 }
             };
+
+            playerState.volume = requestBody.playerOptions.volume;
 
             return sendCommand('play', requestBody).then(function () {
 
@@ -638,6 +643,8 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
         }
 
         function onVolumeChange() {
+
+            appSettings.set('mpv-volume', self.volume());
             events.trigger(self, 'volumechange');
         }
 
