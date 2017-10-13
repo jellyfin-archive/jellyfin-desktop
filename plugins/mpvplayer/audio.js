@@ -48,7 +48,7 @@
 
             appSettings.set('mpv-drc', view.querySelector('.selectDrc').value);
             appSettings.set('mpv-speakerlayout', view.querySelector('.selectSpeakerLayout').value);
-            appSettings.set('mpv-exclusiveaudio', view.querySelector('.chkExclusiveMode').checked);
+            appSettings.set('mpv-exclusiveAudio', view.querySelector('.chkExclusiveMode').checked);
 
             appSettings.set('mpv-audiospdif', getMultiCheckboxValues(view, 'chkSpdif').join(','));
             appSettings.set('mpv-upmixaudiofor', getMultiCheckboxValues(view, 'chkUpmixAudioFor').join(','));
@@ -58,7 +58,7 @@
 
             view.querySelector('.selectSpeakerLayout').value = appSettings.get('mpv-speakerlayout') || '';
             view.querySelector('.selectDrc').value = appSettings.get('mpv-drc') || '';
-            view.querySelector('.chkExclusiveMode').checked = appSettings.get('mpv-exclusiveaudio') === 'true';
+            view.querySelector('.chkExclusiveMode').checked = appSettings.get('mpv-exclusiveAudio') === 'true';
 
             setMultiCheckboxValues(view, 'chkSpdif', appSettings.get('mpv-audiospdif') || '');
             setMultiCheckboxValues(view, 'chkUpmixAudioFor', appSettings.get('mpv-upmixaudiofor') || '');
