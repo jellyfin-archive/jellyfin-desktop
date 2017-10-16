@@ -174,7 +174,7 @@ function getMpvOptions(options, mediaType, mediaSource) {
             var rf_speed = ',autospeed-speed=' + ((options.videoSync) ? 'false' : 'true');
             var rf_rate = ((options.displaySync_Override != '') ? ',autospeed-rates="' + (options.displaySync_Override) + '"' : '');
 
-            list.push('--script-opts=autospeed-enabled=true' + rf_speed + rf_method + rf_rate);
+            list.push('--script-opts=autospeed-enabled=true' + rf_speed + rf_rate);
         }
     }
 
