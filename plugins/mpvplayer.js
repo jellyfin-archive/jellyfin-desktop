@@ -432,6 +432,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
                     correctdownscaling: appSettings.get('mpv-correctdownscaling') === 'true',
                     sigmoidupscaling: appSettings.get('mpv-sigmoidupscaling') === 'true',
                     deband: appSettings.get('mpv-deband') === 'true',
+                    fullscreen: enableFullscreen,
                     //genPts: mediaSource.RunTimeTicks ? false : true,
                     audioDelay: parseInt(appSettings.get('mpv-audiodelay') || '0'),
                     audioDelay2325: parseInt(appSettings.get('mpv-audiodelay2325') || 0),
