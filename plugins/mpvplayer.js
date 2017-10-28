@@ -536,6 +536,8 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
 
             embyRouter.setTransparency('none');
 
+            sendCommand('stopdestroy');
+
             var dlg = videoDialog;
             if (dlg) {
 
