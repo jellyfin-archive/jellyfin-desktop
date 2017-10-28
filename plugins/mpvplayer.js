@@ -522,22 +522,22 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
 
             var cmd = destroyPlayer ? 'stopdestroy' : 'stop';
 
-            return sendCommand(cmd).then(function () {
-
-                onEnded();
-
-                if (destroyPlayer) {
-                    self.destroy();
-                }
-            });
+            if (!destroyPlayer) {
+                return sendCommand(cmd).then(function () {
+                    onEnded();
+                });
+            }
+            else {
+                self.destroy();
+            }
         };
 
         self.destroy = function () {
+            sendCommand('stopdestroy');
+            onEnded();
 
             embyRouter.setTransparency('none');
-
-            sendCommand('stopdestroy');
-
+            
             var dlg = videoDialog;
             if (dlg) {
 
