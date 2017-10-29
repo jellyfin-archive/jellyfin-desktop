@@ -532,9 +532,9 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
             });
         };
 
-        function destroyInternal(sendCommand) {
+        function destroyInternal(destroyCommand) {
 
-            if (sendCommand) {
+            if (destroyCommand) {
                 sendCommand('stopdestroy');
             }
 
