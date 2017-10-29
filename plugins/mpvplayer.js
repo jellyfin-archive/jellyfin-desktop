@@ -522,22 +522,24 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
 
             var cmd = destroyPlayer ? 'stopdestroy' : 'stop';
 
-            if (!destroyPlayer) {
-                return sendCommand(cmd).then(function () {
-                    onEnded();
-                });
-            }
-            else {
-                self.destroy();
-            }
+            return sendCommand(cmd).then(function () {
+
+                onEnded();
+
+                if (destroyPlayer) {
+                    destroyInternal(false);
+                }
+            });
         };
 
-        self.destroy = function () {
-            sendCommand('stopdestroy');
-            onEnded();
+        function destroyInternal(sendCommand) {
+
+            if (sendCommand) {
+                sendCommand('stopdestroy');
+            }
 
             embyRouter.setTransparency('none');
-            
+
             var dlg = videoDialog;
             if (dlg) {
 
@@ -545,6 +547,10 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
 
                 dlg.parentNode.removeChild(dlg);
             }
+        }
+
+        self.destroy = function () {
+            destroyInternal(true);
         };
 
         self.playPause = function () {
