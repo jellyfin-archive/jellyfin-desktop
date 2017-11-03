@@ -1,10 +1,10 @@
 {
-    "UserRefreshRate": "Override automatically generated Refresh Rates",
+    "UserRefreshRate": "Nadpisuj wygenerowane automatycznie cz\u0119stotliwo\u015bci od\u015bwie\u017cania",
     "UserRefreshRateHelp": "Add Refresh Rates in the order of preference and separate with semicolon (ex. 50;60;23)",
     "EnableVideoDisplaySyncingHelp": "Resample audio to match the video. This mode will also try to adjust audio speed to compensate for other drift. (This means it will play the audio at a different speed every once in a while to reduce the A\/V difference.)",
     "LabelOutputRange": "Zakres kolor\u00f3w:",
     "LabelHardwareAccelerationMode": "Tryb akceleracji sprz\u0119towej:",
-    "Auto": "Automatyczny",
+    "Auto": "Automatycznie",
     "None": "Brak",
     "ChangeRefreshRate": "Dopasowuj od\u015bwie\u017canie wy\u015bwietlacza do cz\u0119stotliwo\u015bci materia\u0142u wideo",
     "ChangeRefreshRateHelp": "Changes the primary display refresh rate to closer align with the currently playing video stream. Reportedly works better when Video Display Sync is enabled as well.",
