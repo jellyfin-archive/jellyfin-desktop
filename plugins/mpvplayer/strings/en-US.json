@@ -5,7 +5,7 @@
   "None": "None",
   "ChangeRefreshRate": "Change display refresh rate to match video",
   "ChangeRefreshRateHelp": "Changes the primary display refresh rate to closer align with the currently playing video stream. Reportedly works better when Video Display Sync is enabled as well.",
-  "UserRefreshRate": "Override automatically generated Refresh Rates",
+  "UserRefreshRate": "Preferred Refresh Rates",
   "UserRefreshRateHelp": "Add Refresh Rates in the order of preference and separate with semicolon (ex. 50;60;23)",
   "LabelSpeakerLayout": "Speaker layout:",
   "Stereo": "Stereo",
