@@ -171,11 +171,10 @@ function getMpvOptions(options, mediaType, mediaSource) {
 
         //rough test for fullscreen on playback start
         if ((winBounds.width == displayParams_active.size.width) && (displayParams_active.size.height == winBounds.height)) {
-            var rf_speed = ((options.videoSync) ? '' : ',autospeed-speed=true');
             var rf_rate = ((options.displaySync_Override != '') ? ',autospeed-rates="' + (options.displaySync_Override) + '"' : '');
             var rf_theme = ((options.fullscreen) ? '' : ',autospeed-theme=true');
 
-            list.push('--script-opts=autospeed-enabled=true' + rf_speed + rf_rate + rf_theme);
+            list.push('--script-opts=autospeed-enabled=true' + rf_rate + rf_theme);
         }
     }
 
@@ -291,7 +290,7 @@ function getMpvAudioOptions(options, mediaType) {
         audioChannels = '5.1,stereo';
     }
     else if (audioChannels === '7.1') {
-        audioChannels = '7.1,5.1,stereo';
+        audioChannels = '7.1,stereo';
     }
 
     var audioChannelsFilter = getAudioChannelsFilter(options, mediaType);
