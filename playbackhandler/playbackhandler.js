@@ -171,10 +171,10 @@ function getMpvOptions(options, mediaType, mediaSource) {
 
         //rough test for fullscreen on playback start
         if ((winBounds.width == displayParams_active.size.width) && (displayParams_active.size.height == winBounds.height)) {
-            var rf_rate = ((options.displaySync_Override != '') ? ',autospeed-rates="' + (options.displaySync_Override) + '"' : '');
-            var rf_theme = ((options.fullscreen) ? '' : ',autospeed-theme=true');
+            var rf_rate = ((options.displaySync_Override != '') ? ',refreshrate-rates="' + (options.displaySync_Override) + '"' : '');
+            var rf_theme = ((options.fullscreen) ? '' : ',refreshrate-theme=true');
 
-            list.push('--script-opts=autospeed-enabled=true' + rf_rate + rf_theme);
+            list.push('--script-opts=refreshrate-enabled=true' + rf_rate + rf_theme);
         }
     }
 
