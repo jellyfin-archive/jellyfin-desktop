@@ -1,5 +1,5 @@
 {
-    "UserRefreshRate": "Override automatically generated Refresh Rates",
+    "UserRefreshRate": "Preferred Refresh Rates",
     "UserRefreshRateHelp": "Add Refresh Rates in the order of preference and separate with semicolon (ex. 50;60;23)",
     "EnableVideoDisplaySyncingHelp": "Resample audio to match the video. This mode will also try to adjust audio speed to compensate for other drift. (This means it will play the audio at a different speed every once in a while to reduce the A\/V difference.)",
     "LabelOutputRange": "\u8f93\u51fa\u8303\u56f4\uff1a",
