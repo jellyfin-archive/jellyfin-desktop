@@ -694,7 +694,7 @@ function processRequest(request, body) {
                 var startPositionTicks = data["startPositionTicks"];
 
                 mpvPlayer.volume(data.playerOptions.volume || 100);
-                alert(data.playMethod);
+
                 play(mpvPlayer, data.path).then(() => {
                     if (playMediaSource.DefaultAudioStreamIndex != null && data.playMethod != 'Transcode') {
                         set_audiostream(mpvPlayer, playMediaSource.DefaultAudioStreamIndex);
