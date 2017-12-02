@@ -1,5 +1,5 @@
 {
-    "UserRefreshRate": "Sobrescreve as Taxas de Atualiza\u00e7\u00e3o automaticamente",
+    "UserRefreshRate": "Taxas de Atualiza\u00e7\u00e3o Preferidas",
     "UserRefreshRateHelp": "Adicionar Taxas de Atualiza\u00e7\u00e3o por ordem de prefer\u00eancia e separadas com ponto-e-v\u00edrgula (ex. 50;60;23)",
     "EnableVideoDisplaySyncingHelp": "Fazer resample do \u00e1udio para combinar com o v\u00eddeo. Este modo tentar\u00e1 ajustar a velocidade do \u00e1udio para compensar a diferen\u00e7a. (Isto significa que reproduzir\u00e1 o \u00e1udio em uma velocidade diferente toda vez que reduzir a diferen\u00e7a com A\/V).",
     "LabelOutputRange": "Alcance da sa\u00edda:",

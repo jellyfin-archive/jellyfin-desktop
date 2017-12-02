@@ -35,10 +35,10 @@
 
     function supportsVoiceInput() {
         return window.SpeechRecognition ||
-               window.webkitSpeechRecognition ||
-               window.mozSpeechRecognition ||
-               window.oSpeechRecognition ||
-               window.msSpeechRecognition;
+            window.webkitSpeechRecognition ||
+            window.mozSpeechRecognition ||
+            window.oSpeechRecognition ||
+            window.msSpeechRecognition;
     }
 
     var supportedFeatures = function () {
@@ -83,7 +83,10 @@
 
         features.push('multiserver');
         features.push('imageanalysis');
-        features.push('remotemedia');
+
+        features.push('remoteaudio');
+        features.push('remotevideo');
+
         features.push('screensaver');
 
         features.push('otherapppromotions');

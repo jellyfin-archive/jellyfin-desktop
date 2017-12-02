@@ -404,6 +404,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
             var requestBody = {
                 path: url,
                 isVideo: isVideo,
+                playMethod: options.playMethod,
                 //item: options.item,
                 mediaSource: mediaSource,
                 startPositionTicks: options.playerStartPositionTicks || 0,
