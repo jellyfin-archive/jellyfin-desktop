@@ -121,38 +121,19 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
 
             var profile = {};
 
-            profile.MaxStreamingBitrate = 100000000;
-            profile.MaxStaticBitrate = 100000000;
+            profile.MaxStreamingBitrate = 200000000;
+            profile.MaxStaticBitrate = 200000000;
             profile.MusicStreamingTranscodingBitrate = 192000;
 
             profile.DirectPlayProfiles = [];
 
-            var apiClient = item && item.ServerId ? connectionManager.getApiClient(item.ServerId) : null;
-            var supportsEmptyContainer = apiClient ? apiClient.isMinServerVersion('3.2.26.0') : false;
-
-            if (supportsEmptyContainer) {
-                // leave container null for all
-                profile.DirectPlayProfiles.push({
-                    Type: 'Video'
-                });
-            }
-
-            // for older servers that don't support leaving container blank
+            // leave container null for all
             profile.DirectPlayProfiles.push({
-                Container: 'm4v,mpegts,ts,3gp,mov,xvid,vob,mkv,wmv,asf,ogm,ogv,m2v,avi,mpg,mpeg,mp4,webm,wtv,iso,m2ts,dvr-ms',
                 Type: 'Video'
             });
 
-            if (supportsEmptyContainer) {
-                // leave container null for all
-                profile.DirectPlayProfiles.push({
-                    Type: 'Audio'
-                });
-            }
-
-            // for older servers that don't support leaving container blank
+            // leave container null for all
             profile.DirectPlayProfiles.push({
-                Container: 'aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus,alac,flac,m4a',
                 Type: 'Audio'
             });
 
