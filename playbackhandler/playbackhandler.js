@@ -338,7 +338,7 @@ function getAudioChannelsFilter(options, mediaType) {
         }
         else if (audioChannels === '7.1') {
             //return 'channels=8';
-            return 'pan=7.1|FL=FL|SL=FL|BL=FL|FR=FR|SR=FR|SR=FR|FC<0.5*FL + 0.5*FR';
+            return 'pan=7.1|FL=FL|SL=FL|BL=FL|FR=FR|SR=FR|BR=FR|FC<0.5*FL + 0.5*FR';
         }
     }
 
