@@ -60,8 +60,11 @@
                 mainWindow.restore();
             }
 
-            mainWindow.setFullScreen(true);
+            //mainWindow.setFullScreen(true);
             mainWindow.setAlwaysOnTop(true);
+            var currentDisplay = electron.screen.getDisplayMatching(mainWindow.getBounds());
+            mainWindow.setBounds(currentDisplay.bounds);
+            onEnterFullscreen();
 
         } else {
 
@@ -72,7 +75,8 @@
 
             else if (previousState == "Fullscreen") {
                 setSize = true;
-                mainWindow.setFullScreen(false);
+                onLeaveFullscreen();
+               //mainWindow.setFullScreen(false);
             }
 
             else if (previousState == "Maximized") {
@@ -788,7 +792,7 @@
         }
 
         var windowOptions = {
-            transparent: true, //supportsTransparency,
+            transparent: false, //supportsTransparency,
             frame: false,
             resizable: true,
             title: 'Emby Theater',
@@ -812,7 +816,7 @@
                 allowDisplayingInsecureContent: true,
                 allowRunningInsecureContent: true,
                 experimentalFeatures: false,
-                devTools: false
+                devTools: enableDevTools
             },
 
             icon: __dirname + '/icon.ico'

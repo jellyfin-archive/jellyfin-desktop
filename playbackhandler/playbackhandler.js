@@ -400,6 +400,7 @@ function getReturnJson(positionTicks) {
     if (playerStatus.pause) {
         playState = "paused";
     }
+
     if (playerStatus['idle-active']) {
         playState = "idle";
     }
@@ -409,7 +410,8 @@ function getReturnJson(positionTicks) {
         isMuted: playerStatus.mute || false,
         volume: currentVolume || playerStatus.volume || 100,
         positionTicks: positionTicks || timeposition,
-        playstate: playState
+        playstate: playState,
+        demuxerCacheState: playerStatus['demuxer-cache-state']
     }
 
     if (playerStatus.duration) {
@@ -872,6 +874,7 @@ function createMpv(options, mediaType, mediaSource) {
 
     mpvPlayer.observeProperty('idle-active', 13);
     mpvPlayer.observeProperty('demuxer-cache-time', 14);
+    mpvPlayer.observeProperty('demuxer-cache-state', 15);
 
     mpvPlayer.on('timeposition', onMpvTimePosition);
     mpvPlayer.on('started', onMpvStarted);

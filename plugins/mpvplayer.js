@@ -134,6 +134,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
 
             // leave container null for all
             profile.DirectPlayProfiles.push({
+                Container: "aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus,flac,m4a",
                 Type: 'Audio'
             });
 
@@ -603,6 +604,34 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
         self.getStats = function () {
 
             return sendCommand('stats');
+        };
+
+        function mapRange(range) {
+            var offset;
+            //var currentPlayOptions = instance._currentPlayOptions;
+            //if (currentPlayOptions) {
+            //    offset = currentPlayOptions.transcodingOffsetTicks;
+            //}
+
+            offset = offset || 0;
+
+            return {
+                start: (range.start * 10000000) + offset,
+                end: (range.end * 10000000) + offset
+            };
+        }
+
+        self.getBufferedRanges = function () {
+
+            var cacheState = playerState.demuxerCacheState;
+            if (cacheState) {
+                var ranges = cacheState['seekable-ranges'];
+
+                if (ranges) {
+                    return ranges.map(mapRange);
+                }
+            }
+            return [];
         };
 
         var timeUpdateInterval;
