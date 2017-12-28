@@ -8,12 +8,12 @@
     // Keep a global reference of the window object, if you don't, the window will
     // be closed automatically when the JavaScript object is garbage collected.
     var mainWindow = null;
-    var mainView = null;
     var hasAppLoaded = false;
 
     var enableDevTools = false;
     var enableDevToolsOnStartup = false;
     var initialShowEventsComplete = false;
+    var previousBounds;
 
     // Quit when all windows are closed.
     app.on('window-all-closed', function () {
@@ -62,7 +62,9 @@
 
             //mainWindow.setFullScreen(true);
             mainWindow.setAlwaysOnTop(true);
-            var currentDisplay = electron.screen.getDisplayMatching(mainWindow.getBounds());
+            var bounds = mainWindow.getBounds();
+            previousBounds = bounds;
+            var currentDisplay = electron.screen.getDisplayMatching(bounds);
             mainWindow.setBounds(currentDisplay.bounds);
             onEnterFullscreen();
 
@@ -76,7 +78,7 @@
             else if (previousState == "Fullscreen") {
                 setSize = true;
                 onLeaveFullscreen();
-               //mainWindow.setFullScreen(false);
+                //mainWindow.setFullScreen(false);
             }
 
             else if (previousState == "Maximized") {
@@ -84,8 +86,14 @@
             }
 
             if (setSize) {
-                mainWindow.setSize(1280, 720);
-                mainWindow.center();
+
+                var bounds = previousBounds;
+                if (bounds) {
+                    mainWindow.setBounds(bounds);
+                } else {
+                    mainWindow.setSize(1280, 720);
+                    mainWindow.center();
+                }
             }
             mainWindow.setAlwaysOnTop(false);
         }
@@ -121,6 +129,7 @@
 
         if (initialShowEventsComplete) {
             mainWindow.setMovable(false);
+            mainWindow.setResizable(false);
         }
     }
 
@@ -130,6 +139,7 @@
 
         if (initialShowEventsComplete) {
             mainWindow.setMovable(true);
+            mainWindow.setResizable(true);
         }
     }
 
@@ -762,14 +772,26 @@
     setCommandLineSwitches();
 
     var fullscreenOnShow = false;
+    var windowShowCount = 0;
     function onWindowShow() {
 
-        if (fullscreenOnShow) {
-            setWindowState('Fullscreen');
-        }
+        windowShowCount++;
+        if (windowShowCount == 1) {
 
-        fullscreenOnShow = false;
-        initialShowEventsComplete = true;
+            mainWindow.setFullScreen(true);
+            mainWindow.setFullScreen(false);
+
+            if (fullscreenOnShow) {
+                // hack alert. in electron 1.4 under windows, the app starts up black. changing window state seems to resolve it.
+                setWindowState('Fullscreen');
+            }
+
+            fullscreenOnShow = false;
+
+            //mainWindow.center();
+            mainWindow.focus();
+            initialShowEventsComplete = true;
+        }
     }
 
     app.on('quit', function () {

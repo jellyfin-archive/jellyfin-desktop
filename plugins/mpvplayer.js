@@ -149,17 +149,17 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
                 Protocol: 'hls',
                 MaxAudioChannels: '6',
                 MinSegments: '1',
-                BreakOnNonKeyFrames: false,
+                BreakOnNonKeyFrames: true,
                 SegmentLength: '3'
             });
 
             profile.TranscodingProfiles.push({
-
                 Container: 'ts',
                 Type: 'Audio',
                 AudioCodec: 'aac',
                 Context: 'Streaming',
                 Protocol: 'hls',
+                BreakOnNonKeyFrames: true,
                 SegmentLength: '3'
             });
 
@@ -632,6 +632,11 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
                 }
             }
             return [];
+        };
+
+        self.seekable = function () {
+
+            return true;
         };
 
         var timeUpdateInterval;
