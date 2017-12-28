@@ -300,7 +300,7 @@ function getMpvAudioOptions(options, mediaType) {
 
     if (audioFilters.length) {
 
-        list.push('--af=' + (audioFilters.join(',')));
+        list.push('--af=lavfi=[' + (audioFilters.join(','))+ ']');
     }
 
     list.push('--audio-channels=' + (audioChannels));
@@ -329,15 +329,16 @@ function getAudioChannelsFilter(options, mediaType) {
         }
     }
 
+    //there's also a surround filter but haven't found good documentation to implement -PMR 20171225
     if (enableFilter) {
-        var audioChannels = options.audioChannels || 'auto-safe';
+        var audioChannels = options.audioChannels || '';
         if (audioChannels === '5.1') {
             //return 'channels=6';
-            return 'channels=6:[0-0,0-2,0-4,1-1,1-5]';
+            return 'pan=5.1|FL=FL|BL=FL|FR=FR|BR=FR|FC<0.5*FL + 0.5*FR';
         }
         else if (audioChannels === '7.1') {
             //return 'channels=8';
-            return 'channels=8:[0-0,0-2,0-4,1-1,1-5,0-6,1-7]';
+            return 'pan=7.1|FL=FL|SL=FL|BL=FL|FR=FR|SR=FR|BR=FR|FC<0.5*FL + 0.5*FR';
         }
     }
 
