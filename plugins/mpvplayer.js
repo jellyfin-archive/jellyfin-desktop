@@ -486,12 +486,6 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
             return seekRelative(offsetMs);
         };
 
-        self.enableMediaProbe = function () {
-
-            // We expect to direct play everything with mpv
-            return false;
-        };
-
         self.duration = function (val) {
 
             if (playerState.durationTicks == null) {
