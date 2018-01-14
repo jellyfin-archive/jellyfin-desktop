@@ -141,10 +141,10 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
             profile.TranscodingProfiles = [];
 
             profile.TranscodingProfiles.push({
-                Container: 'mkv',
+                Container: 'ts',
                 Type: 'Video',
                 AudioCodec: 'ac3,mp3,aac',
-                VideoCodec: 'h264,mpeg2video',
+                VideoCodec: 'h264,mpeg2video,hevc',
                 Context: 'Streaming',
                 Protocol: 'hls',
                 MaxAudioChannels: '6',

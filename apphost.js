@@ -48,12 +48,15 @@
             'exit',
             'runatstartup',
             'filedownload',
-            'sharing',
             'externallinks',
             'sleep',
             //'restart',
             'shutdown'
         ];
+
+        if (navigator.share){
+            features.push('sharing');
+        }
 
         if (appStartInfo.supportsTransparentWindow) {
             features.push('windowtransparency');
