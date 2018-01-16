@@ -1,5 +1,5 @@
 {
-    "UserRefreshRate": "Ignorer les fr\u00e9quences de rafra\u00eechissement calcul\u00e9es automatiquement",
+    "UserRefreshRate": "Fr\u00e9quences de rafra\u00eechissement pr\u00e9f\u00e9r\u00e9es",
     "UserRefreshRateHelp": "Ajoutez les fr\u00e9quences de rafra\u00eechissement par ordre de pr\u00e9f\u00e9rence en les s\u00e9parant par un point-virgule (p. ex. 50;60;23)",
     "EnableVideoDisplaySyncingHelp": "R\u00e9-\u00e9chantillonner l'audio pour s'aligner sur la vid\u00e9o. Ce mode essayera \u00e9galement d'ajuster la vitesse de l'audio pour compenser les d\u00e9calages. (Cela signifie que l'audio sera lu a une vitesse diff\u00e9rente de temps en temps pour r\u00e9duire l'\u00e9cart entre l'audio et la vid\u00e9o.)",
     "LabelOutputRange": "Plage de sortie\u00a0:",
