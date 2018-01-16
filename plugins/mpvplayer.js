@@ -132,11 +132,22 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
                 Type: 'Video'
             });
 
-            // leave container null for all
-            profile.DirectPlayProfiles.push({
-                Container: "aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus,flac,m4a",
-                Type: 'Audio'
-            });
+            var apiClient = item && item.ServerId ? connectionManager.getApiClient(item.ServerId) : null;
+            var supportsEmptyContainer = apiClient ? apiClient.isMinServerVersion('3.2.60.1') : false;
+
+            if (supportsEmptyContainer) {
+                // leave container null for all
+                profile.DirectPlayProfiles.push({
+                    Type: 'Audio'
+                });
+            }
+            else {
+                // for older servers that don't support leaving container blank
+                profile.DirectPlayProfiles.push({
+                    Container: 'aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus,alac,flac,m4a',
+                    Type: 'Audio'
+                });
+            }
 
             profile.TranscodingProfiles = [];
 
