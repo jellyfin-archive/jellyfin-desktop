@@ -51,6 +51,11 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
             var files = [];
 
             files.push({
+                lang: 'cs',
+                path: pluginManager.mapPath(self, 'mpvplayer/strings/cs.json')
+            });
+
+            files.push({
                 lang: 'en-us',
                 path: pluginManager.mapPath(self, 'mpvplayer/strings/en-US.json')
             });
