@@ -347,18 +347,6 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
 
             var enableFullscreen = options.fullscreen !== false;
 
-            // Update the text url in the media source with the full url from the options object
-            mediaSource.MediaStreams.forEach(function (ms) {
-                var textTrack = options.textTracks.filter(function (t) {
-                    return t.index == ms.Index;
-
-                })[0];
-
-                if (textTrack) {
-                    ms.DeliveryUrl = textTrack.url;
-                }
-            });
-
             var subtitleAppearanceSettings = userSettings.getSubtitleAppearanceSettings();
             var fontSize;
             switch (subtitleAppearanceSettings.textSize || '') {
