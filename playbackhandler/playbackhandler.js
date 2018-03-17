@@ -8,7 +8,6 @@ var mpvPath;
 var playMediaSource;
 var playMediaType;
 var playerStatus;
-var externalSubIndexes;
 var fadeTimeout;
 var currentVolume;
 var currentPlayResolve;
@@ -18,23 +17,6 @@ function alert(text) {
     require('electron').dialog.showMessageBox(mainWindowRef, {
         message: text.toString(),
         buttons: ['ok']
-    });
-}
-
-function download(url, dest) {
-    return new Promise(function (resolve, reject) {
-        var http = url.toLowerCase().indexOf('https:') == -1 ? require('http') : require('https');
-        var fs = require('fs');
-        var file = fs.createWriteStream(dest);
-        var request = http.get(url, function (response) {
-            response.pipe(file);
-            file.on('finish', function () {
-                file.close(resolve);  // close() is async, call cb after close completes.
-            });
-        }).on('error', function (err) { // Handle errors
-            fs.unlink(dest); // Delete the file async. (But we don't check the result)
-            reject();
-        });
     });
 }
 
@@ -92,7 +74,7 @@ function set_audiostream(player, index) {
     var streams = playMediaSource.MediaStreams || [];
     for (i = 0, length = streams.length; i < length; i++) {
         stream = streams[i];
-        if (stream.Type === 'Audio') {
+        if (stream.Type == 'Audio') {
             audioIndex++;
             if (stream.Index == index) {
                 break;
@@ -112,25 +94,13 @@ function set_subtitlestream(player, index) {
         var streams = playMediaSource.MediaStreams || [];
         for (i = 0, length = streams.length; i < length; i++) {
             stream = streams[i];
-            if (stream.Type === 'Subtitle') {
+            if (stream.Type == 'Subtitle') {
                 subIndex++;
 
                 if (stream.Index == index) {
-                    if (stream.DeliveryMethod === 'External') {
-                        if (stream.Index in externalSubIndexes) {
-                            player.setProperty("sid", externalSubIndexes[stream.Index]);
-                        } else {
-                            var os = require('os');
-                            var subtitlefile = os.tmpdir() + "/" + "subtitle" + new Date().getTime() + "." + stream.Codec.toLowerCase();
-                            download(stream.DeliveryUrl, subtitlefile).then(() => {
-                                player.addSubtitles(subtitlefile, "select", stream.DisplayTitle, stream.Language);
-                                player.getProperty('sid').then(function (sid) {
-                                    externalSubIndexes[stream.Index] = sid;
-                                }).catch(() => {
-                                    console.log("Failed to download " + stream.DeliveryUrl);
-                                });
-                            });
-                        }
+                    if (stream.DeliveryMethod == 'External') {
+
+                        player.addSubtitles(stream.DeliveryUrl, "cached", stream.DisplayTitle, stream.Language);
                     } else {
                         player.setProperty("sid", subIndex);
                     }
@@ -300,7 +270,7 @@ function getMpvAudioOptions(options, mediaType) {
 
     if (audioFilters.length) {
 
-        list.push('--af=lavfi=[' + (audioFilters.join(','))+ ']');
+        list.push('--af=lavfi=[' + (audioFilters.join(',')) + ']');
     }
 
     list.push('--audio-channels=' + (audioChannels));
@@ -393,7 +363,6 @@ function cleanup() {
     playMediaSource = null;
     playMediaType = null;
     playerStatus = null;
-    externalSubIndexes = null;
 }
 
 function getReturnJson(positionTicks) {
@@ -693,7 +662,6 @@ function processRequest(request, body) {
                 createMpv(data.playerOptions, data.mediaType, playMediaSource);
                 playMediaType = data.mediaType;
 
-                externalSubIndexes = {};
                 var startPositionTicks = data["startPositionTicks"];
 
                 mpvPlayer.volume(data.playerOptions.volume || 100);

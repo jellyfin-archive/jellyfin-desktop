@@ -1,5 +1,9 @@
-define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'userSettings', 'loading', 'dom', 'require', 'connectionManager'], function (appHost, pluginManager, events, embyRouter, appSettings, userSettings, loading, dom, require, connectionManager) {
+define(['apphost', 'playbackManager', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'userSettings', 'loading', 'dom', 'require', 'connectionManager'], function (appHost, playbackManager, pluginManager, events, embyRouter, appSettings, userSettings, loading, dom, require, connectionManager) {
     'use strict';
+
+    function getTextTrackUrl(subtitleStream, serverId) {
+        return playbackManager.getSubtitleUrl(subtitleStream, serverId);
+    }
 
     return function () {
 
@@ -335,6 +339,7 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
 
         function playInternal(options) {
 
+            var item = options.item;
             var mediaSource = JSON.parse(JSON.stringify(options.mediaSource));
 
             var url = options.url;
@@ -344,6 +349,18 @@ define(['apphost', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'user
 
             //var isVideo = options.mimeType.toLowerCase('video').indexOf() == 0;
             var isVideo = options.item.MediaType == 'Video';
+
+            for (var i = 0, length = mediaSource.MediaStreams.length; i < length; i++) {
+
+                var track = mediaSource.MediaStreams[i];
+
+                if (track.Type === 'Subtitle') {
+
+                    if (track.DeliveryMethod === 'External') {
+                        track.DeliveryUrl = getTextTrackUrl(track, item.ServerId);
+                    }
+                }
+            }
 
             var enableFullscreen = options.fullscreen !== false;
 
