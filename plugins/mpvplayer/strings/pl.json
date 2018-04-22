@@ -1,13 +1,13 @@
 {
-    "UserRefreshRate": "Nadpisuj cz\u0119stotliwo\u015bci od\u015bwie\u017cania wygenerowane automatycznie",
+    "UserRefreshRate": "Preferowane cz\u0119stotliwo\u015bci od\u015bwie\u017cania",
     "UserRefreshRateHelp": "Umo\u017cliwia dodanie cz\u0119stotliwo\u015bci w preferowanej kolejno\u015bci, rozdzielonych \u015brednikiem (np. 50;60;23)",
     "EnableVideoDisplaySyncingHelp": "Umo\u017cliwia przetwarzanie pr\u00f3bkowania d\u017awi\u0119ku w celu dopasowania go do wy\u015bwietlanego obrazu. Tryb ten b\u0119dzie dodatkowo  pr\u00f3bowa\u0142 dostosowa\u0107 pr\u0119dko\u015b\u0107 d\u017awi\u0119ku, aby zrekompensowa\u0107 inne przesuni\u0119cie. (Oznacza to, \u017ce d\u017awi\u0119k b\u0119dzie odtwarzany z inn\u0105 pr\u0119dko\u015bci\u0105 za ka\u017cdym razem, aby zredukowa\u0107 r\u00f3\u017cnice w synchronizacji obrazu z d\u017awi\u0119kiem.)",
     "LabelOutputRange": "Zakres kolor\u00f3w:",
     "LabelHardwareAccelerationMode": "Tryb akceleracji sprz\u0119towej:",
-    "Auto": "Automatyczny",
+    "Auto": "Automatycznie",
     "None": "Brak",
     "ChangeRefreshRate": "Dopasowuj od\u015bwie\u017canie wy\u015bwietlacza do cz\u0119stotliwo\u015bci materia\u0142u wideo",
-    "ChangeRefreshRateHelp": "Changes the primary display refresh rate to closer align with the currently playing video stream. Reportedly works better when Video Display Sync is enabled as well.",
+    "ChangeRefreshRateHelp": "Umo\u017cliwia dopasowanie cz\u0119stotliwo\u015bci od\u015bwie\u017cania podstawowego wy\u015bwietlacza do cz\u0119stotliwo\u015bci materia\u0142u wideo. Dzia\u0142a lepiej, gdy aktywowano funkcj\u0119 synchronizacji pionowej.",
     "LabelSpeakerLayout": "Uk\u0142ad g\u0142o\u015bnik\u00f3w:",
     "Stereo": "Stereo",
     "Quadraphonic": "Kwadrofoniczny",
@@ -22,7 +22,7 @@
     "EnableInterpolation": "Aktywuj interpolacj\u0119",
     "EnableInterpolationHelp": "Umo\u017cliwia redukcj\u0119 poszarpania obrazu, spowodowane niedopasowanie klatka\u017cu materia\u0142u wideo z cz\u0119stotliwo\u015bci\u0105 od\u015bwie\u017cania wy\u015bwietlacza.",
     "EnableExclusiveAudioMode": "Aktywuj tryb wy\u0142\u0105czno\u015bci urz\u0105dzenia d\u017awi\u0119kowego",
-    "SettingRequiresHighEnd": "To ustawienie wymaga systemu wysokiej klasy.",
+    "SettingRequiresHighEnd": "To ustawienie wymaga sprz\u0119tu wysokiej klasy.",
     "DefaultScalingMethod": "Domy\u015blna metoda skalowania:",
     "ChromaScalingMethod": "Metoda skalowania chrominancji:",
     "DownScalingMethod": "Metoda skalowania w d\u00f3\u0142:",
@@ -40,8 +40,8 @@
     "DefaultAudioDelay": "Domy\u015blne op\u00f3\u017anienie d\u017awi\u0119ku:",
     "DefaultAudioDelayHelp": "Okre\u015bla op\u00f3\u017anienie d\u017awi\u0119ku w stosunku do obrazu w milisekundach.",
     "AudioDelay2325": "Op\u00f3\u017anienie d\u017awi\u0119ku (23-25 klatek)",
-    "AudioDelay2325Help": "Okre\u015bla op\u00f3\u017anienie d\u017awi\u0119ku w milisekundach, w stosunku do obrazu, dla materia\u0142\u00f3w wideo o klatka\u017cu 23-25.",
-    "EnableExclusiveAudioModeHelp": "Umo\u017cliwia dost\u0119p do urz\u0105dzenia d\u017awi\u0119kowego w trybie wy\u0142\u0105czno\u015bci. W tym trybie, system jest zablokowany i tylko Emby b\u0119dzie mia\u0142o mo\u017cliwo\u015b\u0107 odtwarzania d\u017awi\u0119k\u00f3w.",
+    "AudioDelay2325Help": "Okre\u015bla op\u00f3\u017anienie d\u017awi\u0119ku w milisekundach, w stosunku do obrazu, dla materia\u0142\u00f3w wideo o cz\u0119stotliwo\u015bci klatek 23-25.",
+    "EnableExclusiveAudioModeHelp": "Umo\u017cliwia dost\u0119p do urz\u0105dzenia d\u017awi\u0119kowego w trybie wy\u0142\u0105czno\u015bci. W tym trybie, podsystem d\u017awi\u0119kowy jest zablokowany, tylko Emby b\u0119dzie mia\u0142o mo\u017cliwo\u015b\u0107 odtwarzania d\u017awi\u0119k\u00f3w.",
     "ThreeDMode": "Tryb konwersji 3D:",
-    "MonoConvertTo2D": "mono (konwertuj do 2D)"
+    "MonoConvertTo2D": "Mono (konwertuj do 2D)"
 }
