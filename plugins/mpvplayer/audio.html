@@ -1,75 +1,80 @@
 ﻿<div class="view flex flex-grow view-centered">
     <div is="emby-scroller" class="scrollFrameY flex flex-grow" data-mousewheel="true" data-horizontal="false" data-centerfocus="true">
-        <div class="scrollSlider flex flex-grow flex-direction-column padded-left padded-right settingsContainer">
-            <div class="selectContainer">
-                <select is="emby-select" class="selectSpeakerLayout" label="${LabelSpeakerLayout}">
-                    <option value="">${Auto}</option>
-                    <option value="stereo">${Stereo}</option>
-                    <option value="5.1">5.1</option>
-                    <option value="7.1">7.1</option>
-                </select>
-            </div>
+        <div class="scrollSlider flex flex-grow flex-direction-column padded-left padded-right padded-top">
 
-            <div class="checkboxListContainer">
-                <label class="checkboxListLabel">${LabelEnableAudioPassthroughFor}</label>
-                <div class="checkboxList">
-                    <label>
-                        <input type="checkbox" is="emby-checkbox" class="chkSpdif" data-value="ac3" />
-                        <span>AC3</span>
-                    </label>
-                    <label>
-                        <input type="checkbox" is="emby-checkbox" class="chkSpdif" data-value="eac3" />
-                        <span>EAC3</span>
-                    </label>
-                    <label>
-                        <input type="checkbox" is="emby-checkbox" class="chkSpdif" data-value="dts" />
-                        <span>DTS</span>
-                    </label>
-                    <label>
-                        <input type="checkbox" is="emby-checkbox" class="chkSpdif" data-value="dts-hd" />
-                        <span>DTS-HD</span>
-                    </label>
-                    <label>
-                        <input type="checkbox" is="emby-checkbox" class="chkSpdif" data-value="truehd" />
-                        <span>True HD</span>
-                    </label>
+            <form>
+
+                <div class="selectContainer">
+                    <select is="emby-select" class="selectSpeakerLayout" label="${LabelSpeakerLayout}">
+                        <option value="">${Auto}</option>
+                        <option value="stereo">${Stereo}</option>
+                        <option value="5.1">5.1</option>
+                        <option value="7.1">7.1</option>
+                    </select>
                 </div>
-            </div>
 
-            <div class="selectContainer">
-                <select is="emby-select" class="selectDrc" label="${LabelDynamicRangeCompression}">
-                    <option value="">${None}</option>
-                    <option value="10">10%</option>
-                    <option value="20">20%</option>
-                    <option value="30">30%</option>
-                    <option value="40">40%</option>
-                    <option value="50">50%</option>
-                    <option value="60">60%</option>
-                    <option value="70">70%</option>
-                    <option value="80">80%</option>
-                    <option value="90">90%</option>
-                    <option value="100">100%</option>
-                </select>
-            </div>
-
-            <div class="checkboxContainer checkboxContainer-withDescription">
-                <label>
-                    <input type="checkbox" is="emby-checkbox" class="chkExclusiveMode" />
-                    <span>${EnableExclusiveAudioMode}</span>
-                </label>
-                <div class="fieldDescription checkboxFieldDescription">${EnableExclusiveAudioModeHelp}</div>
-            </div>
-
-            <div class="checkboxListContainer">
-                <label class="checkboxListLabel">${LabelUpmixAudioFor}</label>
-                <div class="checkboxList">
-                    <label>
-                        <input type="checkbox" is="emby-checkbox" class="chkUpmixAudioFor" data-value="music" />
-                        <span>Music</span>
-                    </label>
+                <div class="checkboxListContainer">
+                    <label class="checkboxListLabel">${LabelEnableAudioPassthroughFor}</label>
+                    <div class="checkboxList">
+                        <label>
+                            <input type="checkbox" is="emby-checkbox" class="chkSpdif" data-value="ac3" />
+                            <span>AC3</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" is="emby-checkbox" class="chkSpdif" data-value="eac3" />
+                            <span>EAC3</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" is="emby-checkbox" class="chkSpdif" data-value="dts" />
+                            <span>DTS</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" is="emby-checkbox" class="chkSpdif" data-value="dts-hd" />
+                            <span>DTS-HD</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" is="emby-checkbox" class="chkSpdif" data-value="truehd" />
+                            <span>True HD</span>
+                        </label>
+                    </div>
                 </div>
-                <div class="fieldDescription">${LabelUpmixAudioForHelp}</div>
-            </div>
+
+                <div class="selectContainer">
+                    <select is="emby-select" class="selectDrc" label="${LabelDynamicRangeCompression}">
+                        <option value="">${None}</option>
+                        <option value="10">10%</option>
+                        <option value="20">20%</option>
+                        <option value="30">30%</option>
+                        <option value="40">40%</option>
+                        <option value="50">50%</option>
+                        <option value="60">60%</option>
+                        <option value="70">70%</option>
+                        <option value="80">80%</option>
+                        <option value="90">90%</option>
+                        <option value="100">100%</option>
+                    </select>
+                </div>
+
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input type="checkbox" is="emby-checkbox" class="chkExclusiveMode" />
+                        <span>${EnableExclusiveAudioMode}</span>
+                    </label>
+                    <div class="fieldDescription checkboxFieldDescription">${EnableExclusiveAudioModeHelp}</div>
+                </div>
+
+                <div class="checkboxListContainer">
+                    <label class="checkboxListLabel">${LabelUpmixAudioFor}</label>
+                    <div class="checkboxList">
+                        <label>
+                            <input type="checkbox" is="emby-checkbox" class="chkUpmixAudioFor" data-value="music" />
+                            <span>Music</span>
+                        </label>
+                    </div>
+                    <div class="fieldDescription">${LabelUpmixAudioForHelp}</div>
+                </div>
+            </form>
+
         </div>
     </div>
 </div>

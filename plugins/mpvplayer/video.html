@@ -1,196 +1,201 @@
 ﻿<div class="view flex flex-grow view-centered">
     <div is="emby-scroller" class="scrollFrameY flex flex-grow" data-mousewheel="true" data-horizontal="false" data-centerfocus="true">
-        <div class="scrollSlider flex flex-grow flex-direction-column padded-left padded-right settingsContainer">
-            <div class="selectContainer">
-                <select is="emby-select" class="selectHwaMode" label="${LabelHardwareAccelerationMode}">
-                    <option value="auto">${Auto}</option>
-                    <option value="auto-copy">Auto (copy back)</option>
-                    <option value="">${None}</option>
-                    <option value="d3d11va">D3D (Windows 8+)</option>
-                    <option value="d3d11va-copy">D3D copy back (Windows 8+)</option>
-                    <option value="cuda">CUDA (Windows 8+)</option>
-                    <option value="cuda-copy">CUDA copy back (Windows 8+)</option>
-                    <option value="rpi">RPI</option>
-                    <option value="rpi-copy">RPI copy back</option>
-                </select>
-            </div>
+        <div class="scrollSlider flex flex-grow flex-direction-column padded-left padded-right padded-top">
 
-            <div class="selectContainer">
-                <select is="emby-select" class="selectNominalRange" label="${LabelOutputRange}">
-                    <option value="">${Auto}</option>
-                    <option value="full">PC (0-255)</option>
-                    <option value="limited">Video (16-235)</option>
-                </select>
-                <div class="fieldDescription">${LabelOutputRangeHelp}</div>
-            </div>
+            <form>
 
-            <div class="selectContainer">
-                <select is="emby-select" class="selectDeinterlace" label="${EnableDeinterlacing}">
-                    <option value="">${Auto}</option>
-                    <option value="yes">${Yes}</option>
-                    <option value="no">${No}</option>
-                </select>
-            </div>
+                <div class="selectContainer">
+                    <select is="emby-select" class="selectHwaMode" label="${LabelHardwareAccelerationMode}">
+                        <option value="auto">${Auto}</option>
+                        <option value="auto-copy">Auto (copy back)</option>
+                        <option value="">${None}</option>
+                        <option value="d3d11va">D3D (Windows 8+)</option>
+                        <option value="d3d11va-copy">D3D copy back (Windows 8+)</option>
+                        <option value="cuda">CUDA (Windows 8+)</option>
+                        <option value="cuda-copy">CUDA copy back (Windows 8+)</option>
+                        <option value="rpi">RPI</option>
+                        <option value="rpi-copy">RPI copy back</option>
+                    </select>
+                </div>
 
-            <h1>${Advanced}</h1>
+                <div class="selectContainer">
+                    <select is="emby-select" class="selectNominalRange" label="${LabelOutputRange}">
+                        <option value="">${Auto}</option>
+                        <option value="full">PC (0-255)</option>
+                        <option value="limited">Video (16-235)</option>
+                    </select>
+                    <div class="fieldDescription">${LabelOutputRangeHelp}</div>
+                </div>
 
-            <div class="inputContainer">
-                <input is="emby-input" type="number" step="1" class="txtDefaultAudioDelay" label="${DefaultAudioDelay}" />
-                <div class="fieldDescription">${DefaultAudioDelayHelp}</div>
-            </div>
+                <div class="selectContainer">
+                    <select is="emby-select" class="selectDeinterlace" label="${EnableDeinterlacing}">
+                        <option value="">${Auto}</option>
+                        <option value="yes">${Yes}</option>
+                        <option value="no">${No}</option>
+                    </select>
+                </div>
 
-            <div class="inputContainer">
-                <input is="emby-input" type="number" step="1" class="txtAudioDelay2325" label="${AudioDelay2325}" />
-                <div class="fieldDescription">${AudioDelay2325Help}</div>
-            </div>
+                <h1>${Advanced}</h1>
 
-            <div class="checkboxContainer checkboxContainer-withDescription">
-                <label>
-                    <input type="checkbox" is="emby-checkbox" class="chkRefreshRateMode" />
-                    <span>${ChangeRefreshRate}</span>
-                </label>
-                <div class="fieldDescription checkboxFieldDescription">${ChangeRefreshRateHelp}</div>
-            </div>
+                <div class="inputContainer">
+                    <input is="emby-input" type="number" step="1" class="txtDefaultAudioDelay" label="${DefaultAudioDelay}" />
+                    <div class="fieldDescription">${DefaultAudioDelayHelp}</div>
+                </div>
 
-            <div class="inputContainer">
-                <input is="emby-input" type="text" step="1" class="txtUserRefreshRate" label="${UserRefreshRate}" />
-                <div class="fieldDescription">${UserRefreshRateHelp}</div>
-            </div>
+                <div class="inputContainer">
+                    <input is="emby-input" type="number" step="1" class="txtAudioDelay2325" label="${AudioDelay2325}" />
+                    <div class="fieldDescription">${AudioDelay2325Help}</div>
+                </div>
 
-            <div class="checkboxContainer checkboxContainer-withDescription">
-                <label>
-                    <input type="checkbox" is="emby-checkbox" class="chkVideoSync" />
-                    <span>${EnableVideoDisplaySyncing}</span>
-                </label>
-                <div class="fieldDescription checkboxFieldDescription">${EnableVideoDisplaySyncingHelp}</div>
-            </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input type="checkbox" is="emby-checkbox" class="chkRefreshRateMode" />
+                        <span>${ChangeRefreshRate}</span>
+                    </label>
+                    <div class="fieldDescription checkboxFieldDescription">${ChangeRefreshRateHelp}</div>
+                </div>
 
-            <div class="checkboxContainer checkboxContainer-withDescription">
-                <label>
-                    <input type="checkbox" is="emby-checkbox" class="chkOpenglhq" />
-                    <span>${EnableOpenGlHq}</span>
-                </label>
-                <div class="fieldDescription checkboxFieldDescription">${SettingRequiresHighEnd}</div>
-            </div>
+                <div class="inputContainer">
+                    <input is="emby-input" type="text" step="1" class="txtUserRefreshRate" label="${UserRefreshRate}" />
+                    <div class="fieldDescription">${UserRefreshRateHelp}</div>
+                </div>
 
-            <div class="checkboxContainer checkboxContainer-withDescription">
-                <label>
-                    <input type="checkbox" is="emby-checkbox" class="chkInterpolation" />
-                    <span>${EnableInterpolation}</span>
-                </label>
-                <div class="fieldDescription checkboxFieldDescription">${EnableInterpolationHelp}</div>
-            </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input type="checkbox" is="emby-checkbox" class="chkVideoSync" />
+                        <span>${EnableVideoDisplaySyncing}</span>
+                    </label>
+                    <div class="fieldDescription checkboxFieldDescription">${EnableVideoDisplaySyncingHelp}</div>
+                </div>
 
-            <div class="selectContainer">
-                <select is="emby-select" class="selectVideoStereoMode" label="${ThreeDMode}">
-                    <option value="">${Auto}</option>
-                    <option value="no">${None}</option>
-                    <option value="mono">${MonoConvertTo2D}</option>
-                    <option value="sbs2l">sbs2l</option>
-                    <option value="ab2r">ab2r</option>
-                    <option value="ab2l">ab2l</option>
-                    <option value="checkr">checkr</option>
-                    <option value="checkl">checkl</option>
-                    <option value="irr">irr</option>
-                    <option value="irl">irl</option>
-                    <option value="icr">icr</option>
-                    <option value="icl">icl</option>
-                    <option value="arcc">arcc</option>
-                    <option value="sbs2r">sbs2r</option>
-                    <option value="agmc">agmc</option>
-                    <option value="al">al</option>
-                    <option value="ar">ar</option>
-                </select>
-            </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input type="checkbox" is="emby-checkbox" class="chkOpenglhq" />
+                        <span>${EnableOpenGlHq}</span>
+                    </label>
+                    <div class="fieldDescription checkboxFieldDescription">${SettingRequiresHighEnd}</div>
+                </div>
 
-            <div class="selectContainer">
-                <select is="emby-select" class="selectScale" label="${DefaultScalingMethod}">
-                    <option value="">${Auto}</option>
-                    <option value="bilinear">bilinear</option>
-                    <option value="spline36">spline36</option>
-                    <option value="lanczos">lanczos</option>
-                    <option value="ewa_lanczos">ewa_lanczos</option>
-                    <option value="ewa_lanczossharp">ewa_lanczossharp</option>
-                    <option value="mitchell">mitchell</option>
-                    <option value="oversample">oversample</option>
-                    <option value="linear">linear</option>
-                </select>
-            </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input type="checkbox" is="emby-checkbox" class="chkInterpolation" />
+                        <span>${EnableInterpolation}</span>
+                    </label>
+                    <div class="fieldDescription checkboxFieldDescription">${EnableInterpolationHelp}</div>
+                </div>
 
-            <div class="selectContainer">
-                <select is="emby-select" class="selectCScale" label="${ChromaScalingMethod}">
-                    <option value="">${Auto}</option>
-                    <option value="bilinear">bilinear</option>
-                    <option value="spline36">spline36</option>
-                    <option value="lanczos">lanczos</option>
-                    <option value="ewa_lanczos">ewa_lanczos</option>
-                    <option value="ewa_lanczossharp">ewa_lanczossharp</option>
-                    <option value="mitchell">mitchell</option>
-                    <option value="oversample">oversample</option>
-                    <option value="linear">linear</option>
-                </select>
-            </div>
+                <div class="selectContainer">
+                    <select is="emby-select" class="selectVideoStereoMode" label="${ThreeDMode}">
+                        <option value="">${Auto}</option>
+                        <option value="no">${None}</option>
+                        <option value="mono">${MonoConvertTo2D}</option>
+                        <option value="sbs2l">sbs2l</option>
+                        <option value="ab2r">ab2r</option>
+                        <option value="ab2l">ab2l</option>
+                        <option value="checkr">checkr</option>
+                        <option value="checkl">checkl</option>
+                        <option value="irr">irr</option>
+                        <option value="irl">irl</option>
+                        <option value="icr">icr</option>
+                        <option value="icl">icl</option>
+                        <option value="arcc">arcc</option>
+                        <option value="sbs2r">sbs2r</option>
+                        <option value="agmc">agmc</option>
+                        <option value="al">al</option>
+                        <option value="ar">ar</option>
+                    </select>
+                </div>
 
-            <div class="selectContainer">
-                <select is="emby-select" class="selectTScale" label="${TScalingMethod}">
-                    <option value="">${Auto}</option>
-                    <option value="bilinear">bilinear</option>
-                    <option value="spline36">spline36</option>
-                    <option value="lanczos">lanczos</option>
-                    <option value="ewa_lanczos">ewa_lanczos</option>
-                    <option value="ewa_lanczossharp">ewa_lanczossharp</option>
-                    <option value="mitchell">mitchell</option>
-                    <option value="oversample">oversample</option>
-                    <option value="linear">linear</option>
-                </select>
-            </div>
+                <div class="selectContainer">
+                    <select is="emby-select" class="selectScale" label="${DefaultScalingMethod}">
+                        <option value="">${Auto}</option>
+                        <option value="bilinear">bilinear</option>
+                        <option value="spline36">spline36</option>
+                        <option value="lanczos">lanczos</option>
+                        <option value="ewa_lanczos">ewa_lanczos</option>
+                        <option value="ewa_lanczossharp">ewa_lanczossharp</option>
+                        <option value="mitchell">mitchell</option>
+                        <option value="oversample">oversample</option>
+                        <option value="linear">linear</option>
+                    </select>
+                </div>
 
-            <div class="selectContainer">
-                <select is="emby-select" class="selectDScale" label="${DownScalingMethod}">
-                    <option value="">${Auto}</option>
-                    <option value="bilinear">bilinear</option>
-                    <option value="spline36">spline36</option>
-                    <option value="lanczos">lanczos</option>
-                    <option value="ewa_lanczos">ewa_lanczos</option>
-                    <option value="ewa_lanczossharp">ewa_lanczossharp</option>
-                    <option value="mitchell">mitchell</option>
-                    <option value="oversample">oversample</option>
-                    <option value="linear">linear</option>
-                </select>
-            </div>
+                <div class="selectContainer">
+                    <select is="emby-select" class="selectCScale" label="${ChromaScalingMethod}">
+                        <option value="">${Auto}</option>
+                        <option value="bilinear">bilinear</option>
+                        <option value="spline36">spline36</option>
+                        <option value="lanczos">lanczos</option>
+                        <option value="ewa_lanczos">ewa_lanczos</option>
+                        <option value="ewa_lanczossharp">ewa_lanczossharp</option>
+                        <option value="mitchell">mitchell</option>
+                        <option value="oversample">oversample</option>
+                        <option value="linear">linear</option>
+                    </select>
+                </div>
 
-            <div class="checkboxContainer checkboxContainer-withDescription">
-                <label>
-                    <input type="checkbox" is="emby-checkbox" class="chkCorrectDownscaling" />
-                    <span>${ForceCorrectDownscaling}</span>
-                </label>
-                <div class="fieldDescription checkboxFieldDescription">${ForceCorrectDownscalingHelp}</div>
-            </div>
+                <div class="selectContainer">
+                    <select is="emby-select" class="selectTScale" label="${TScalingMethod}">
+                        <option value="">${Auto}</option>
+                        <option value="bilinear">bilinear</option>
+                        <option value="spline36">spline36</option>
+                        <option value="lanczos">lanczos</option>
+                        <option value="ewa_lanczos">ewa_lanczos</option>
+                        <option value="ewa_lanczossharp">ewa_lanczossharp</option>
+                        <option value="mitchell">mitchell</option>
+                        <option value="oversample">oversample</option>
+                        <option value="linear">linear</option>
+                    </select>
+                </div>
 
-            <div class="checkboxContainer checkboxContainer-withDescription">
-                <label>
-                    <input type="checkbox" is="emby-checkbox" class="chkSigmoid" />
-                    <span>${EnableSigmoid}</span>
-                </label>
-                <div class="fieldDescription checkboxFieldDescription">${EnableSigmoidHelp}</div>
-            </div>
+                <div class="selectContainer">
+                    <select is="emby-select" class="selectDScale" label="${DownScalingMethod}">
+                        <option value="">${Auto}</option>
+                        <option value="bilinear">bilinear</option>
+                        <option value="spline36">spline36</option>
+                        <option value="lanczos">lanczos</option>
+                        <option value="ewa_lanczos">ewa_lanczos</option>
+                        <option value="ewa_lanczossharp">ewa_lanczossharp</option>
+                        <option value="mitchell">mitchell</option>
+                        <option value="oversample">oversample</option>
+                        <option value="linear">linear</option>
+                    </select>
+                </div>
 
-            <div class="checkboxContainer checkboxContainer-withDescription">
-                <label>
-                    <input type="checkbox" is="emby-checkbox" class="chkDeband" />
-                    <span>${EnableDeband}</span>
-                </label>
-                <div class="fieldDescription checkboxFieldDescription">${EnableDebandHelp}</div>
-            </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input type="checkbox" is="emby-checkbox" class="chkCorrectDownscaling" />
+                        <span>${ForceCorrectDownscaling}</span>
+                    </label>
+                    <div class="fieldDescription checkboxFieldDescription">${ForceCorrectDownscalingHelp}</div>
+                </div>
 
-            <div class="selectContainer">
-                <select is="emby-select" class="selectDitherDepth" label="${LabelDitherDepth}">
-                    <option value="">${None}</option>
-                    <option value="auto">${Auto}</option>
-                    <option value="8">${Dither8}</option>
-                </select>
-                <div class="fieldDescription">${LabelDitherDepthHelp}</div>
-            </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input type="checkbox" is="emby-checkbox" class="chkSigmoid" />
+                        <span>${EnableSigmoid}</span>
+                    </label>
+                    <div class="fieldDescription checkboxFieldDescription">${EnableSigmoidHelp}</div>
+                </div>
+
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input type="checkbox" is="emby-checkbox" class="chkDeband" />
+                        <span>${EnableDeband}</span>
+                    </label>
+                    <div class="fieldDescription checkboxFieldDescription">${EnableDebandHelp}</div>
+                </div>
+
+                <div class="selectContainer">
+                    <select is="emby-select" class="selectDitherDepth" label="${LabelDitherDepth}">
+                        <option value="">${None}</option>
+                        <option value="auto">${Auto}</option>
+                        <option value="8">${Dither8}</option>
+                    </select>
+                    <div class="fieldDescription">${LabelDitherDepthHelp}</div>
+                </div>
+            </form>
+
         </div>
     </div>
 </div>
