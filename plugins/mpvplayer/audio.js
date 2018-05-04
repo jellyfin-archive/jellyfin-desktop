@@ -26,7 +26,14 @@
         }
     }
 
+    function onSubmit(e) {
+        e.preventDefault();
+        return false;
+    }
+
     return function (view, params) {
+
+        view.querySelector('form').addEventListener('submit', onSubmit);
 
         view.addEventListener('viewbeforeshow', function (e) {
 
