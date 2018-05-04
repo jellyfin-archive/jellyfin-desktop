@@ -445,6 +445,7 @@
                         paths: {
                             apphost: customFileProtocol + '://apphost',
                             shell: customFileProtocol + '://shell',
+                            wakeonlan: customFileProtocol + '://wakeonlan',
                             serverdiscovery: customFileProtocol + '://serverdiscovery/serverdiscovery',
                             fullscreenmanager: 'file://' + replaceAll(path.normalize(topDirectory + '/fullscreenmanager.js'), '\\', '/'),
                             filesystem: customFileProtocol + '://filesystem'
