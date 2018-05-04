@@ -264,6 +264,10 @@ define(['apphost', 'playbackManager', 'pluginManager', 'events', 'embyRouter', '
             return Promise.resolve(profile);
         };
 
+        self.getDirectPlayProtocols = function () {
+            return ['File', 'Http', 'Rtp', 'Rtmp', 'Rtsp', 'Ftp'];
+        };
+
         self.currentSrc = function () {
             return currentSrc;
         };

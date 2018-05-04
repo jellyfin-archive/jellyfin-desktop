@@ -1,4 +1,4 @@
-﻿define(['loading', 'scrollHelper', 'appSettings', 'emby-select', 'emby-checkbox'], function (loading, scrollHelper, appSettings) {
+﻿define(['loading', 'appSettings', 'emby-select', 'emby-checkbox', 'emby-scroller'], function (loading, appSettings) {
 
     function getMultiCheckboxValues(view, className) {
 
@@ -37,7 +37,6 @@
             loading.hide();
 
             if (!isRestored) {
-                scrollHelper.centerFocus.on(view, false);
                 renderSettings();
             }
         });

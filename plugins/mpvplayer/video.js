@@ -1,4 +1,4 @@
-﻿define(['loading', 'pluginManager', 'scrollHelper', 'appSettings', 'emby-select', 'emby-checkbox', 'emby-input'], function (loading, pluginManager, scrollHelper, appSettings) {
+﻿define(['loading', 'pluginManager', 'appSettings', 'emby-select', 'emby-checkbox', 'emby-input', 'emby-scroller'], function (loading, pluginManager, appSettings) {
 
     return function (view, params) {
 
@@ -11,7 +11,6 @@
             loading.hide();
 
             if (!isRestored) {
-                scrollHelper.centerFocus.on(view, false);
 
                 renderSettings();
             }
