@@ -73,6 +73,9 @@
             mainWindow.setFullScreen(true);
             mainWindow.setAlwaysOnTop(true);
 
+            // So far this is only needed for returning from external player playback
+            mainWindow.focus();
+
         } else {
 
             var setSize = false;
