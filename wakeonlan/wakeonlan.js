@@ -3,7 +3,19 @@
 
     function send(info) {
 
-        return Promise.reject();
+        return new Promise(function (resolve, reject) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'electronwakeonlan://wakeserver?macaddress=' + info.MacAddress + '&port=' + info.Port, true);
+                xhr.onload = function () {
+                    if (this.response) {
+                        resolve();
+                    } else{ 
+                        reject();
+                    }
+                };
+                xhr.onerror = reject;
+                xhr.send();
+            });
     }
 
     function isSupported() {
