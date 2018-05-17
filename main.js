@@ -395,6 +395,31 @@
             }
         });
     }
+    
+    function registerWakeOnLan() {
+
+        var protocol = electron.protocol;
+        var customProtocol = 'electronwakeonlan';
+        var wakeonlan = require('./wakeonlan/wakeonlan-native');
+
+        protocol.registerStringProtocol(customProtocol, function (request, callback) {
+
+            // Add 3 to account for ://
+            var url = request.url.substr(customProtocol.length + 3).split('?')[0];
+
+            switch (url) {
+
+                case 'wakeserver':
+                    var mac = request.url.split('=')[1].split('&')[0];
+                    var options = {port: request.url.split('=')[2]};
+                    wakeonlan.wake(mac, options, callback);
+                    break;
+                default:
+                    callback("");
+                    break;
+            }
+        });
+    }
 
     function alert(text) {
         electron.dialog.showMessageBox(mainWindow, {
@@ -902,6 +927,7 @@
             registerAppHost();
             registerFileSystem();
             registerServerdiscovery();
+            registerWakeOnLan();
 
             // and load the index.html of the app.
             mainWindow.loadURL(url);
