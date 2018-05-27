@@ -131,14 +131,9 @@
         shutdown: function () {
             sendCommand('shutdown');
         },
-        appInfo: function () {
+        init: function () {
 
-            return Promise.resolve({
-                appName: appStartInfo.name,
-                appVersion: appStartInfo.version,
-                deviceName: appStartInfo.deviceName,
-                deviceId: appStartInfo.deviceId
-            });
+            return Promise.resolve();
         },
         appName: function () {
             return appStartInfo.name;
@@ -150,7 +145,7 @@
             return appStartInfo.deviceName;
         },
         deviceId: function () {
-            return Promise.resolve(appStartInfo.deviceId);
+            return appStartInfo.deviceId;
         },
 
         moreIcon: 'dots-vert',
