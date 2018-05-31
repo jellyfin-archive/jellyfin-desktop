@@ -165,6 +165,14 @@
                 }
             };
 
+        },
+
+        setThemeColor: function (color) {
+
+            var metaThemeColor = document.querySelector("meta[name=theme-color]");
+            if (metaThemeColor) {
+                metaThemeColor.setAttribute("content", color);
+            }
         }
     };
 });
