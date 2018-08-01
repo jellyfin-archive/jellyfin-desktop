@@ -168,11 +168,11 @@
 
         },
 
-        setThemeColor: function (color) {
+        setTheme: function (themeSettings) {
 
             var metaThemeColor = document.querySelector("meta[name=theme-color]");
             if (metaThemeColor) {
-                metaThemeColor.setAttribute("content", color);
+                metaThemeColor.setAttribute("content", themeSettings.themeColor);
             }
         },
 
