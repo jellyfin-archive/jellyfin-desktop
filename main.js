@@ -965,6 +965,12 @@
             initCec();
 
             initPlaybackHandler(commandLineOptions.mpvPath);
+
+            var isRpi = require('detect-rpi');
+            if(isRpi()){
+                mainWindow.setFullScreen(true);
+                mainWindow.setAlwaysOnTop(true);
+            }
         });
     });
 })();

@@ -21,6 +21,16 @@ define(['apphost', 'playbackManager', 'pluginManager', 'events', 'embyRouter', '
         var ignoreEnded;
         var videoDialog;
 
+        document.addEventListener('video-osd-show', function () {
+            //alert("OSD Shown");
+            sendCommand("video_toggle");
+        });
+
+        document.addEventListener('video-osd-hide', function () {
+            //alert("OSD Hidden");
+            sendCommand("video_toggle");
+        });
+
         self.getRoutes = function () {
 
             var routes = [];
