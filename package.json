@@ -30,10 +30,12 @@
     "is-windows": "^1.0.0"
   },
   "dependencies": {
-    "power-off": "^1.0.1",
-    "sleep-mode": "^1.1.0",
-    "node-mpv": "^1.0.3",
+    "detect-rpi": "^1.3.0",
+    "electron": "^2.0.5",
+    "is-windows": "^1.0.0",
     "long": "^3.2.0",
-    "is-windows": "^1.0.0"
+    "node-mpv": "^1.0.3",
+    "power-off": "^1.0.1",
+    "sleep-mode": "^1.1.0"
   }
 }
