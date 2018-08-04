@@ -179,8 +179,8 @@
         setUserScalable: function (scalable) {
 
             var att = scalable ?
-                'width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes' :
-                'width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no';
+                'viewport-fit=cover, width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes' :
+                'viewport-fit=cover, width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no';
 
             document.querySelector('meta[name=viewport]').setAttribute('content', att);
         },
