@@ -67,6 +67,13 @@ function unmute() {
     mpvPlayer.unmute();
 }
 
+function video_toggle() {
+    var isRpi = require('detect-rpi');
+    if(isRpi()){
+        mpvPlayer.cycleProperty("video");
+    }
+}
+
 function set_audiostream(player, index) {
 
     var audioIndex = 0;
@@ -120,7 +127,13 @@ function getMpvOptions(options, mediaType, mediaSource) {
         list.push('--profile=opengl-hq');
     }
 
-    list.push('--hwdec=' + (options.hwdec || 'no'));
+    var isRpi = require('detect-rpi');
+    if(isRpi()){
+        list.push('--hwdec=' + (options.hwdec || 'mmal-copy'));
+        list.push('--fs');
+    } else {
+        list.push('--hwdec=' + (options.hwdec || 'no'));
+    }
 
     if (options.deinterlace == 'yes') {
         list.push('--deinterlace=' + (options.deinterlace || 'auto'));
@@ -770,6 +783,10 @@ function processRequest(request, body) {
             case 'setsubtitlestreamindex':
                 var data = url_parts.query["index"];
                 set_subtitlestream(mpvPlayer, data);
+                getReturnJson().then(resolve);
+                break;
+            case 'video_toggle':
+                video_toggle();
                 getReturnJson().then(resolve);
                 break;
             default:
