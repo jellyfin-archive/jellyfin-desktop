@@ -55,6 +55,35 @@ function set_position(data) {
     mpvPlayer.goToPosition(Math.round(data / 10000000));
 }
 
+function setAspectRatio(player, value) {
+
+    switch (value) {
+        case "4_3":
+            player.setProperty("video-unscaled", "no");
+            player.setProperty("video-aspect", "4:3");
+            break;
+        case "16_9":
+            player.setProperty("video-unscaled", "no");
+            player.setProperty("video-aspect", "16:9");
+            break;
+        case "bestfit":
+            player.setProperty("video-unscaled", "no");
+            player.setProperty("video-aspect", "-1");
+            break;
+        case "fill":
+            //var size = player.getProperty("android-surface-size");
+            //var aspect = parseFloat(size.split("x")[0]) / parseFloat(size.split("x")[1]);
+            //player.setProperty("video-unscaled", "no");
+            //player.setProperty("video-aspect", aspect);
+
+            break;
+        case "original":
+            player.setProperty("video-unscaled", "downscale-big");
+            player.setProperty("video-aspect", "-1");
+            break;
+    }
+}
+
 function set_volume(data) {
     mpvPlayer.volume(data);
 }
@@ -69,7 +98,7 @@ function unmute() {
 
 function video_toggle() {
     var isRpi = require('detect-rpi');
-    if(isRpi()){
+    if (isRpi()) {
         mpvPlayer.cycleProperty("video");
     }
 }
@@ -128,7 +157,7 @@ function getMpvOptions(options, mediaType, mediaSource) {
     }
 
     var isRpi = require('detect-rpi');
-    if(isRpi()){
+    if (isRpi()) {
         list.push('--hwdec=' + (options.hwdec || 'mmal-copy'));
         list.push('--fs');
     } else {
@@ -765,6 +794,11 @@ function processRequest(request, body) {
             case 'volume':
                 var data = url_parts.query["val"];
                 set_volume(data);
+                getReturnJson().then(resolve);
+                break;
+            case 'aspectratio':
+                var data = url_parts.query["val"];
+                setAspectRatio(mpvPlayer, data);
                 getReturnJson().then(resolve);
                 break;
             case 'mute':
