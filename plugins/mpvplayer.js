@@ -1,4 +1,4 @@
-define(['apphost', 'playbackManager', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'userSettings', 'loading', 'dom', 'require', 'connectionManager'], function (appHost, playbackManager, pluginManager, events, embyRouter, appSettings, userSettings, loading, dom, require, connectionManager) {
+define(['globalize', 'apphost', 'playbackManager', 'pluginManager', 'events', 'embyRouter', 'appSettings', 'userSettings', 'loading', 'dom', 'require', 'connectionManager'], function (globalize, appHost, playbackManager, pluginManager, events, embyRouter, appSettings, userSettings, loading, dom, require, connectionManager) {
     'use strict';
 
     function getTextTrackUrl(subtitleStream, serverId) {
@@ -20,6 +20,7 @@ define(['apphost', 'playbackManager', 'pluginManager', 'events', 'embyRouter', '
         };
         var ignoreEnded;
         var videoDialog;
+        var currentAspectRatio = 'bestfit';
 
         document.addEventListener('video-osd-show', function () {
             //alert("OSD Shown");
@@ -360,6 +361,7 @@ define(['apphost', 'playbackManager', 'pluginManager', 'events', 'embyRouter', '
 
             ignoreEnded = false;
             currentSrc = url;
+            currentAspectRatio = 'bestfit'
 
             //var isVideo = options.mimeType.toLowerCase('video').indexOf() == 0;
             var isVideo = options.item.MediaType == 'Video';
@@ -649,6 +651,47 @@ define(['apphost', 'playbackManager', 'pluginManager', 'events', 'embyRouter', '
                 end: (range.end * 10000000) + offset
             };
         }
+
+        var supportedFeatures;
+        function getSupportedFeatures() {
+
+            var list = [];
+
+            list.push('SetAspectRatio');
+
+            return list;
+        }
+
+        self.supports = function (feature) {
+
+            if (!supportedFeatures) {
+                supportedFeatures = getSupportedFeatures();
+            }
+
+            return supportedFeatures.indexOf(feature) !== -1;
+        };
+
+        self.setAspectRatio = function (val) {
+
+            currentAspectRatio = val;
+            sendCommand('aspectratio?val=' + val);
+        };
+
+        self.getAspectRatio = function () {
+
+            return currentAspectRatio;
+        };
+
+        self.getSupportedAspectRatios = function () {
+
+            return [
+                { name: '4:3', id: '4_3' },
+                { name: '16:9', id: '16_9' },
+                { name: globalize.translate('sharedcomponents#Auto'), id: 'bestfit' },
+                //{ name: globalize.translate('sharedcomponents#Fill'), id: 'fill' },
+                { name: globalize.translate('sharedcomponents#Original'), id: 'original' }
+            ];
+        };
 
         self.getBufferedRanges = function () {
 
