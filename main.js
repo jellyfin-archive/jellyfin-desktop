@@ -746,8 +746,14 @@
         result.cecExePath = commandLineArguments[index];
         index++;
 
-        result.mpvPath = commandLineArguments[index];
-        index++;
+        var isRpi = require('detect-rpi');
+        if(isRpi()){
+            result.mpvPath = commandLineArguments[index] || __dirname + '/bin/mpv';
+            index++;
+        } else {
+            result.mpvPath = commandLineArguments[index];
+            index++;
+        }
 
         return result;
     }
