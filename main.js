@@ -748,7 +748,7 @@
 
         var isRpi = require('detect-rpi');
         if(isRpi()){
-            result.mpvPath = commandLineArguments[index] || '/usr/lib/emby-theater/resources/app/bin/mpv';
+            result.mpvPath = commandLineArguments[index] || __dirname + '/bin/mpv';
             index++;
         } else {
             result.mpvPath = commandLineArguments[index];
