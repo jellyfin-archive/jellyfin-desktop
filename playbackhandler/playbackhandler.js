@@ -158,11 +158,10 @@ function getMpvOptions(options, mediaType, mediaSource) {
 
     var isRpi = require('detect-rpi');
     if (isRpi()) {
-        list.push('--hwdec=' + (options.hwdec || 'mmal-copy'));
         list.push('--fs');
-    } else {
-        list.push('--hwdec=' + (options.hwdec || 'no'));
     }
+
+    list.push('--hwdec=' + (options.hwdec || 'no'));
 
     if (options.deinterlace == 'yes') {
         list.push('--deinterlace=' + (options.deinterlace || 'auto'));
