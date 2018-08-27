@@ -214,11 +214,11 @@ define(['globalize', 'apphost', 'playbackManager', 'pluginManager', 'events', 'e
                 Method: 'External'
             });
             profile.SubtitleProfiles.push({
-                Format: 'ass',
+                Format: 'ssa',
                 Method: 'External'
             });
             profile.SubtitleProfiles.push({
-                Format: 'ssa',
+                Format: 'ass',
                 Method: 'External'
             });
             profile.SubtitleProfiles.push({
@@ -238,6 +238,18 @@ define(['globalize', 'apphost', 'playbackManager', 'pluginManager', 'events', 'e
                 Method: 'Embed'
             });
             profile.SubtitleProfiles.push({
+                Format: 'dvb_teletext',
+                Method: 'Embed'
+            });
+            profile.SubtitleProfiles.push({
+                Format: 'dvb_subtitle',
+                Method: 'Embed'
+            });
+            profile.SubtitleProfiles.push({
+                Format: 'dvbsub',
+                Method: 'Embed'
+            });
+            profile.SubtitleProfiles.push({
                 Format: 'pgs',
                 Method: 'Embed'
             });
@@ -247,10 +259,6 @@ define(['globalize', 'apphost', 'playbackManager', 'pluginManager', 'events', 'e
             });
             profile.SubtitleProfiles.push({
                 Format: 'dvdsub',
-                Method: 'Embed'
-            });
-            profile.SubtitleProfiles.push({
-                Format: 'dvbsub',
                 Method: 'Embed'
             });
             profile.SubtitleProfiles.push({
