@@ -392,6 +392,9 @@ define(['globalize', 'apphost', 'playbackManager', 'pluginManager', 'events', 'e
             var fontSize;
             switch (subtitleAppearanceSettings.textSize || '') {
 
+                case 'smaller':
+                    fontSize = 35;
+                    break;
                 case 'small':
                     fontSize = 45;
                     break;

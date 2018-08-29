@@ -1,5 +1,5 @@
 {
-  "name": "emby.theater",
+  "name": "emby-theater",
   "productName": "Emby Theater",
   "version": "3.0.2",
   "description": "Emby Theater for Electron",
