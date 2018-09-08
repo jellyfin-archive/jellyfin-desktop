@@ -14,6 +14,7 @@
     var enableDevToolsOnStartup = false;
     var initialShowEventsComplete = false;
     var previousBounds;
+    var cecProcess;
 
     // Quit when all windows are closed.
     app.on('window-all-closed', function () {
@@ -726,6 +727,10 @@
         electron.globalShortcut.unregisterAll();
         closeWindow(playerWindow);
 
+        if (cecProcess) {
+            cecProcess.kill();
+        }
+
         app.quit();
     }
 
@@ -743,7 +748,7 @@
             index++;
         }
 
-        result.cecExePath = commandLineArguments[index];
+        result.cecExePath = commandLineArguments[index] || 'cec-client';
         index++;
 
         result.mpvPath = commandLineArguments[index];
@@ -777,7 +782,7 @@
                 cecExePath: cecExePath,
                 cecEmitter: cecEmitter
             };
-            cec.init(cecOpts);
+            cecProcess = cec.init(cecOpts);
 
             cecEmitter.on("receive-cmd", onCecCommand);
 

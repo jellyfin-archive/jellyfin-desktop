@@ -45,6 +45,8 @@ function init(args) {
         // console.log(err);
     });
     registerEvents(cecProcess);
+
+    return cecProcess;
 }
 
 
@@ -105,7 +107,7 @@ function registerEvents(cecProcess) {
             if (indexOfAdapter) {
                 console.log("\nCEC Client successfully registered.\n");
                 var initVals = dataAsString.split(",");
-                var cecAdapterVals = initVals[4].split("(");
+                var cecAdapterVals = initVals[3].split("(");
                 var cecBaseVals = initVals[5].split("(");
                 CEC_ADAPTER.device = cecAdapterVals[1].substr(4);
                 CEC_ADAPTER.lAddr = cecAdapterVals[2][0];
