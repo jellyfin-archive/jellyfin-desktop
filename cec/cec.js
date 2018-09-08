@@ -10,6 +10,7 @@
 const fs = require("fs");
 const child_process = require("child_process");
 const parseCmd = require("./command-map");
+const os = require("os");
 
 var
     cecProcess,         // cec process
@@ -74,7 +75,7 @@ function emitCmd(cmd) {
  */
 function registerEvents(cecProcess) {
     // create new log file
-    var logPath = __dirname + "/logs";
+    var logPath = os.tmpdir();
     var logFile = logPath + "/cec-log.txt";
     try {
         var stats = fs.statSync(logPath);
