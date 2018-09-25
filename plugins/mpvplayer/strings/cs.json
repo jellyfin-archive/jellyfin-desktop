@@ -1,6 +1,6 @@
 {
-    "UserRefreshRate": "Preferred Refresh Rates",
-    "UserRefreshRateHelp": "Add Refresh Rates in the order of preference and separate with semicolon (ex. 50;60;23)",
+    "UserRefreshRate": "Preferovan\u00e1 rychlost obnovy",
+    "UserRefreshRateHelp": "Zadejte preferovan\u00e9 rychlosti se\u0159azen\u00e9 podle preferenc\u00ed, odd\u011blen\u00e9 st\u0159edn\u00edkem (nap\u0159. 50;60;23)",
     "EnableVideoDisplaySyncingHelp": "Resample audio to match the video. This mode will also try to adjust audio speed to compensate for other drift. (This means it will play the audio at a different speed every once in a while to reduce the A\/V difference.)",
     "LabelOutputRange": "Output range:",
     "LabelHardwareAccelerationMode": "Hardware acceleration mode:",

@@ -546,7 +546,7 @@
         //    case APPCOMMAND_MEDIA_NEXTTRACK        : return "media-nexttrack";
         //    case APPCOMMAND_MEDIA_PREVIOUSTRACK    : return "media-previoustrack";
         //    case APPCOMMAND_MEDIA_STOP             : return "media-stop";
-        //    case APPCOMMAND_MEDIA_PLAY_PAUSE       : return "media-play_pause";
+        //    case APPCOMMAND_MEDIA_PLAY_PAUSE       : return "media-play-pause";
         //    case APPCOMMAND_LAUNCH_MAIL            : return "launch-mail";
         //    case APPCOMMAND_LAUNCH_MEDIA_SELECT    : return "launch-media-select";
         //    case APPCOMMAND_LAUNCH_APP1            : return "launch-app1";
@@ -657,7 +657,7 @@
             case 'media-rewind':
                 sendCommand("rewind");
                 break;
-            case 'media-play_pause':
+            case 'media-play-pause':
                 sendCommand("playpause");
                 break;
             case 'media-channel-up':
