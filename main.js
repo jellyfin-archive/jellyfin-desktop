@@ -16,6 +16,8 @@
     var previousBounds;
     var cecProcess;
 
+    var useTrueFullScreen = false;
+
     // Quit when all windows are closed.
     app.on('window-all-closed', function () {
         // On OS X it is common for applications and their menu bar
@@ -33,8 +35,11 @@
     }
 
     function onWindowResize() {
-        var winSize = mainWindow.getSize();
-        playerWindow.setSize(winSize[0], winSize[1]);
+
+        if (!useTrueFullScreen || currentWindowState === 'Normal') {
+            var winSize = mainWindow.getSize();
+            playerWindow.setSize(winSize[0], winSize[1]);
+        }
     }
 
     var currentWindowState = 'Normal';
@@ -138,7 +143,10 @@
         onWindowStateChanged('Fullscreen');
 
         if (initialShowEventsComplete) {
-            //playerWindow.setFullScreen(true);
+
+            if (useTrueFullScreen) {
+                playerWindow.setFullScreen(true);
+            }
             mainWindow.setMovable(false);
         }
     }
@@ -396,7 +404,7 @@
             }
         });
     }
-    
+
     function registerWakeOnLan() {
 
         var protocol = electron.protocol;
@@ -412,7 +420,7 @@
 
                 case 'wakeserver':
                     var mac = request.url.split('=')[1].split('&')[0];
-                    var options = {port: request.url.split('=')[2]};
+                    var options = { port: request.url.split('=')[2] };
                     wakeonlan.wake(mac, options, callback);
                     break;
                 default:
@@ -828,15 +836,6 @@
         windowShowCount++;
         if (windowShowCount == 2) {
 
-            mainWindow.setFullScreen(true);
-
-            if (!fullscreenOnShow) {
-                // hack alert. in electron 1.4 under windows, the app starts up black. changing window state seems to resolve it.
-                mainWindow.setFullScreen(false);
-            }
-
-            fullscreenOnShow = false;
-
             mainWindow.center();
             mainWindow.focus();
             initialShowEventsComplete = true;
@@ -880,6 +879,7 @@
             backgroundColor: '#00000000',
             center: true,
             show: false,
+            resizable: useTrueFullScreen,
 
             webPreferences: {
                 webSecurity: false,
@@ -972,7 +972,7 @@
             initPlaybackHandler(commandLineOptions.mpvPath);
 
             var isRpi = require('detect-rpi');
-            if(isRpi()){
+            if (isRpi()) {
                 mainWindow.setFullScreen(true);
                 mainWindow.setAlwaysOnTop(true);
             }
