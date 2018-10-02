@@ -16,7 +16,7 @@
     var previousBounds;
     var cecProcess;
 
-    var useTrueFullScreen = false;
+    var useTrueFullScreen = require('is-linux')();
 
     // Quit when all windows are closed.
     app.on('window-all-closed', function () {
