@@ -37,8 +37,8 @@
     function onWindowResize() {
 
         if (!useTrueFullScreen || currentWindowState === 'Normal') {
-            var winSize = mainWindow.getSize();
-            playerWindow.setSize(winSize[0], winSize[1]);
+            var bounds = mainWindow.getBounds();
+            playerWindow.setBounds(bounds);
         }
     }
 
