@@ -152,8 +152,17 @@ function set_subtitlestream(player, index) {
 }
 
 function setDvbTeletextPage(player, stream) {
-    if (stream.Extradata.length > 13) {
-        var pageNumber = parseInt(stream.Extradata.substring(11, 14));
+    
+    // cases to handle:
+    // 00000000: 0001 0001 10
+    // 00000000: 1088 0888
+    // 00000000: 1088
+    // If the stream contains multiple languages, just use the first
+
+    var extradata = stream.Extradata;
+            
+    if (extradata && extradata.length > 13) {
+        var pageNumber = parseInt(extradata.substring(11, 14));
         if (pageNumber < 100) {
             pageNumber += 800;
         }
