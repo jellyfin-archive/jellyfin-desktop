@@ -139,12 +139,25 @@ function set_subtitlestream(player, index) {
                         player.addSubtitles(stream.DeliveryUrl, "cached", stream.DisplayTitle, stream.Language);
                     } else {
                         player.setProperty("sid", subIndex);
+                        if (stream.Codec == "dvb_teletext") {
+                            setDvbTeletextPage(player, stream);
+                        }
                     }
 
                     break;
                 }
             }
         }
+    }
+}
+
+function setDvbTeletextPage(player, stream) {
+    if (stream.Extradata.length > 13) {
+        var pageNumber = parseInt(stream.Extradata.substring(11, 14));
+        if (pageNumber < 100) {
+            pageNumber += 800;
+        }
+        player.setProperty("teletext-page", pageNumber);
     }
 }
 
