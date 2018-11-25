@@ -809,7 +809,7 @@ function processRequest(request, body) {
                 getReturnJson().then(resolve);
                 break;
             case 'volumedown':
-                set_volume(Math.max(0, (currentVolume || playerStatus.volume || 100) - 2));
+                set_volume(Math.max(1, (currentVolume || playerStatus.volume || 100) - 2));
                 getReturnJson().then(resolve);
                 break;
             case 'volume':
