@@ -1,34 +1,28 @@
 {
-  "name": "emby-theater",
-  "productName": "Emby Theater",
+  "name": "jellyfin-theater",
+  "productName": "Jellyfin Theater",
   "version": "3.0.5",
-  "description": "Emby Theater for Electron",
+  "description": "Jellyfin Theater for Electron",
   "main": "main.js",
   "scripts": {
     "start": "electron main.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MediaBrowser/Emby.Theater.Electron.git"
+    "url": "git+https://github.com/jellyfin/jellyfin-theater-electron.git"
   },
   "keywords": [
     "Electron",
-    "Emby",
+    "Jellyfin",
     "Theater"
   ],
   "author": "GitHub",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/MediaBrowser/Emby.Theater.Electron/issues"
+    "url": "https://github.com/jellyfin/jellyfin-theater-electron/issues"
   },
-  "homepage": "https://github.com/MediaBrowser/Emby.Theater.Electron#readme",
-  "devDependencies": {
-    "power-off": "^1.0.1",
-    "sleep-mode": "^1.1.0",
-    "node-mpv": "^1.0.3",
-    "long": "^3.2.0",
-    "is-windows": "^1.0.0"
-  },
+  "homepage": "https://github.com/jellyfin/jellyfin-theater-electron#readme",
+  "devDependencies": {},
   "dependencies": {
     "detect-rpi": "^1.3.0",
     "electron": "^3.0.0",
