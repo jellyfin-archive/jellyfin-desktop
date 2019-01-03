@@ -10,7 +10,7 @@ package manager. The following versions have been tested:
 
 | Software Name | Version          |
 | ------------- | ---------------- |
-| Node JS       | 11.5.0           |
+| Node JS       | 11.4.0 >         |
 | npm           | 6.4.1            |
 | ------------- | ---------------- |
 
@@ -18,8 +18,13 @@ package manager. The following versions have been tested:
 Take the following steps to build the application
 
 ```
-# Get the source
+# Get the source via ssh or http
 git clone git@github.com:jellyfin/jellyfin-theater-electron.git
+
+or 
+
+git clone https://github.com/jellyfin/jellyfin-theater-electron.git
+
 cd jellyfin-theater-electron
 
 # Install dependancies for electron
