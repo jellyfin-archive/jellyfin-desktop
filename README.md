@@ -60,7 +60,7 @@ Note :
 If you are on ubuntu you may need to install additional dependencies
 
 ```
-apt-get -y install \
+# apt-get -y install \
 	libgtkextra-dev libgconf2-dev \
 	libnss3 \
 	libxss1 \
