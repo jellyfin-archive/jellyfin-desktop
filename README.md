@@ -12,7 +12,7 @@ package manager. The following versions have been tested:
 | ------------- | ---------------- |
 | Node JS       | 11.4.0 >         |
 | npm           | 6.4.1            |
-| ------------- | ---------------- |
+
 
 
 ## Getting Started Installing Jellyfin Theater
