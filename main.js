@@ -869,7 +869,7 @@
             transparent: false, //supportsTransparency,
             frame: false,
             resizable: false,
-            title: 'Emby Theater',
+            title: 'Jellyfin Theater',
             minWidth: 720,
             minHeight: 480,
             //alwaysOnTop: true,
