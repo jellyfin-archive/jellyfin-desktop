@@ -44,7 +44,7 @@ $ npm install
 Once the installation has been finished you will need to run this command in the directory to activate the program.
 
 ```
-npm start
+$ npm start
 ```
 
 ## Building And Releasing Jellyfin
