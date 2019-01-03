@@ -36,9 +36,9 @@ Note : If you dont have git installed you can allways download a zip by clicking
 After downloading the source the source you will need to install the dependencies for the project. You can do so by typing into your terminal 
 
 ```
-cd jellyfin-theater-electron
+$ cd jellyfin-theater-electron
 
-npm install
+$ npm install
 ```
 
 Once the installation has been finished you will need to run this command in the directory to activate the program.
