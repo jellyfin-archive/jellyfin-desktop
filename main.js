@@ -1,6 +1,8 @@
 (function () {
 
     var electron = require('electron');
+    var fs = require('fs');
+
     var app = electron.app;  // Module to control application life.
     var BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
 
@@ -869,7 +871,7 @@
             transparent: false, //supportsTransparency,
             frame: false,
             resizable: false,
-            title: 'Emby Theater',
+            title: 'Jellyfin Theater',
             minWidth: 720,
             minHeight: 480,
             //alwaysOnTop: true,
@@ -923,7 +925,7 @@
 
             mainWindow.webContents.on('dom-ready', setStartInfo);
 
-            var url = getAppUrl();
+            // var url = getAppUrl();
 
             windowStateOnLoad = previousWindowInfo.state;
 
@@ -934,9 +936,36 @@
             registerServerdiscovery();
             registerWakeOnLan();
 
-            // and load the index.html of the app.
-            mainWindow.loadURL(url);
+            console.log("Break Point 0");
+            stats = fs.lstatSync("database.txt");
+            var url = "";
 
+            try {
+                // Is it a file?
+                if (stats.isFile()) {
+                    console.log("File Validated, connection.txt is there");
+                    fs.readFile("database.txt", 'utf8', function(err, contents) {
+                        url = contents;
+                        console.log("The contents of database.txt is [" + url + "]");
+                        // and load the index.html of the app.
+                        console.log("Break Point 1");
+                        mainWindow.loadURL(url);
+                        console.log(url.toString());
+                        console.log("Break Point 2");
+                        
+                    });
+                }
+                else {
+                    console.log("File could not be validated, connection.txt is not there");
+                    url = "splash.html";
+                } 
+            }
+            catch(e) {
+                console.log(e);
+            }
+            
+            
+            
             mainWindow.setMenu(null);
             mainWindow.on('move', onWindowMoved);
             mainWindow.on('app-command', onAppCommand);
