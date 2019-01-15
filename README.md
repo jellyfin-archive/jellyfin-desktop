@@ -98,7 +98,7 @@ If you are on ubuntu you may need to install additional dependencies
 ![image](screenshots/Login.PNG)
 ![image](screenshots/Movies.PNG)
 ![image](screenshots/TV_Shows.PNG)
-![image](screenshots/Music.PNG)
+![image](screenshots/Music.png)
 
 
 
