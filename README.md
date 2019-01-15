@@ -1,7 +1,7 @@
 # Jellyfin Theater
 
 Jellyfin Theater is a local client that connects to a Jellyfin server. 
-Currently this takes place by contacting https://
+Currently this takes place by contacting http://
 
 ![image](screenshots/Home.PNG)
 
