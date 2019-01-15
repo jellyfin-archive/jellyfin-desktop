@@ -95,7 +95,6 @@ If you are on ubuntu you may need to install additional dependencies
 
 ## Screenshots
 
-![image](screenshots/Home.PNG)
 ![image](screenshots/Login.PNG)
 ![image](screenshots/Movies.PNG)
 ![image](screenshots/TV_Shows.PNG)
