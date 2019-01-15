@@ -1,5 +1,0 @@
-## Contributers
-
-| ------------- |
-| lachlan-00    |
-

@@ -872,8 +872,8 @@
             frame: false,
             resizable: false,
             title: 'Jellyfin Theater',
-            minWidth: 720,
-            minHeight: 480,
+            minWidth: 1280,
+            minHeight: 720,
             //alwaysOnTop: true,
             skipTaskbar: isWindows() ? false : true,
 
