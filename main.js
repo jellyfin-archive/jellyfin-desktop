@@ -872,8 +872,8 @@
             frame: false,
             resizable: false,
             title: 'Jellyfin Theater',
-            minWidth: 720,
-            minHeight: 480,
+            minWidth: 1280,
+            minHeight: 720,
             //alwaysOnTop: true,
             skipTaskbar: isWindows() ? false : true,
 
@@ -936,7 +936,6 @@
             registerServerdiscovery();
             registerWakeOnLan();
 
-            console.log("Break Point 0");
             stats = fs.lstatSync("database.txt");
             var url = "";
 
@@ -948,10 +947,8 @@
                         url = contents;
                         console.log("The contents of database.txt is [" + url + "]");
                         // and load the index.html of the app.
-                        console.log("Break Point 1");
-                        mainWindow.loadURL(url);
+                        mainWindow.loadURL("http://" + url + "/web/index.html");
                         console.log(url.toString());
-                        console.log("Break Point 2");
                         
                     });
                 }

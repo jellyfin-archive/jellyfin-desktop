@@ -1,7 +1,11 @@
 # Jellyfin Theater
 
 Jellyfin Theater is a local client that connects to a Jellyfin server. 
-Currently this takes place by contacting https://
+
+Currently the jellyfin-theater-electron connects using http protocol.
+
+![image](screenshots/Home.PNG)
+
 # Building
 
 This application is implemented as an electron app and is built off of 
@@ -12,7 +16,6 @@ package manager. The following versions have been tested:
 | ------------- | ---------------- |
 | Node JS       | 11.4.0 >         |
 | npm           | 6.4.1            |
-
 
 
 ## Getting Started Installing Jellyfin Theater
@@ -90,3 +93,13 @@ If you are on ubuntu you may need to install additional dependencies
 #### Releasing For Macintosh
 
 ```$ npm run package-mac```
+
+## Screenshots
+
+![image](screenshots/Login.PNG)
+![image](screenshots/Movies.PNG)
+![image](screenshots/TV_Shows.PNG)
+![image](screenshots/Music.png)
+
+
+

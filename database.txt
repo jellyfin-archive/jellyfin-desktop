@@ -1,1 +1,1 @@
-https://your-ip:port
+jellyfin-ip:port
