@@ -936,14 +936,14 @@
             registerServerdiscovery();
             registerWakeOnLan();
 
-            stats = fs.lstatSync("database.txt");
+            stats = fs.lstatSync(__dirname + "/database.txt");
             var url = "";
 
             try {
                 // Is it a file?
                 if (stats.isFile()) {
                     console.log("File Validated, connection.txt is there");
-                    fs.readFile("database.txt", 'utf8', function(err, contents) {
+                    fs.readFile(__dirname + "/database.txt", 'utf8', function(err, contents) {
                         url = contents;
                         console.log("The contents of database.txt is [" + url + "]");
                         // and load the index.html of the app.
