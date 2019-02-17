@@ -1,10 +1,10 @@
 (function () {
 
     var electron = require('electron');
-    var fs = require('fs');
-
     var app = electron.app;  // Module to control application life.
     var BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
+    var settings = require('electron-settings');
+    var prompt = require('electron-prompt');
 
     // Keep a global reference of the window object, if you don't, the window will
     // be closed automatically when the JavaScript object is garbage collected.
@@ -445,17 +445,12 @@
     }
 
     function getAppBaseUrl() {
-
-        var url = 'https://tv.emby.media';
-
-        //url = 'http://localhost:8088';
+        var url = settings.get('server.url')
         return url;
     }
 
     function getAppUrl() {
-
-        var url = getAppBaseUrl() + '/index.html?autostart=false';
-        //url += '?v=' + new Date().getTime();
+        var url = getAppBaseUrl() + '/web/index.html';
         return url;
     }
 
@@ -924,9 +919,6 @@
             }
 
             mainWindow.webContents.on('dom-ready', setStartInfo);
-
-            // var url = getAppUrl();
-
             windowStateOnLoad = previousWindowInfo.state;
 
             addPathIntercepts();
@@ -936,33 +928,33 @@
             registerServerdiscovery();
             registerWakeOnLan();
 
-            stats = fs.lstatSync(__dirname + "/database.txt");
-            var url = "";
+            if(settings.has('server.url')){
+                mainWindow.loadURL(settings.get('server.url') + '/web/index.html');
+            } else {
+                mainWindow.loadURL('file://' + __dirname + '/splash.html');
+                setTimeout(function(){ 
+                    prompt({
+                        title: 'Jellyfin Server URL',
+                        label: 'Please enter your Jellyfin Server IP or URL:',
+                        value: 'http://jellyfin-ip:port',
+                        inputAttrs: {
+                            type: 'url'
+                        }
+                    }, mainWindow)
+                    .then((r) => {
+                        if(r === null) {
+                            app.quit();
+                        } else {
+                            settings.set('server', {
+                                url: r
+                            });
+                            mainWindow.loadURL(settings.get('server.url') + '/web/index.html');
+                        }
+                    })
+                    .catch(console.error);
+                    }, 5000);
+            }
 
-            try {
-                // Is it a file?
-                if (stats.isFile()) {
-                    console.log("File Validated, connection.txt is there");
-                    fs.readFile(__dirname + "/database.txt", 'utf8', function(err, contents) {
-                        url = contents;
-                        console.log("The contents of database.txt is [" + url + "]");
-                        // and load the index.html of the app.
-                        mainWindow.loadURL("http://" + url + "/web/index.html");
-                        console.log(url.toString());
-                        
-                    });
-                }
-                else {
-                    console.log("File could not be validated, connection.txt is not there");
-                    url = "splash.html";
-                } 
-            }
-            catch(e) {
-                console.log(e);
-            }
-            
-            
-            
             mainWindow.setMenu(null);
             mainWindow.on('move', onWindowMoved);
             mainWindow.on('app-command', onAppCommand);
