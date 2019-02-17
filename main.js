@@ -934,12 +934,14 @@
                 mainWindow.loadURL('file://' + __dirname + '/splash.html');
                 setTimeout(function(){ 
                     prompt({
+                        height: 185,
                         title: 'Jellyfin Server URL',
-                        label: 'Please enter your Jellyfin Server IP or URL:',
+                        label: 'Please enter your Jellyfin Server IP or URL',
                         value: 'http://jellyfin-ip:port',
                         inputAttrs: {
                             type: 'url'
-                        }
+                        },
+                        customStylesheet: __dirname + '/prompt.css'
                     }, mainWindow)
                     .then((r) => {
                         if(r === null) {

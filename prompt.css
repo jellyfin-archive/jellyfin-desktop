@@ -1,0 +1,81 @@
+body {
+    font-family: -apple-system, "Helvetica", system-ui, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen-Sans", "Ubuntu", "Cantarell", "Helvetica Neue", 'Open Sans', sans-serif;
+    color: rgba(255, 255, 255, .8);
+    background-color: #101010;
+}
+
+#container {
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    overflow: auto;
+}
+
+#form {
+    width: 100%;
+    font-weight: 500;
+}
+
+#label {
+    max-width: 100%;
+    max-height: 100%;
+    padding: 0 .5em;
+    font-weight: 550;
+    font-size: 93%;
+}
+
+#data {
+    color: inherit;
+    background: #292929;
+    border: .07em solid #292929;
+    -webkit-border-radius: .15em;
+    border-radius: .15em;
+    display: block;
+    margin: 0;
+    margin-bottom: 10 !important;
+    font-size: 110%;
+    font-family: inherit;
+    font-weight: inherit;
+    padding: .4em .25em;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    outline: none !important;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    width: 100%;
+}
+
+select#data {
+    height: 2em;
+}
+
+#data-container {
+    text-align: center;
+    padding: 0 .5em;
+}
+
+#buttons {
+    text-align: right;
+    padding: 0 .5em 0 .5em;
+}
+
+#buttons > button {
+    border-radius: 2px;
+    border: 0;
+    margin: 5 0 0 0;
+    font-size: 16px;
+    line-height: 1em;
+    padding: .6em 1em;
+    width: 100%
+}
+
+#ok {
+    background-color: #00a4dc;
+    color: #fff;
+    font-weight: 600;
+}
+
+#cancel {
+    background-color: #303030;
+    color: #fff;
+    font-weight: 600;
+}
