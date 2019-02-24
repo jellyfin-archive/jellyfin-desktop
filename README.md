@@ -53,7 +53,7 @@ nano database.txt
 Delete the file and type in your server IP address, If you dont know what it is it should be the IP that you access the server from. for example my server ip is 192.168.1.251:8096.
 
 NOTE
-** YOU MUST REMEMBER THE PORT NUMBER OF :8096 UNLESS YOU CHANGED IT DURING EMBY SETUP **
+** YOU MUST REMEMBER THE PORT NUMBER OF :8096 UNLESS YOU CHANGED IT DURING JELLYFIN SETUP **
 
 Once the installation has been finished you will need to run this command in the directory to activate the program.
 
