@@ -44,22 +44,18 @@ $ cd jellyfin-theater-electron
 $ npm install
 ```
 
-Before you can run the program you will need to configure the database.txt file. You can do so by entering this into the terminal 
-
-```
-nano database.txt
-```
-
-Delete the file and type in your server IP address, If you dont know what it is it should be the IP that you access the server from. for example my server ip is 192.168.1.251:8096.
-
-NOTE
-** YOU MUST REMEMBER THE PORT NUMBER OF :8096 UNLESS YOU CHANGED IT DURING JELLYFIN SETUP **
-
 Once the installation has been finished you will need to run this command in the directory to activate the program.
 
 ```
 $ npm start
 ```
+## Jellyfin Theater Settings Location
+
+At first launch, you will be asked to enter your server address. This parameter is kept in:
+
+- %APPDATA%/Jellyfin Theater on Windows
+- ~/.config/Jellyfin Theater on Linux
+- ~/Library/Application Support/Jellyfin Theater on macOS
 
 ## Building And Releasing Jellyfin
 

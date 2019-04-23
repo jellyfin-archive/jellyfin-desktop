@@ -5,6 +5,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+.DS_Store
 # Runtime data
 pids
 *.pid
@@ -86,3 +87,8 @@ cec/logs/
 cec/test-exec-files/
 /.vs/~$GitHubVSTemp$~/v15/.suo
 release/
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
