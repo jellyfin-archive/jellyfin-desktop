@@ -14,8 +14,8 @@
     var playerWindow = null;
     var hasAppLoaded = false;
 
-    var enableDevTools = false;
-    var enableDevToolsOnStartup = false;
+    var enableDevTools = true;
+    var enableDevToolsOnStartup = true;
     var initialShowEventsComplete = false;
     var previousBounds;
     var cecProcess;
@@ -869,7 +869,7 @@
 
         var isWindows = require('is-windows');
         var windowStatePath = getWindowStateDataPath();
-
+        var enableNodeIntegration = getAppUrl() ? false : true
         var previousWindowInfo;
         try {
             previousWindowInfo = JSON.parse(require("fs").readFileSync(windowStatePath, 'utf8'));
@@ -877,7 +877,6 @@
         catch (e) {
             previousWindowInfo = {};
         }
-
         var windowOptions = {
             transparent: false, //supportsTransparency,
             frame: false,
@@ -897,7 +896,7 @@
             webPreferences: {
                 webSecurity: false,
                 webgl: false,
-                nodeIntegration: !settings.has('server'),
+                nodeIntegration: enableNodeIntegration,
                 plugins: false,
                 webaudio: true,
                 java: false,
@@ -937,7 +936,6 @@
             mainWindow.webContents.on('dom-ready', setStartInfo);
 
             var url = getAppUrl();
-            console.log(url);
             windowStateOnLoad = previousWindowInfo.state;
 
             addPathIntercepts();
