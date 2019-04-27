@@ -14,8 +14,8 @@
     var playerWindow = null;
     var hasAppLoaded = false;
 
-    var enableDevTools = true;
-    var enableDevToolsOnStartup = true;
+    var enableDevTools = false;
+    var enableDevToolsOnStartup = false;
     var initialShowEventsComplete = false;
     var previousBounds;
     var cecProcess;
@@ -463,7 +463,7 @@
     function getAppUrl() {
         var url = getAppBaseUrl();
 
-        if(url){
+        if (url) {
             url += '/web/index.html';
         }
 
@@ -945,7 +945,7 @@
             registerServerdiscovery();
             registerWakeOnLan();
  
-            if(url){
+            if (url) {
                 mainWindow.loadURL(url);
             } else {
                 var localPath = path.join(`file://${__dirname}/firstrun/Jellyfin.html`);
