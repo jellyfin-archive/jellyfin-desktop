@@ -18,17 +18,17 @@
     <div class="mainAnimatedPages skinBody">
         <div id="loginPage" data-role="page" class="page standalonePage mainAnimatedPage" data-backbutton="false">
             <div class="padded-left padded-right padded-bottom-page">
-                <form class="manualLoginForm">
+                <form class="manualLoginForm" id="serverForm">
 
                     <h1>Please enter your Jellyfin server address</h1>
 
                     <div class="inputContainer">
                         <label class="inputLabel inputLabel-float inputLabelUnfocused"
                             for="txtServerAddress">Server Address:</label><input is="emby-input" type="text" id="txtServerAddress"
-                            required="required" label="User:" class="emby-input">
+                            required="required" label="Server Address:" class="emby-input">
                     </div>
 
-                    <button is="emby-button" type="button" id="submit"
+                    <button is="emby-button" type="submit" id="submit"
                         class="raised button-submit block emby-button button-link-inline">
                         <span>Save</span>
                     </button>
@@ -39,7 +39,8 @@
         </div>
     </div>
     <script>
-        document.querySelector('#submit').addEventListener('click', function() {
+        document.querySelector('#serverForm').addEventListener('submit', function() {
+            event.preventDefault();
             let serverAddress = document.getElementById("txtServerAddress").value;
             const {ipcRenderer} = require('electron')
             ipcRenderer.send('asynchronous-message', serverAddress )
