@@ -21,14 +21,13 @@
     "Media Client"
   ],
   "author": "GitHub",
-  "license": "GNU gpl v2",
+  "license": "GPL-2.0-only",
   "bugs": {
     "url": "https://github.com/jellyfin/jellyfin-theater-electron/issues"
   },
   "homepage": "https://github.com/jellyfin/jellyfin-theater-electron#readme",
   "devDependencies": {
-    "electron": "^3.0.0",
-    "electron-settings": "^3.2.0"
+    "electron": "^3.0.0"
   },
   "dependencies": {
     "detect-rpi": "^1.3.0",
