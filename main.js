@@ -1,7 +1,9 @@
 (function () {
 
     var electron = require('electron');
-    var fs = require('fs');
+    var settings = require('electron-settings');
+    var path = require('path');
+    const {ipcMain} = require('electron')
 
     var app = electron.app;  // Module to control application life.
     var BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
@@ -27,6 +29,15 @@
         if (process.platform != 'darwin') {
             app.quit();
         }
+    });
+
+    // receive message from index.html 
+    ipcMain.on('asynchronous-message', (event, arg) => {
+        settings.set('server', {
+            url: arg
+        });
+        app.relaunch()
+        app.quit(0)
     });
 
     function onWindowMoved() {
@@ -445,17 +456,17 @@
     }
 
     function getAppBaseUrl() {
-
-        var url = 'https://tv.emby.media';
-
-        //url = 'http://localhost:8088';
+        var url = settings.get('server.url', null)
         return url;
     }
 
     function getAppUrl() {
+        var url = getAppBaseUrl();
 
-        var url = getAppBaseUrl() + '/index.html?autostart=false';
-        //url += '?v=' + new Date().getTime();
+        if (url) {
+            url += '/web/index.html';
+        }
+
         return url;
     }
 
@@ -858,7 +869,7 @@
 
         var isWindows = require('is-windows');
         var windowStatePath = getWindowStateDataPath();
-
+        var enableNodeIntegration = getAppUrl() ? false : true
         var previousWindowInfo;
         try {
             previousWindowInfo = JSON.parse(require("fs").readFileSync(windowStatePath, 'utf8'));
@@ -866,7 +877,6 @@
         catch (e) {
             previousWindowInfo = {};
         }
-
         var windowOptions = {
             transparent: false, //supportsTransparency,
             frame: false,
@@ -886,7 +896,7 @@
             webPreferences: {
                 webSecurity: false,
                 webgl: false,
-                nodeIntegration: false,
+                nodeIntegration: enableNodeIntegration,
                 plugins: false,
                 webaudio: true,
                 java: false,
@@ -925,8 +935,7 @@
 
             mainWindow.webContents.on('dom-ready', setStartInfo);
 
-            // var url = getAppUrl();
-
+            var url = getAppUrl();
             windowStateOnLoad = previousWindowInfo.state;
 
             addPathIntercepts();
@@ -935,33 +944,13 @@
             registerFileSystem();
             registerServerdiscovery();
             registerWakeOnLan();
-
-            stats = fs.lstatSync("database.txt");
-            var url = "";
-
-            try {
-                // Is it a file?
-                if (stats.isFile()) {
-                    console.log("File Validated, connection.txt is there");
-                    fs.readFile("database.txt", 'utf8', function(err, contents) {
-                        url = contents;
-                        console.log("The contents of database.txt is [" + url + "]");
-                        // and load the index.html of the app.
-                        mainWindow.loadURL("http://" + url + "/web/index.html");
-                        console.log(url.toString());
-                        
-                    });
-                }
-                else {
-                    console.log("File could not be validated, connection.txt is not there");
-                    url = "splash.html";
-                } 
+ 
+            if (url) {
+                mainWindow.loadURL(url);
+            } else {
+                var localPath = path.join(`file://${__dirname}/firstrun/Jellyfin.html`);
+                mainWindow.loadURL(localPath);                        
             }
-            catch(e) {
-                console.log(e);
-            }
-            
-            
             
             mainWindow.setMenu(null);
             mainWindow.on('move', onWindowMoved);

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jellyfin Theater</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body class="hideMainDrawer">
+    <div class="skinHeader skinHeader-withBackground skinHeader-blurred headroom noHeaderRight">
+        <div class="flex align-items-center flex-grow headerTop">
+            <div class="headerLeft"><button type="button" is="paper-icon-button-light"
+                    class="headerButton headerButtonLeft headerBackButton hide paper-icon-button-light">
+                <h3 class="pageTitle pageTitleWithLogo pageTitleWithDefaultLogo"></h3>
+            </div>
+        </div>
+        <div class="headerTabs sectionTabs hide"></div>
+    </div>
+    <div class="mainAnimatedPages skinBody">
+        <div id="loginPage" data-role="page" class="page standalonePage mainAnimatedPage" data-backbutton="false">
+            <div class="padded-left padded-right padded-bottom-page">
+                <form class="manualLoginForm" id="serverForm">
+
+                    <h1>Connect to Server</h1>
+
+                    <div class="inputContainer">
+                        <label class="inputLabel inputLabel-float inputLabelUnfocused" for="txtHost">Host:</label>
+                        <input is="emby-input" type="url" id="txtHost" required="required" label="Host:" class="emby-input">
+                        <div class="fieldDescription">Server Address (ex. 192.168.1.100 or https://myserver.com</div>
+                    </div>
+
+                    <div class="inputContainer">
+                        <label class="inputLabel inputLabel-float inputLabelUnfocused" for="txtPort">Port:</label>
+                        <input is="emby-input" type="text" id="txtPort" label="Port:" class="emby-input" value="8096">
+                    </div>
+
+                    <button is="emby-button" type="submit" id="submit" class="raised button-submit block emby-button button-link-inline">
+                        <span>Connect</span>
+                    </button>
+                    <br>
+                    <br>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.querySelector('#serverForm').addEventListener('submit', function() {
+            event.preventDefault();
+            let host = document.getElementById("txtHost").value;
+            let port = document.getElementById("txtPort").value;
+            let serverAddress = host + ":" + port
+
+            const {ipcRenderer} = require('electron')
+            ipcRenderer.send('asynchronous-message', serverAddress )
+         });
+     </script>
+</body>
+</html>
