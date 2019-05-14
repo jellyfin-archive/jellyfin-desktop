@@ -51,7 +51,7 @@ function findServers(timeoutMs, callback) {
         try {
             var address = client.address();
             client.setBroadcast(true);
-            var message = new Buffer("who is EmbyServer?");
+            var message = new Buffer("who is JellyfinServer?");
             client.send(message, 0, message.length, PORT, MULTICAST_ADDR, function (err) {
                 if (err) console.error(err);
             });
