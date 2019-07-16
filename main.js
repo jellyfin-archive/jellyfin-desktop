@@ -50,7 +50,7 @@
 
     function onWindowResize() {
 
-        if (!useTrueFullScreen || currentWindowState === 'Normal') {
+        if (!isLinux || currentWindowState === 'Normal') {
             const bounds = mainWindow.getBounds();
             playerWindow.setBounds(bounds);
         }
