@@ -159,7 +159,7 @@
 
         if (initialShowEventsComplete) {
 
-            if (useTrueFullScreen) {
+            if (isLinux) {
                 playerWindow.setFullScreen(true);
             }
             mainWindow.setMovable(false);
