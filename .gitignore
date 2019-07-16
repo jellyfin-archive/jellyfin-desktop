@@ -79,10 +79,10 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 
-node_modules/
 cec/logs/
 *.iml
 .idea/
 cec/test-exec-files/
 /.vs/~$GitHubVSTemp$~/v15/.suo
 release/
+dist/

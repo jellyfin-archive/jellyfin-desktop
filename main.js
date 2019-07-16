@@ -1,32 +1,33 @@
 (function () {
 
-    var electron = require('electron');
-    var settings = require('electron-settings');
-    var path = require('path');
-    const {ipcMain} = require('electron')
+    let currentWindowState;
+    const electron = require('electron');
+    const settings = require('electron-settings');
+    const path = require('path');
+    const {ipcMain} = require('electron');
 
-    var app = electron.app;  // Module to control application life.
-    var BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
+    const app = electron.app;  // Module to control application life.
+    const BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
 
     // Keep a global reference of the window object, if you don't, the window will
     // be closed automatically when the JavaScript object is garbage collected.
-    var mainWindow = null;
-    var playerWindow = null;
-    var hasAppLoaded = false;
+    let mainWindow = null;
+    let playerWindow = null;
+    let hasAppLoaded = false;
 
-    var enableDevTools = false;
-    var enableDevToolsOnStartup = false;
-    var initialShowEventsComplete = false;
-    var previousBounds;
-    var cecProcess;
+    const enableDevTools = false;
+    const enableDevToolsOnStartup = false;
+    let initialShowEventsComplete = false;
+    let previousBounds;
+    let cecProcess;
 
-    var useTrueFullScreen = require('is-linux')();
+    const isLinux = require('is-linux')();
 
     // Quit when all windows are closed.
     app.on('window-all-closed', function () {
         // On OS X it is common for applications and their menu bar
         // to stay active until the user quits explicitly with Cmd + Q
-        if (process.platform != 'darwin') {
+        if (process.platform !== 'darwin') {
             app.quit();
         }
     });
@@ -36,57 +37,58 @@
         settings.set('server', {
             url: arg
         });
-        app.relaunch()
+        app.relaunch();
         app.quit(0)
     });
 
     function onWindowMoved() {
 
         mainWindow.webContents.executeJavaScript('window.dispatchEvent(new CustomEvent("move", {}));');
-        var winPosition = mainWindow.getPosition();
+        const winPosition = mainWindow.getPosition();
         playerWindow.setPosition(winPosition[0], winPosition[1]);
     }
 
     function onWindowResize() {
 
         if (!useTrueFullScreen || currentWindowState === 'Normal') {
-            var bounds = mainWindow.getBounds();
+            const bounds = mainWindow.getBounds();
             playerWindow.setBounds(bounds);
         }
     }
 
-    var currentWindowState = 'Normal';
-    var restoreWindowState;
+    currentWindowState = "Normal";
+    let restoreWindowState;
 
     function setWindowState(state) {
 
+        let bounds;
         restoreWindowState = null;
-        var previousState = currentWindowState;
+        const previousState = currentWindowState;
 
-        if (state == 'Maximized') {
+        if (state === 'Maximized') {
             state = 'Fullscreen';
         }
 
-        if (state == 'Minimized') {
+        if (state === 'Minimized') {
             restoreWindowState = previousState;
             mainWindow.setAlwaysOnTop(false);
             mainWindow.minimize();
-        } else if (state == 'Maximized') {
+        } else if (state === 'Maximized') {
 
-            if (previousState == "Minimized") {
+            if (previousState === "Minimized") {
                 mainWindow.restore();
             }
 
             mainWindow.maximize();
             mainWindow.setAlwaysOnTop(false);
 
-        } else if (state == 'Fullscreen') {
+        } else if (state === 'Fullscreen') {
 
-            if (previousState == "Minimized") {
+            if (previousState === "Minimized") {
                 mainWindow.restore();
             }
 
-            var bounds = mainWindow.getBounds();
+            bounds = mainWindow.getBounds();
             previousBounds = bounds;
 
             mainWindow.setFullScreen(true);
@@ -97,22 +99,22 @@
 
         } else {
 
-            var setSize = false;
-            if (previousState == "Minimized") {
+            let setSize = false;
+            if (previousState === "Minimized") {
                 mainWindow.restore();
             }
 
-            else if (previousState == "Fullscreen") {
+            else if (previousState === "Fullscreen") {
                 setSize = true;
                 mainWindow.setFullScreen(false);
             }
 
-            else if (previousState == "Maximized") {
+            else if (previousState === "Maximized") {
                 mainWindow.unmaximize();
             }
 
             if (setSize) {
-                var bounds = previousBounds;
+                bounds = previousBounds;
                 if (bounds) {
                     mainWindow.setBounds(bounds);
                 } else {
@@ -137,9 +139,9 @@
 
     function onRestore() {
 
-        var restoreState = restoreWindowState;
+        const restoreState = restoreWindowState;
         restoreWindowState = null;
-        if (restoreState && restoreState != 'Normal' && restoreState != 'Minimized') {
+        if (restoreState && restoreState !== 'Normal' && restoreState !== 'Minimized') {
             setWindowState(restoreState);
         } else {
             onWindowStateChanged('Normal');
@@ -178,17 +180,17 @@
         onWindowStateChanged('Normal');
     }
 
-    var customFileProtocol = 'electronfile';
+    const customFileProtocol = 'electronfile';
 
     function addPathIntercepts() {
 
-        var protocol = electron.protocol;
-        var path = require('path');
+        const protocol = electron.protocol;
+        const path = require('path');
 
         protocol.registerFileProtocol(customFileProtocol, function (request, callback) {
 
             // Add 3 to account for ://
-            var url = request.url.substr(customFileProtocol.length + 3);
+            let url = request.url.substr(customFileProtocol.length + 3);
             url = __dirname + '/' + url;
             url = url.split('?')[0];
 
@@ -206,7 +208,7 @@
 
     function sleepSystem() {
 
-        var sleepMode = require('sleep-mode');
+        const sleepMode = require('sleep-mode');
         sleepMode(function (err, stderr, stdout) {
         });
     }
@@ -216,7 +218,7 @@
 
     function shutdownSystem() {
 
-        var powerOff = require('power-off');
+        const powerOff = require('power-off');
         powerOff(function (err, stderr, stdout) {
         });
     }
@@ -230,19 +232,20 @@
         }
     }
 
-    var isTransparencyRequired = false;
-    var windowStateOnLoad;
+    let isTransparencyRequired = false;
+    let windowStateOnLoad;
+
     function registerAppHost() {
 
-        var protocol = electron.protocol;
-        var customProtocol = 'electronapphost';
+        const protocol = electron.protocol;
+        const customProtocol = 'electronapphost';
 
         protocol.registerStringProtocol(customProtocol, function (request, callback) {
 
             // Add 3 to account for ://
-            var url = request.url.substr(customProtocol.length + 3);
-            var parts = url.split('?');
-            var command = parts[0];
+            const url = request.url.substr(customProtocol.length + 3);
+            const parts = url.split('?');
+            const command = parts[0];
 
             switch (command) {
 
@@ -280,7 +283,7 @@
                     break;
                 case 'shellstart':
 
-                    var options = require('querystring').parse(parts[1]);
+                    const options = require('querystring').parse(parts[1]);
                     startProcess(options, callback);
                     return;
                 case 'shellclose':
@@ -323,21 +326,21 @@
         sendJavascript('window.PlayerWindowId="' + getWindowId(playerWindow) + '";');
     }
 
-    var processes = {};
+    const processes = {};
 
     function startProcess(options, callback) {
 
-        var pid;
-        var args = (options.arguments || '').split('|||');
+        let pid;
+        const args = (options.arguments || '').split('|||');
 
         try {
-            var process = require('child_process').execFile(options.path, args, {}, function (error, stdout, stderr) {
+            const process = require('child_process').execFile(options.path, args, {}, function (error, stdout, stderr) {
 
                 if (error) {
                     console.log('Process closed with error: ' + error);
                 }
                 processes[pid] = null;
-                var script = 'onChildProcessClosed("' + pid + '", ' + (error ? 'true' : 'false') + ');';
+                const script = 'onChildProcessClosed(\"' + pid + '\", ' + (error ? 'true' : 'false') + ');';
 
                 sendJavascript(script);
             });
@@ -352,7 +355,7 @@
 
     function closeProcess(id, callback) {
 
-        var process = processes[id];
+        const process = processes[id];
         if (process) {
             process.kill();
         }
@@ -361,21 +364,21 @@
 
     function registerFileSystem() {
 
-        var protocol = electron.protocol;
-        var customProtocol = 'electronfs';
+        const protocol = electron.protocol;
+        const customProtocol = 'electronfs';
 
         protocol.registerStringProtocol(customProtocol, function (request, callback) {
 
             // Add 3 to account for ://
-            var url = request.url.substr(customProtocol.length + 3).split('?')[0];
-            var fs = require('fs');
+            const url = request.url.substr(customProtocol.length + 3).split('?')[0];
+            const fs = require('fs');
 
             switch (url) {
 
                 case 'fileexists':
                 case 'directoryexists':
 
-                    var path = request.url.split('=')[1];
+                    const path = request.url.split('=')[1];
 
                     fs.access(path, (err) => {
                         if (err) {
@@ -396,19 +399,18 @@
 
     function registerServerdiscovery() {
 
-        var protocol = electron.protocol;
-        var customProtocol = 'electronserverdiscovery';
-        var serverdiscovery = require('./serverdiscovery/serverdiscovery-native');
+        const protocol = electron.protocol;
+        const customProtocol = 'electronserverdiscovery';
+        const serverdiscovery = require('./serverdiscovery/serverdiscovery-native');
 
         protocol.registerStringProtocol(customProtocol, function (request, callback) {
 
             // Add 3 to account for ://
-            var url = request.url.substr(customProtocol.length + 3).split('?')[0];
+            const url = request.url.substr(customProtocol.length + 3).split('?')[0];
 
             switch (url) {
-
                 case 'findservers':
-                    var timeoutMs = request.url.split('=')[1];
+                    const timeoutMs = request.url.split('=')[1];
                     serverdiscovery.findServers(timeoutMs, callback);
                     break;
                 default:
@@ -420,20 +422,19 @@
 
     function registerWakeOnLan() {
 
-        var protocol = electron.protocol;
-        var customProtocol = 'electronwakeonlan';
-        var wakeonlan = require('./wakeonlan/wakeonlan-native');
+        const protocol = electron.protocol;
+        const customProtocol = 'electronwakeonlan';
+        const wakeonlan = require('./wakeonlan/wakeonlan-native');
 
         protocol.registerStringProtocol(customProtocol, function (request, callback) {
 
             // Add 3 to account for ://
-            var url = request.url.substr(customProtocol.length + 3).split('?')[0];
+            const url = request.url.substr(customProtocol.length + 3).split('?')[0];
 
             switch (url) {
-
                 case 'wakeserver':
-                    var mac = request.url.split('=')[1].split('&')[0];
-                    var options = { port: request.url.split('=')[2] };
+                    const mac = request.url.split('=')[1].split('&')[0];
+                    const options = {port: request.url.split('=')[2]};
                     wakeonlan.wake(mac, options, callback);
                     break;
                 default:
@@ -456,12 +457,11 @@
     }
 
     function getAppBaseUrl() {
-        var url = settings.get('server.url', null)
-        return url;
+        return settings.get('server.url', null);
     }
 
     function getAppUrl() {
-        var url = getAppBaseUrl();
+        let url = getAppBaseUrl();
 
         if (url) {
             url += '/web/index.html';
@@ -470,19 +470,20 @@
         return url;
     }
 
-    var startInfoJson;
+    let startInfoJson;
+
     function loadStartInfo() {
 
         return new Promise(function (resolve, reject) {
 
-            var os = require("os");
+            const os = require("os");
 
-            var path = require('path');
-            var fs = require('fs');
+            const path = require('path');
+            const fs = require('fs');
 
-            var topDirectory = path.normalize(__dirname);
-            var pluginDirectory = path.normalize(__dirname + '/plugins');
-            var scriptsDirectory = path.normalize(__dirname + '/scripts');
+            const topDirectory = path.normalize(__dirname);
+            const pluginDirectory = path.normalize(__dirname + '/plugins');
+            const scriptsDirectory = path.normalize(__dirname + '/scripts');
 
             fs.readdir(pluginDirectory, function (err, pluginFiles) {
 
@@ -491,7 +492,7 @@
                     pluginFiles = pluginFiles || [];
                     scriptFiles = scriptFiles || [];
 
-                    var startInfo = {
+                    const startInfo = {
                         paths: {
                             apphost: customFileProtocol + '://apphost',
                             shell: customFileProtocol + '://shell',
@@ -507,7 +508,7 @@
                         supportsTransparentWindow: supportsTransparentWindow(),
                         plugins: pluginFiles.filter(function (f) {
 
-                            return f.indexOf('.js') != -1;
+                            return f.indexOf('.js') !== -1;
 
                         }).map(function (f) {
 
@@ -528,23 +529,23 @@
 
     function setStartInfo() {
 
-        var script = 'function startWhenReady(){if (self.Emby && self.Emby.App){self.appStartInfo=' + startInfoJson + ';Emby.App.start(appStartInfo);} else {setTimeout(startWhenReady, 50);}} startWhenReady();';
+        const script = 'function startWhenReady(){if (self.Emby && self.Emby.App){self.appStartInfo=' + startInfoJson + ';Emby.App.start(appStartInfo);} else {setTimeout(startWhenReady, 50);}} startWhenReady();';
         sendJavascript(script);
         //sendJavascript('var appStartInfo=' + startInfoJson + ';');
     }
 
     function sendCommand(cmd) {
 
-        var script = "require(['inputmanager'], function(inputmanager){inputmanager.trigger('" + cmd + "');});";
+        const script = "require(['inputmanager'], function(inputmanager){inputmanager.trigger('" + cmd + "');});";
         sendJavascript(script);
     }
 
     function sendJavascript(script) {
 
         // Add some null checks to handle attempts to send JS when the process is closing or has closed
-        var win = mainWindow;
+        const win = mainWindow;
         if (win) {
-            var web = win.webContents;
+            const web = win.webContents;
             if (web) {
                 web.executeJavaScript(script);
             }
@@ -611,7 +612,7 @@
         //    default:
         //        return "unknown";
 
-        if (cmd != 'Unknown') {
+        if (cmd !== 'Unknown') {
             //alert(cmd);
         }
 
@@ -698,7 +699,7 @@
 
     function setCommandLineSwitches() {
 
-        var isLinux = require('is-linux');
+        const isLinux = require('is-linux');
 
         if (isLinux()) {
             app.commandLine.appendSwitch('enable-transparent-visuals');
@@ -720,7 +721,7 @@
 
     function getWindowStateDataPath() {
 
-        var path = require("path");
+        const path = require('path');
         return path.join(app.getPath('userData'), "windowstate.json");
     }
 
@@ -736,9 +737,9 @@
     function onWindowClose() {
 
         if (hasAppLoaded) {
-            var data = mainWindow.getBounds();
+            const data = mainWindow.getBounds();
             data.state = currentWindowState;
-            var windowStatePath = getWindowStateDataPath();
+            const windowStatePath = getWindowStateDataPath();
             require("fs").writeFileSync(windowStatePath, JSON.stringify(data));
         }
 
@@ -757,12 +758,12 @@
 
     function parseCommandLine() {
 
-        var isWindows = require('is-windows');
+        const isWindows = require('is-windows');
 
-        var result = {};
-        var commandLineArguments = process.argv.slice(2);
+        const result = {};
+        const commandLineArguments = process.argv.slice(2);
 
-        var index = 0;
+        let index = 0;
 
         if (isWindows()) {
             result.userDataPath = commandLineArguments[index];
@@ -778,9 +779,9 @@
         return result;
     }
 
-    var commandLineOptions = parseCommandLine();
+    const commandLineOptions = parseCommandLine();
 
-    var userDataPath = commandLineOptions.userDataPath;
+    const userDataPath = commandLineOptions.userDataPath;
     if (userDataPath) {
         app.setPath('userData', userDataPath);
     }
@@ -795,11 +796,11 @@
 
         try {
             const cec = require('./cec/cec');
-            var cecExePath = commandLineOptions.cecExePath;
+            const cecExePath = commandLineOptions.cecExePath;
             // create the cec event
             const EventEmitter = require("events").EventEmitter;
-            var cecEmitter = new EventEmitter();
-            var cecOpts = {
+            const cecEmitter = new EventEmitter();
+            const cecOpts = {
                 cecExePath: cecExePath,
                 cecEmitter: cecEmitter
             };
@@ -814,40 +815,41 @@
 
     function getWindowId(win) {
 
-        var Long = require("long");
-        var os = require("os");
-        var handle = win.getNativeWindowHandle();
+        const Long = require("long");
+        const os = require("os");
+        const handle = win.getNativeWindowHandle();
 
-        if (os.endianness() == "LE") {
+        if (os.endianness() === "LE") {
 
-            if (handle.length == 4) {
+            if (handle.length === 4) {
                 handle.swap32();
-            } else if (handle.length == 8) {
+            } else if (handle.length === 8) {
                 handle.swap64();
             } else {
                 console.log("Unknown Native Window Handle Format.");
             }
         }
-        var longVal = Long.fromString(handle.toString('hex'), unsigned = true, radix = 16);
+        const longVal = Long.fromString(handle.toString('hex'), unsigned = true, radix = 16);
 
         return longVal.toString();
     }
 
     function initPlaybackHandler(mpvPath) {
 
-        var playbackhandler = require('./playbackhandler/playbackhandler');
+        const playbackhandler = require('./playbackhandler/playbackhandler');
         playbackhandler.initialize(getWindowId(playerWindow), mpvPath);
         playbackhandler.registerMediaPlayerProtocol(electron.protocol, mainWindow);
     }
 
     setCommandLineSwitches();
 
-    var fullscreenOnShow = false;
-    var windowShowCount = 0;
+    let fullscreenOnShow = false;
+    let windowShowCount = 0;
+
     function onWindowShow() {
 
         windowShowCount++;
-        if (windowShowCount == 2) {
+        if (windowShowCount === 2) {
 
             mainWindow.center();
             mainWindow.focus();
@@ -867,31 +869,30 @@
     // initialization and is ready to create browser windows.
     app.on('ready', function () {
 
-        var isWindows = require('is-windows');
-        var windowStatePath = getWindowStateDataPath();
-        var enableNodeIntegration = getAppUrl() ? false : true
-        var previousWindowInfo;
+        const isWindows = require('is-windows')();
+        const windowStatePath = getWindowStateDataPath();
+        const enableNodeIntegration = !getAppUrl();
+        let previousWindowInfo;
         try {
             previousWindowInfo = JSON.parse(require("fs").readFileSync(windowStatePath, 'utf8'));
         }
         catch (e) {
             previousWindowInfo = {};
         }
-        var windowOptions = {
+        const windowOptions = {
             transparent: false, //supportsTransparency,
             frame: false,
-            resizable: false,
             title: 'Jellyfin Theater',
             minWidth: 1280,
             minHeight: 720,
             //alwaysOnTop: true,
-            skipTaskbar: isWindows() ? false : true,
+            skipTaskbar: !(isWindows || isLinux),
 
             //show: false,
             backgroundColor: '#00000000',
             center: true,
             show: false,
-            resizable: useTrueFullScreen,
+            resizable: isLinux,
 
             webPreferences: {
                 webSecurity: false,
@@ -935,7 +936,7 @@
 
             mainWindow.webContents.on('dom-ready', setStartInfo);
 
-            var url = getAppUrl();
+            const url = getAppUrl();
             windowStateOnLoad = previousWindowInfo.state;
 
             addPathIntercepts();
@@ -948,7 +949,7 @@
             if (url) {
                 mainWindow.loadURL(url);
             } else {
-                var localPath = path.join(`file://${__dirname}/firstrun/Jellyfin.html`);
+                const localPath = path.join(`file://${__dirname}/firstrun/Jellyfin.html`);
                 mainWindow.loadURL(localPath);                        
             }
             
@@ -975,7 +976,7 @@
             // Only the main window should be set to full screen.
             // This is done after the window is shown because the
             // player window otherwise is shown behind the task bar.
-            if (previousWindowInfo.state == 'Fullscreen') {
+            if (previousWindowInfo.state === 'Fullscreen') {
                 fullscreenOnShow = true;
             }
 
@@ -986,7 +987,7 @@
 
             initPlaybackHandler(commandLineOptions.mpvPath);
 
-            var isRpi = require('detect-rpi');
+            const isRpi = require('detect-rpi');
             if (isRpi()) {
                 mainWindow.setFullScreen(true);
                 mainWindow.setAlwaysOnTop(true);
