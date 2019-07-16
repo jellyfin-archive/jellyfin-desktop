@@ -1,4 +1,5 @@
-const debDependenyDefault = ["gconf2", "gconf-service", "libnotify4", "libappindicator1", "libxtst6", "libnss3"];
+const debDependencyDefault = ["gconf2", "gconf-service", "libnotify4", "libappindicator1", "libxtst6", "libnss3"];
+const debDependencies = ["gconf2", "gconf-service", "libnotify4", "libappindicator1", "libxtst6", "libnss3"];
 
 function targetConf(targets, arch) {
     return targets.map((target) => ({
@@ -49,14 +50,14 @@ module.exports = {
     },
     deb: {
         depends: [
-            ...debDependenyDefault,
-            "cec-utils"
+            ...debDependencyDefault,
+            ...debDependencies
         ]
     },
     snap: {
         stagePackages: [
             "default",
-            "cec-utils"
+            ...debDependencies
         ],
         plugs: [
             "default",
