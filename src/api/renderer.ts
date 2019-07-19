@@ -30,4 +30,14 @@ export class RendererApi {
         }
         startWhenReady();
     }
+
+    public executeCommand(cmd: string) {
+        window.require(["inputmanager"], inputmanager => {
+            inputmanager.trigger(cmd);
+        });
+    }
+
+    public onClosing() {
+        self.AppCloseHelper.onClosing();
+    }
 }

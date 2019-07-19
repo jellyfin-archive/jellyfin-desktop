@@ -1,1 +1,5 @@
-export class TheatreApi {}
+export class TheaterApi {
+    public conntest() {
+        console.info("Communication main <- renderer established");
+    }
+}

@@ -1,6 +1,9 @@
 import { ChildProcess, execFile } from "child_process";
-import { wrap } from "comlink";
-import { rendererProcObjectEndpoint } from "comlink-electron-adapter";
+import { expose, wrap } from "comlink";
+import {
+    mainProcObjectEndpoint,
+    rendererProcObjectEndpoint
+} from "comlink-electron-adapter";
 import * as merge from "deepmerge";
 import * as isRpi from "detect-rpi";
 import {
@@ -26,6 +29,7 @@ import powerOff from "power-off";
 import { parse } from "querystring";
 import sleepMode from "sleep-mode";
 import { promisify } from "util";
+import { TheaterApi } from "./api";
 import { RendererApi } from "./api/renderer";
 
 import * as cec from "./cec/cec";
@@ -47,7 +51,8 @@ export async function main() {
     // initialization and is ready to create browser windows.
     app.on("ready", async () => {
         const windowStatePath = getWindowStateDataPath();
-        const enableNodeIntegration = !getAppUrl();
+        const appUrl = getAppUrl();
+        const enableNodeIntegration = !appUrl;
         let previousWindowInfo;
         try {
             previousWindowInfo = JSON.parse(
@@ -76,12 +81,12 @@ export async function main() {
                 webgl: false,
                 nodeIntegration: enableNodeIntegration,
                 plugins: false,
-                allowRunningInsecureContent: true,
+                allowRunningInsecureContent: !appUrl.startsWith("https"),
                 experimentalFeatures: false,
                 devTools: enableDevTools
             },
 
-            icon: `${__dirname}/icon.ico`
+            icon: `${__dirname}/../icons/512x512.png`
         };
 
         windowOptions.width = previousWindowInfo.width || 1280;
@@ -179,8 +184,105 @@ export async function main() {
         );
 
         mainWindow.on("move", () => rendererApi.onMove());
-        mainWindow.on("app-command", onAppCommand);
-        mainWindow.on("close", onWindowClose);
+        mainWindow.on("app-command", async (e, cmd) => {
+            switch (cmd) {
+                case "browser-backward":
+                    if (mainWindow.webContents.canGoBack()) {
+                        mainWindow.webContents.goBack();
+                    }
+                    break;
+                case "browser-forward":
+                    if (mainWindow.webContents.canGoForward()) {
+                        mainWindow.webContents.goForward();
+                    }
+                    break;
+                case "browser-stop":
+                    await rendererApi.executeCommand("stop");
+                    break;
+                case "browser-search":
+                    await rendererApi.executeCommand("search");
+                    break;
+                case "browser-favorites":
+                    await rendererApi.executeCommand("favorites");
+                    break;
+                case "browser-home":
+                    await rendererApi.executeCommand("home");
+                    break;
+                case "browser-refresh":
+                    await rendererApi.executeCommand("refresh");
+                    break;
+                case "find":
+                    await rendererApi.executeCommand("search");
+                    break;
+                case "volume-mute":
+                    await rendererApi.executeCommand("togglemute");
+                    break;
+                case "volume-down":
+                    await rendererApi.executeCommand("volumedown");
+                    break;
+                case "volume-up":
+                    await rendererApi.executeCommand("volumeup");
+                    break;
+                case "media-nexttrack":
+                    await rendererApi.executeCommand("next");
+                    break;
+                case "media-previoustrack":
+                    await rendererApi.executeCommand("previous");
+                    break;
+                case "media-stop":
+                    await rendererApi.executeCommand("stop");
+                    break;
+                case "media-play":
+                    await rendererApi.executeCommand("play");
+                    break;
+                case "media-pause":
+                    await rendererApi.executeCommand("pause");
+                    break;
+                case "media-record":
+                    await rendererApi.executeCommand("record");
+                    break;
+                case "media-fast-forward":
+                    await rendererApi.executeCommand("fastforward");
+                    break;
+                case "media-rewind":
+                    await rendererApi.executeCommand("rewind");
+                    break;
+                case "media-play-pause":
+                    await rendererApi.executeCommand("playpause");
+                    break;
+                case "media-channel-up":
+                    await rendererApi.executeCommand("channelup");
+                    break;
+                case "media-channel-down":
+                    await rendererApi.executeCommand("channeldown");
+                    break;
+                case "menu":
+                    await rendererApi.executeCommand("menu");
+                    break;
+                case "info":
+                    await rendererApi.executeCommand("info");
+                    break;
+            }
+        });
+        mainWindow.on("close", async () => {
+            if (hasAppLoaded) {
+                const data: any = mainWindow.getBounds();
+                data.state = currentWindowState;
+                writeFileSync(windowStatePath, JSON.stringify(data));
+            }
+
+            await rendererApi.onClosing();
+
+            // Unregister all shortcuts.
+            globalShortcut.unregisterAll();
+            closeWindow(playerWindow);
+
+            if (cecProcess) {
+                cecProcess.kill();
+            }
+
+            app.quit();
+        });
         mainWindow.on("minimize", () =>
             rendererApi.onWindowStateChanged("Minimized")
         );
@@ -221,11 +323,19 @@ export async function main() {
         mainWindow.on("unmaximize", () =>
             rendererApi.onWindowStateChanged("Normal")
         );
-        mainWindow.on("resize", onWindowResize);
+        mainWindow.on("resize", () => {
+            if (!isLinux || currentWindowState === "Normal") {
+                const bounds = mainWindow.getBounds();
+                playerWindow.setBounds(bounds);
+            }
+        });
 
         mainWindow.once("ready-to-show", async () => {
             mainWindow.show();
         });
+
+        const theaterApi = new TheaterApi();
+        expose(theaterApi, mainProcObjectEndpoint(ipcMain));
     });
 
     let currentWindowState: WindowState;
@@ -254,18 +364,6 @@ export async function main() {
         app.relaunch();
         app.quit();
     });
-
-    function onWindowMoved() {
-        const winPosition = mainWindow.getPosition();
-        playerWindow.setPosition(winPosition[0], winPosition[1]);
-    }
-
-    function onWindowResize() {
-        if (!isLinux || currentWindowState === "Normal") {
-            const bounds = mainWindow.getBounds();
-            playerWindow.setBounds(bounds);
-        }
-    }
 
     currentWindowState = "Normal";
     let restoreWindowState: WindowState;
@@ -323,14 +421,6 @@ export async function main() {
             }
             mainWindow.setAlwaysOnTop(false);
         }
-    }
-
-    function onMinimize() {
-        playerWindow.minimize();
-    }
-
-    function onRestore() {
-        playerWindow.restore();
     }
 
     const customFileProtocol = "electronfile";

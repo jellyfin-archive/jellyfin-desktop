@@ -1,8 +1,12 @@
-import { expose } from "comlink";
-import { rendererProcObjectEndpoint } from "comlink-electron-adapter";
+import { expose, wrap } from "comlink";
+import {
+    mainProcObjectEndpoint,
+    rendererProcObjectEndpoint
+} from "comlink-electron-adapter";
 import { ipcRenderer } from "electron";
 import { join } from "path";
 
+import { TheaterApi } from "../api";
 import { RendererApi } from "../api/renderer";
 
 const endpoint = rendererProcObjectEndpoint(ipcRenderer);
@@ -31,3 +35,9 @@ function dispatchIfLoaded() {
 }
 
 setTimeout(dispatchIfLoaded, 100);
+
+const theaterApi = wrap<TheaterApi>(mainProcObjectEndpoint(ipcRenderer));
+window.theaterApi = theaterApi;
+theaterApi
+    .conntest()
+    .then(() => console.info("Communication main <- renderer established"));
