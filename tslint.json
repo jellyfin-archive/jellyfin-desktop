@@ -1,0 +1,53 @@
+{
+    "defaultSeverity": "error",
+    "extends": ["tslint:recommended", "tslint-config-prettier"],
+    "jsRules": {},
+    "rules": {
+        "no-empty": false,
+        "eofline": true,
+        "indent": [true, "spaces", 4],
+        "deprecation": true,
+        "prefer-const": [
+            true,
+            {
+                "destructuring": "all"
+            }
+        ],
+        "encoding": true,
+        "prefer-template": [true, "allow-single-concat"],
+        "quotemark": [
+            true,
+            "double",
+            "avoid-template",
+            "avoid-escape"
+        ],
+        "trailing-comma": [
+            true,
+            {
+                "multiline": "never",
+                "singleline": "never"
+            }
+        ],
+        "no-console": false,
+        "variable-name": [
+            true,
+            "ban-keywords",
+            "check-format",
+            "allow-trailing-underscore",
+            "allow-pascal-case"
+        ],
+        "no-empty-interface": false,
+        "max-classes-per-file": false,
+        "no-trailing-whitespace": [
+            true,
+            "ignore-blank-lines",
+            "ignore-template-strings"
+        ],
+        "object-literal-sort-keys": false,
+        "prettier": true
+    },
+    "rulesDirectory": ["tslint-plugin-prettier"],
+    "linterOptions": {
+        "exclude": ["node_modules"]
+    }
+}

@@ -1,5 +1,5 @@
 const debDependencyDefault = ["gconf2", "gconf-service", "libnotify4", "libappindicator1", "libxtst6", "libnss3"];
-const debDependencies = ["gconf2", "gconf-service", "libnotify4", "libappindicator1", "libxtst6", "libnss3"];
+const debDependencies = ["cec-utils", "mpv"];
 
 function targetConf(targets, arch) {
     return targets.map((target) => ({
@@ -63,5 +63,8 @@ module.exports = {
             "default",
             "block-devices"
         ]
-    }
+    },
+    ignore: [
+        new RegExp("src/[a-z-/]\\.ts")
+    ]
 };

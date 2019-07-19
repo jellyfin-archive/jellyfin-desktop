@@ -1,4 +1,4 @@
-﻿define(['apphost', 'events'], function (appHost, events) {
+﻿define(['src/apphost', 'events'], function (appHost, events) {
     'use strict';
 
     function fullscreenManager() {
