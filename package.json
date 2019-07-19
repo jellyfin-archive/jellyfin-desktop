@@ -11,6 +11,10 @@
     "start": "run-s build electron",
     "build": "tsc -p src/tsconfig.json",
     "electron": "electron build/entry.js",
+    "lint": "tslint -p src/tsconfig.json",
+    "mac": "run-s build package-mac",
+    "win": "run-s build package-win",
+    "linux": "run-s build package-linux",
     "package-mac": "electron-builder -m",
     "package-win": "electron-builder -w",
     "package-linux": "electron-builder -l"
