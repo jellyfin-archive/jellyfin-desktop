@@ -40,10 +40,22 @@
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.4.tgz#56eec47706f0fd0b7c694eae2f3172e6b0b769da"
   integrity sha512-D9MyoQFI7iP5VdpEyPZyjjqIJ8Y8EDNQFIFVLOmeg1rI1xiHOChyUPMPRUVfqFCerxfE+yS3vMyj37F6IdtOoQ==
 
+"@types/electron-settings@^3.1.1":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@types/electron-settings/-/electron-settings-3.1.1.tgz#e3f8246ee1a8fc66b08203792d09589df355c776"
+  integrity sha512-wDVj8YFBuqLXgVQqZ1Yk+Qm27LjjldssnrwzDv9JanOokw24tcuJ76X1Uo5Xg9VVRIAF6HgmiAQQ+CZrRmJgYw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/long@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/long/-/long-4.0.0.tgz#719551d2352d301ac8b81db732acb6bdc28dbdef"
   integrity sha512-1w52Nyx4Gq47uuu0EVcsHBxZFJgurQ+rTKS3qMHxR1GY2T8c2AJYd6vZoZ9q1rupaDjU0yT+Jc2XTyXkjeMA+Q==
+
+"@types/node@*":
+  version "12.6.8"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.6.8.tgz#e469b4bf9d1c9832aee4907ba8a051494357c12c"
+  integrity sha512-aX+gFgA5GHcDi89KG5keey2zf0WfZk/HAQotEamsK2kbey+8yGKcson0hbK8E+v0NArlCJQCqMP161YhV6ZXLg==
 
 "@types/node@^10.12.18":
   version "10.14.12"
@@ -417,6 +429,11 @@ combined-stream@^1.0.6, combined-stream@~1.0.6:
   dependencies:
     delayed-stream "~1.0.0"
 
+comlink-electron-adapter@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/comlink-electron-adapter/-/comlink-electron-adapter-0.0.1.tgz#eb5107e7f39b32f7c8487c90310af75a4f73b5c2"
+  integrity sha512-viYKRvfW/V5c5m0CiQHIzEIMLc3CNt0A+fchKxsWl6NluEi84C5tQNDARl2gPibReoy8leJevpqyJVzTlAi3rA==
+
 comlink@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/comlink/-/comlink-4.0.1.tgz#b20d0fca012ef80cf7eae89b76e4b43b2a1a0e6d"
@@ -555,6 +572,11 @@ deep-extend@^0.6.0:
   resolved "https://registry.yarnpkg.com/deep-extend/-/deep-extend-0.6.0.tgz#c4fa7c95404a17a9c3e8ca7e1537312b736330ac"
   integrity sha512-LOHxIOaPYdHlJRtCQfDIVZtfw/ufM8+rVj649RIHzcm/vGwQRXFt6OPqIFWsm2XEMrNIEtWR64sY1LEKD2vAOA==
 
+deepmerge@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-4.0.0.tgz#3e3110ca29205f120d7cb064960a39c3d2087c09"
+  integrity sha512-YZ1rOP5+kHor4hMAH+HRQnBQHg+wvS1un1hAOuIcxcBy0hzcUf6Jg2a1w65kpoOUnurOfZbERwjI1TfZxNjcww==
+
 defer-to-connect@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/defer-to-connect/-/defer-to-connect-1.0.2.tgz#4bae758a314b034ae33902b5aac25a8dd6a8633e"
@@ -649,11 +671,6 @@ electron-builder@^21.0.15:
     sanitize-filename "^1.6.1"
     update-notifier "^3.0.1"
     yargs "^13.2.4"
-
-electron-comlink@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/electron-comlink/-/electron-comlink-0.1.0.tgz#1296f077da68bf168ff76eb21c070e0bdfb21452"
-  integrity sha512-EYZUPRTqoUe0mn7TTwuXfp2c8giiCLfTu1Driq6yiDpAYv+Zu8mGC9THMoTDJl/6EvNhryVd98g+tDb3NSPh2A==
 
 electron-download@^4.1.0:
   version "4.1.1"
