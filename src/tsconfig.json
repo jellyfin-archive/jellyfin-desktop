@@ -4,9 +4,14 @@
     "target": "es2018",
     "sourceMap": true,
     "outDir": "../build",
-    "allowJs": true
+    "rootDir": ".",
+    "skipLibCheck": true,
+    "lib": [
+      "esnext",
+      "dom"
+    ]
   },
-  "exclude": [
-    "../node_modules"
+  "include": [
+    "./**/*.ts"
   ]
 }

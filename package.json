@@ -3,14 +3,17 @@
   "productName": "Jellyfin Theater",
   "version": "3.0.5",
   "description": "Jellyfin Theater Made With Electron",
-  "main": "src/main.js",
+  "main": "build/shell/entry.js",
   "engines": {
     "node": ">=12"
   },
   "scripts": {
     "start": "run-s build electron",
-    "build": "tsc -p src/tsconfig.json",
-    "electron": "electron build/entry.js",
+    "build": "run-p build:ts build:scss build:copy",
+    "build:ts": "tsc -p src/tsconfig.json",
+    "build:scss": "node-sass src -ro build",
+    "build:copy": "cpx src/**/*.{html,json} build",
+    "electron": "electron build/shell/entry.js",
     "lint": "tslint -p src/tsconfig.json",
     "mac": "run-s build package-mac",
     "win": "run-s build package-win",
@@ -41,8 +44,10 @@
   "devDependencies": {
     "@types/electron-settings": "^3.1.1",
     "@types/long": "^4.0.0",
+    "cpx": "^1.5.0",
     "electron": "^6.0.0-beta.13",
     "electron-builder": "^21.0.15",
+    "node-sass": "^4.12.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.18.2",
     "source-map-support": "^0.5.12",

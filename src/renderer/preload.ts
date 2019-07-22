@@ -1,3 +1,4 @@
+/* tslint:disable:no-string-literal */
 import { expose, wrap } from "comlink";
 import {
     mainProcObjectEndpoint,
@@ -6,8 +7,12 @@ import {
 import { ipcRenderer } from "electron";
 import { join } from "path";
 
-import { TheaterApi } from "../api";
-import { RendererApi } from "../api/renderer";
+import { TheaterApi } from "../shell/api";
+import { RendererApi } from "./api";
+import { NativeShell } from "./native-shell";
+
+// prevent commonjs errors
+window["exports"] = {};
 
 const endpoint = rendererProcObjectEndpoint(ipcRenderer);
 
@@ -16,7 +21,6 @@ const rendererApi = new RendererApi();
 expose(rendererApi, endpoint);
 
 function onDomLoaded() {
-    console.info("Inserted custom styles");
     const link = document.createElement("link");
     link.setAttribute("rel", "stylesheet");
     link.setAttribute(
@@ -24,6 +28,10 @@ function onDomLoaded() {
         `file://${join(__dirname, "../../assets/theater.css")}`
     );
     document.head.appendChild(link);
+    console.info("Inserted custom styles");
+    const script = document.createElement("script");
+    link.setAttribute("src", "app://plugins/mpvplayer.js");
+    document.head.appendChild(script);
 }
 
 function dispatchIfLoaded() {
@@ -37,7 +45,9 @@ function dispatchIfLoaded() {
 setTimeout(dispatchIfLoaded, 100);
 
 const theaterApi = wrap<TheaterApi>(mainProcObjectEndpoint(ipcRenderer));
-window.theaterApi = theaterApi;
+window["theaterApi"] = theaterApi;
 theaterApi
     .conntest()
     .then(() => console.info("Communication main <- renderer established"));
+
+self["NativeShell"] = new NativeShell(theaterApi);

@@ -45,7 +45,8 @@
         ],
         "object-literal-sort-keys": false,
         "no-require-imports": true,
-        "prettier": true
+        "prettier": true,
+        "no-string-literal": false
     },
     "rulesDirectory": ["tslint-plugin-prettier"],
     "linterOptions": {

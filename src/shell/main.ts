@@ -19,25 +19,29 @@ import {
 } from "electron";
 import * as settings from "electron-settings";
 import { EventEmitter } from "events";
-import { access, readdir, readFileSync, writeFileSync } from "fs";
+import { readdir, readFileSync, writeFileSync } from "fs";
 import * as isLinux from "is-linux";
 import * as isWindows from "is-windows";
 import * as Long from "long";
 import { endianness, hostname } from "os";
 import { join, normalize } from "path";
 import powerOff from "power-off";
-import { parse } from "querystring";
 import sleepMode from "sleep-mode";
 import { promisify } from "util";
-import { TheaterApi } from "./api";
-import { RendererApi } from "./api/renderer";
 
-import * as cec from "./cec/cec";
-import * as playbackhandler from "./playbackhandler/playbackhandler";
-import * as serverdiscovery from "./serverdiscovery/serverdiscovery-native";
-import { IDevToolsBrowserWindow, WindowState } from "./types";
+import { RendererApi } from "../renderer/api";
+import {
+    IAppStartInfo,
+    IDevToolsBrowserWindow,
+    IMpvState,
+    WindowState
+} from "../types";
+import { TheaterApi } from "./api";
+import * as cec from "./features/cec";
+import * as playbackhandler from "./features/mpv";
+import { findServers } from "./features/serverdiscovery";
+import { wake } from "./features/wakeonlan";
 import { assertStringOrNull } from "./utils";
-import * as wakeonlan from "./wakeonlan/wakeonlan-native";
 
 const readdirAsync = promisify(readdir);
 
@@ -46,6 +50,8 @@ export async function main() {
     // be closed automatically when the JavaScript object is garbage collected.
     let mainWindow: IDevToolsBrowserWindow;
     let playerWindow: IDevToolsBrowserWindow;
+
+    const processes: { [pid: number]: ChildProcess } = {};
 
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
@@ -81,12 +87,12 @@ export async function main() {
                 webgl: false,
                 nodeIntegration: enableNodeIntegration,
                 plugins: false,
-                allowRunningInsecureContent: !appUrl.startsWith("https"),
+                allowRunningInsecureContent: true,
                 experimentalFeatures: false,
                 devTools: enableDevTools
             },
 
-            icon: `${__dirname}/../icons/512x512.png`
+            icon: `${__dirname}/../../icons/512x512.png`
         };
 
         windowOptions.width = previousWindowInfo.width || 1280;
@@ -109,9 +115,10 @@ export async function main() {
         const mainWindowOptions = merge<BrowserWindowConstructorOptions>(
             {
                 webPreferences: {
-                    preload: join(__dirname, "renderer/index.js")
+                    preload: join(__dirname, "../renderer/preload.js"),
+                    nodeIntegration: true
                 }
-            },
+            } as BrowserWindowConstructorOptions,
             windowOptions
         );
 
@@ -126,24 +133,28 @@ export async function main() {
             mainWindow.openDevTools();
         }
 
-        const url = getAppUrl();
         windowStateOnLoad = previousWindowInfo.state;
 
         addPathIntercepts();
-
-        registerAppHost();
-        registerFileSystem();
-        registerServerdiscovery();
         registerWakeOnLan();
 
-        if (url) {
-            mainWindow.loadURL(url);
+        if (appUrl) {
+            mainWindow.loadURL(appUrl);
         } else {
             const localPath = join(
-                `file://${__dirname}/../assets/firstrun/Jellyfin.html`
+                `file://${__dirname}/../../assets/firstrun/Jellyfin.html`
             );
             mainWindow.loadURL(localPath);
         }
+
+        const endpoint = rendererProcObjectEndpoint(
+            ipcMain,
+            mainWindow.webContents
+        );
+        const rendererApi = wrap<RendererApi>(endpoint);
+        rendererApi.comtest().then(() => {
+            console.info("Communication main -> renderer established");
+        });
 
         mainWindow.setMenu(null);
 
@@ -162,22 +173,13 @@ export async function main() {
             fullscreenOnShow = true;
         }
 
-        initCec();
+        initCec(rendererApi);
 
         initPlaybackHandler(commandLineOptions.mpvPath);
         if (isRpi()) {
             mainWindow.setFullScreen(true);
             mainWindow.setAlwaysOnTop(true);
         }
-
-        const endpoint = rendererProcObjectEndpoint(
-            ipcMain,
-            mainWindow.webContents
-        );
-        const rendererApi = wrap<RendererApi>(endpoint);
-        rendererApi.comtest().then(() => {
-            console.info("Communication main -> renderer established");
-        });
 
         mainWindow.webContents.on("dom-ready", () =>
             rendererApi.setStartInfo(startInfo)
@@ -283,14 +285,17 @@ export async function main() {
 
             app.quit();
         });
-        mainWindow.on("minimize", () =>
-            rendererApi.onWindowStateChanged("Minimized")
-        );
-        mainWindow.on("maximize", () =>
-            rendererApi.onWindowStateChanged("Maximized")
-        );
+        mainWindow.on("minimize", () => {
+            rendererApi.onWindowStateChanged("Minimized");
+            currentWindowState = "Minimized";
+        });
+        mainWindow.on("maximize", () => {
+            rendererApi.onWindowStateChanged("Maximized");
+            currentWindowState = "Maximized";
+        });
         mainWindow.on("enter-full-screen", async () => {
             await rendererApi.onWindowStateChanged("Fullscreen");
+            currentWindowState = "Fullscreen";
 
             if (initialShowEventsComplete) {
                 if (isLinux) {
@@ -301,6 +306,7 @@ export async function main() {
         });
         mainWindow.on("leave-full-screen", async () => {
             await rendererApi.onWindowStateChanged("Normal");
+            currentWindowState = "Normal";
 
             if (initialShowEventsComplete) {
                 playerWindow.setFullScreen(false);
@@ -316,13 +322,17 @@ export async function main() {
                 restoreState !== "Minimized"
             ) {
                 setWindowState(restoreState);
+                currentWindowState = restoreState;
             } else {
                 await rendererApi.onWindowStateChanged("Normal");
+                currentWindowState = "Normal";
             }
         });
-        mainWindow.on("unmaximize", () =>
-            rendererApi.onWindowStateChanged("Normal")
-        );
+        mainWindow.on("unmaximize", () => {
+            rendererApi.onWindowStateChanged("Normal");
+
+            currentWindowState = "Normal";
+        });
         mainWindow.on("resize", () => {
             if (!isLinux || currentWindowState === "Normal") {
                 const bounds = mainWindow.getBounds();
@@ -334,11 +344,84 @@ export async function main() {
             mainWindow.show();
         });
 
-        const theaterApi = new TheaterApi();
+        const theaterApi = new TheaterApi({
+            setWindowState,
+            async execCommand(cmd: string): Promise<void> {
+                switch (cmd) {
+                    case "exit":
+                        closeWindow(mainWindow);
+                        break;
+                    case "sleep":
+                        sleepSystem();
+                        break;
+                    case "shutdown":
+                        shutdownSystem();
+                        break;
+                    case "restart":
+                        restartSystem();
+                        break;
+                    case "video-on":
+                        isTransparencyRequired = true;
+                        setMainWindowResizable(false);
+                        break;
+                    case "video-off":
+                        isTransparencyRequired = false;
+                        setMainWindowResizable(true);
+                        break;
+                    case "loaded":
+                        if (windowStateOnLoad) {
+                            setWindowState(windowStateOnLoad);
+                        }
+                        mainWindow.focus();
+                        hasAppLoaded = true;
+                        globalShortcut.register("mediastop", async () => {
+                            await rendererApi.executeCommand("stop");
+                        });
+
+                        globalShortcut.register("mediaplaypause", async () => {
+                            await rendererApi.executeCommand("playpause");
+                        });
+
+                        await rendererApi.setPlayerwindowId(
+                            getWindowId(playerWindow)
+                        );
+                        break;
+                }
+            },
+            mpvCommand(name: string, body?: any): IMpvState {
+                return { volume: 100 };
+            },
+            startProcess(path: string, args: string[]): number | void {
+                try {
+                    const process = execFile(path, args, {}, async error => {
+                        if (error) {
+                            console.log(`Process closed with error: ${error}`);
+                        }
+                        processes[pid] = null;
+                        await rendererApi.onChildProcessClosed(pid, !!error);
+                    });
+
+                    const pid = process.pid;
+                    processes[pid] = process;
+                    return pid;
+                } catch (err) {
+                    alert(`Error launching process: ${err}`);
+                }
+            },
+            stopProcess(pid: number): void {
+                const process = processes[pid];
+                if (process) {
+                    process.kill();
+                }
+            },
+            findServers,
+            async openUrl(url: string): Promise<void> {
+                await shell.openExternal(url);
+            }
+        });
         expose(theaterApi, mainProcObjectEndpoint(ipcMain));
     });
 
-    let currentWindowState: WindowState;
     let hasAppLoaded = false;
 
     const enableDevTools = true;
@@ -365,29 +448,31 @@ export async function main() {
         app.quit();
     });
 
-    currentWindowState = "Normal";
+    let currentWindowState: WindowState = "Normal";
     let restoreWindowState: WindowState;
 
     function setWindowState(state: WindowState) {
         restoreWindowState = null;
         const previousState = currentWindowState;
 
-        /*if (state === "Maximized") {
+        if (state === "Maximized") {
             state = "Fullscreen";
-        }*/
+        }
 
         if (state === "Minimized") {
             restoreWindowState = previousState;
             mainWindow.setAlwaysOnTop(false);
             mainWindow.minimize();
-        } else if (state === "Maximized") {
+        } /*else if (state === "Maximized") {
             if (previousState === "Minimized") {
                 mainWindow.restore();
             }
 
             mainWindow.maximize();
             mainWindow.setAlwaysOnTop(false);
-        } else if (state === "Fullscreen") {
+        }*/ else if (
+            state === "Fullscreen"
+        ) {
             if (previousState === "Minimized") {
                 mainWindow.restore();
             }
@@ -423,16 +508,20 @@ export async function main() {
         }
     }
 
-    const customFileProtocol = "electronfile";
+    const customFileProtocol = "theater";
 
     function addPathIntercepts() {
+        const theaterPath = normalize(join(__dirname, "../renderer"));
+
         protocol.registerFileProtocol(
             customFileProtocol,
             (request, callback) => {
                 // Add 3 to account for ://
                 let url = request.url.substr(customFileProtocol.length + 3);
-                url = `${__dirname}/${url}`;
+                url = `${theaterPath}/${url}`;
                 url = url.split("?")[0];
+
+                console.info(`Loading appfile ${url}`);
 
                 callback(normalize(url));
             }
@@ -466,173 +555,12 @@ export async function main() {
     let isTransparencyRequired = false;
     let windowStateOnLoad;
 
-    function registerAppHost() {
-        const customProtocol = "electronapphost";
-
-        protocol.registerStringProtocol(customProtocol, (request, callback) => {
-            // Add 3 to account for ://
-            const url = request.url.substr(customProtocol.length + 3);
-            const parts = url.split("?");
-            const command = parts[0];
-
-            switch (command) {
-                case "windowstate-Normal":
-                    setMainWindowResizable(!isTransparencyRequired);
-                    setWindowState("Normal");
-
-                    break;
-                case "windowstate-Maximized":
-                    setMainWindowResizable(false);
-                    setWindowState("Maximized");
-                    break;
-                case "windowstate-Fullscreen":
-                    setMainWindowResizable(false);
-                    setWindowState("Fullscreen");
-                    break;
-                case "windowstate-Minimized":
-                    setWindowState("Minimized");
-                    break;
-                case "exit":
-                    closeWindow(mainWindow);
-                    break;
-                case "sleep":
-                    sleepSystem();
-                    break;
-                case "shutdown":
-                    shutdownSystem();
-                    break;
-                case "restart":
-                    restartSystem();
-                    break;
-                case "openurl":
-                    shell.openExternal(url.substring(url.indexOf("url=") + 4));
-                    break;
-                case "shellstart":
-                    const options = parse(parts[1]);
-                    startProcess(options, callback);
-                    return;
-                case "shellclose":
-                    closeProcess(parse(parts[1]).id, callback);
-                    return;
-                case "video-on":
-                    isTransparencyRequired = true;
-                    setMainWindowResizable(false);
-                    break;
-                case "video-off":
-                    isTransparencyRequired = false;
-                    setMainWindowResizable(true);
-                    break;
-                case "loaded":
-                    if (windowStateOnLoad) {
-                        setWindowState(windowStateOnLoad);
-                    }
-                    mainWindow.focus();
-                    hasAppLoaded = true;
-                    onLoaded();
-                    break;
-            }
-            callback("");
-        });
-    }
-
-    function onLoaded() {
-        // var globalShortcut = electron.globalShortcut;
-
-        // globalShortcut.register('mediastop', function () {
-        //    sendCommand('stop');
-        // });
-
-        // globalShortcut.register('mediaplaypause', function () {
-        // });
-
-        sendJavascript(`window.PlayerWindowId="${getWindowId(playerWindow)}";`);
-    }
-
-    const processes = {};
-
-    function startProcess(options, callback) {
-        let pid;
-        const args = (options.arguments || "").split("|||");
-
-        try {
-            const process = execFile(options.path, args, {}, error => {
-                if (error) {
-                    console.log(`Process closed with error: ${error}`);
-                }
-                processes[pid] = null;
-                const script = `onChildProcessClosed("${pid}", ${
-                    error ? "true" : "false"
-                });`;
-
-                sendJavascript(script);
-            });
-
-            pid = process.pid.toString();
-            processes[pid] = process;
-            callback(pid);
-        } catch (err) {
-            alert(`Error launching process: ${err}`);
-        }
-    }
-
     function closeProcess(id, callback) {
         const process = processes[id];
         if (process) {
             process.kill();
         }
         callback("");
-    }
-
-    function registerFileSystem() {
-        const customProtocol = "electronfs";
-
-        protocol.registerStringProtocol(customProtocol, (request, callback) => {
-            // Add 3 to account for ://
-            const url = request.url
-                .substr(customProtocol.length + 3)
-                .split("?")[0];
-
-            switch (url) {
-                case "fileexists":
-                case "directoryexists":
-                    const path = request.url.split("=")[1];
-
-                    access(path, err => {
-                        if (err) {
-                            console.error(`fs access result for path: ${err}`);
-
-                            callback("false");
-                        } else {
-                            callback("true");
-                        }
-                    });
-                    break;
-                default:
-                    callback("");
-                    break;
-            }
-        });
-    }
-
-    function registerServerdiscovery() {
-        const customProtocol = "electronserverdiscovery";
-        protocol.registerStringProtocol(customProtocol, (request, callback) => {
-            // Add 3 to account for ://
-            const url = request.url
-                .substr(customProtocol.length + 3)
-                .split("?")[0];
-
-            // noinspection JSRedundantSwitchStatement
-            switch (url) {
-                case "findservers":
-                    const timeoutMs = request.url.split("=")[1];
-                    serverdiscovery.findServers(timeoutMs, callback);
-                    break;
-                default:
-                    callback("");
-                    break;
-            }
-        });
     }
 
     function registerWakeOnLan() {
@@ -648,7 +576,7 @@ export async function main() {
                 case "wakeserver":
                     const mac = request.url.split("=")[1].split("&")[0];
                     const options = { port: request.url.split("=")[2] };
-                    wakeonlan.wake(mac, options, callback);
+                    wake(mac, options, callback);
                     break;
                 default:
                     callback("");
@@ -657,7 +585,7 @@ export async function main() {
         });
     }
 
-    function alert(text) {
+    function alert(text: string) {
         dialog.showMessageBox(mainWindow, {
             message: text.toString(),
             buttons: ["ok"]
@@ -683,25 +611,23 @@ export async function main() {
         return url;
     }
 
-    async function loadStartInfo() {
-        const topDirectory = normalize(__dirname);
-        const pluginDirectory = normalize(`${__dirname}/plugins`);
-        const scriptsDirectory = normalize(`${__dirname}/scripts`);
+    async function loadStartInfo(): Promise<IAppStartInfo> {
+        const pluginDirectory = normalize(`${__dirname}/../renderer/plugins`);
+        const scriptsDirectory = normalize(`${__dirname}/../renderer/scripts`);
 
-        const pluginFiles = (await readdirAsync(pluginDirectory)) || [];
-        const scriptFiles = (await readdirAsync(scriptsDirectory)) || [];
-        const startInfo = {
+        const pluginFiles: string[] =
+            (await readdirAsync(pluginDirectory)) || [];
+        const scriptFiles: string[] =
+            (await readdirAsync(scriptsDirectory)) || [];
+        return {
             paths: {
-                apphost: `${customFileProtocol}://apphost`,
                 shell: `${customFileProtocol}://shell`,
                 wakeonlan: `${customFileProtocol}://wakeonlan/wakeonlan`,
                 serverdiscovery: `${customFileProtocol}://serverdiscovery/serverdiscovery`,
-                fullscreenmanager: `file://${replaceAll(
-                    normalize(topDirectory + "/fullscreenmanager.js"),
-                    "\\",
-                    "/"
-                )}`,
-                filesystem: `${customFileProtocol}://filesystem`
+                fullscreenmanager: `${customFileProtocol}://fullscreenmanager`,
+                filesystem: `${customFileProtocol}://filesystem`,
+                theater: `${customFileProtocol}://`,
+                mpvplayer: `${customFileProtocol}://plugins/mpvplayer`
             },
             name: app.getName(),
             version: app.getVersion(),
@@ -709,7 +635,7 @@ export async function main() {
             deviceId: hostname(),
             supportsTransparentWindow: supportsTransparentWindow(),
             plugins: pluginFiles
-                .filter(f => f.indexOf(".js") !== -1)
+                .filter(f => f.match(/\.js$/))
                 .map(
                     f =>
                         `file://${replaceAll(
@@ -727,171 +653,6 @@ export async function main() {
                     )}`
             )
         };
-    }
-
-    function setStartInfo() {
-        // const script = `function startWhenReady(){if (self.Emby && self.Emby.App){self.appStartInfo=${startInfoJson};Emby.App.start(appStartInfo);} else {setTimeout(startWhenReady, 50);}} startWhenReady();`;
-        // sendJavascript(script);
-        // sendJavascript('var appStartInfo=' + startInfoJson + ';');
-    }
-
-    function sendCommand(cmd) {
-        const script = `require(['inputmanager'], function(inputmanager){inputmanager.trigger('${cmd}');});`;
-        sendJavascript(script);
-    }
-
-    function sendJavascript(script) {
-        // Add some null checks to handle attempts to send JS when the process is closing or has closed
-        const win = mainWindow;
-        if (win) {
-            const web = win.webContents;
-            if (web) {
-                web.executeJavaScript(script);
-            }
-        }
-    }
-
-    function onAppCommand(e, cmd) {
-        // switch (command_id) {
-        //    case APPCOMMAND_BROWSER_BACKWARD       : return "browser-backward";
-        //    case APPCOMMAND_BROWSER_FORWARD        : return "browser-forward";
-        //    case APPCOMMAND_BROWSER_REFRESH        : return "browser-refresh";
-        //    case APPCOMMAND_BROWSER_STOP           : return "browser-stop";
-        //    case APPCOMMAND_BROWSER_SEARCH         : return "browser-search";
-        //    case APPCOMMAND_BROWSER_FAVORITES      : return "browser-favorites";
-        //    case APPCOMMAND_BROWSER_HOME           : return "browser-home";
-        //    case APPCOMMAND_VOLUME_MUTE            : return "volume-mute";
-        //    case APPCOMMAND_VOLUME_DOWN            : return "volume-down";
-        //    case APPCOMMAND_VOLUME_UP              : return "volume-up";
-        //    case APPCOMMAND_MEDIA_NEXTTRACK        : return "media-nexttrack";
-        //    case APPCOMMAND_MEDIA_PREVIOUSTRACK    : return "media-previoustrack";
-        //    case APPCOMMAND_MEDIA_STOP             : return "media-stop";
-        //    case APPCOMMAND_MEDIA_PLAY_PAUSE       : return "media-play-pause";
-        //    case APPCOMMAND_LAUNCH_MAIL            : return "launch-mail";
-        //    case APPCOMMAND_LAUNCH_MEDIA_SELECT    : return "launch-media-select";
-        //    case APPCOMMAND_LAUNCH_APP1            : return "launch-app1";
-        //    case APPCOMMAND_LAUNCH_APP2            : return "launch-app2";
-        //    case APPCOMMAND_BASS_DOWN              : return "bass-down";
-        //    case APPCOMMAND_BASS_BOOST             : return "bass-boost";
-        //    case APPCOMMAND_BASS_UP                : return "bass-up";
-        //    case APPCOMMAND_TREBLE_DOWN            : return "treble-down";
-        //    case APPCOMMAND_TREBLE_UP              : return "treble-up";
-        //    case APPCOMMAND_MICROPHONE_VOLUME_MUTE : return "microphone-volume-mute";
-        //    case APPCOMMAND_MICROPHONE_VOLUME_DOWN : return "microphone-volume-down";
-        //    case APPCOMMAND_MICROPHONE_VOLUME_UP   : return "microphone-volume-up";
-        //    case APPCOMMAND_HELP                   : return "help";
-        //    case APPCOMMAND_FIND                   : return "find";
-        //    case APPCOMMAND_NEW                    : return "new";
-        //    case APPCOMMAND_OPEN                   : return "open";
-        //    case APPCOMMAND_CLOSE                  : return "close";
-        //    case APPCOMMAND_SAVE                   : return "save";
-        //    case APPCOMMAND_PRINT                  : return "print";
-        //    case APPCOMMAND_UNDO                   : return "undo";
-        //    case APPCOMMAND_REDO                   : return "redo";
-        //    case APPCOMMAND_COPY                   : return "copy";
-        //    case APPCOMMAND_CUT                    : return "cut";
-        //    case APPCOMMAND_PASTE                  : return "paste";
-        //    case APPCOMMAND_REPLY_TO_MAIL          : return "reply-to-mail";
-        //    case APPCOMMAND_FORWARD_MAIL           : return "forward-mail";
-        //    case APPCOMMAND_SEND_MAIL              : return "send-mail";
-        //    case APPCOMMAND_SPELL_CHECK            : return "spell-check";
-        //    case APPCOMMAND_MIC_ON_OFF_TOGGLE      : return "mic-on-off-toggle";
-        //    case APPCOMMAND_CORRECTION_LIST        : return "correction-list";
-        //    case APPCOMMAND_MEDIA_PLAY             : return "media-play";
-        //    case APPCOMMAND_MEDIA_PAUSE            : return "media-pause";
-        //    case APPCOMMAND_MEDIA_RECORD           : return "media-record";
-        //    case APPCOMMAND_MEDIA_FAST_FORWARD     : return "media-fast-forward";
-        //    case APPCOMMAND_MEDIA_REWIND           : return "media-rewind";
-        //    case APPCOMMAND_MEDIA_CHANNEL_UP       : return "media-channel-up";
-        //    case APPCOMMAND_MEDIA_CHANNEL_DOWN     : return "media-channel-down";
-        //    case APPCOMMAND_DELETE                 : return "delete";
-        //    case APPCOMMAND_DICTATE_OR_COMMAND_CONTROL_TOGGLE:
-        //        return "dictate-or-command-control-toggle";
-        //    default:
-        //        return "unknown";
-
-        if (cmd !== "Unknown") {
-            // alert(cmd);
-        }
-
-        switch (cmd) {
-            case "browser-backward":
-                if (mainWindow.webContents.canGoBack()) {
-                    mainWindow.webContents.goBack();
-                }
-                break;
-            case "browser-forward":
-                if (mainWindow.webContents.canGoForward()) {
-                    mainWindow.webContents.goForward();
-                }
-                break;
-            case "browser-stop":
-                sendCommand("stop");
-                break;
-            case "browser-search":
-                sendCommand("search");
-                break;
-            case "browser-favorites":
-                sendCommand("favorites");
-                break;
-            case "browser-home":
-                sendCommand("home");
-                break;
-            case "browser-refresh":
-                sendCommand("refresh");
-                break;
-            case "find":
-                sendCommand("search");
-                break;
-            case "volume-mute":
-                sendCommand("togglemute");
-                break;
-            case "volume-down":
-                sendCommand("volumedown");
-                break;
-            case "volume-up":
-                sendCommand("volumeup");
-                break;
-            case "media-nexttrack":
-                sendCommand("next");
-                break;
-            case "media-previoustrack":
-                sendCommand("previous");
-                break;
-            case "media-stop":
-                sendCommand("stop");
-                break;
-            case "media-play":
-                sendCommand("play");
-                break;
-            case "media-pause":
-                sendCommand("pause");
-                break;
-            case "media-record":
-                sendCommand("record");
-                break;
-            case "media-fast-forward":
-                sendCommand("fastforward");
-                break;
-            case "media-rewind":
-                sendCommand("rewind");
-                break;
-            case "media-play-pause":
-                sendCommand("playpause");
-                break;
-            case "media-channel-up":
-                sendCommand("channelup");
-                break;
-            case "media-channel-down":
-                sendCommand("channeldown");
-                break;
-            case "menu":
-                sendCommand("menu");
-                break;
-            case "info":
-                sendCommand("info");
-                break;
-        }
     }
 
     function setCommandLineSwitches() {
@@ -924,27 +685,6 @@ export async function main() {
         }
     }
 
-    function onWindowClose() {
-        if (hasAppLoaded) {
-            const data: any = mainWindow.getBounds();
-            data.state = currentWindowState;
-            const windowStatePath = getWindowStateDataPath();
-            writeFileSync(windowStatePath, JSON.stringify(data));
-        }
-
-        mainWindow.webContents.executeJavaScript("AppCloseHelper.onClosing();");
-
-        // Unregister all shortcuts.
-        globalShortcut.unregisterAll();
-        closeWindow(playerWindow);
-
-        if (cecProcess) {
-            cecProcess.kill();
-        }
-
-        app.quit();
-    }
-
     function parseCommandLine() {
         const commandLineArguments = process.argv.slice(2);
 
@@ -973,13 +713,13 @@ export async function main() {
         app.setPath("userData", userDataPath);
     }
 
-    function onCecCommand(cmd) {
-        console.log(`Command received: ${cmd}`);
-        sendCommand(cmd);
-    }
-
     /* CEC Module */
-    function initCec() {
+    function initCec(rendererApi: RendererApi) {
+        async function onCecCommand(cmd) {
+            console.log(`Command received: ${cmd}`);
+            await rendererApi.executeCommand(cmd);
+        }
+
         try {
             // create the cec event
             const cecExePath = commandLineOptions.cecExePath;
