@@ -28,7 +28,7 @@ define([
     dom,
     require,
     connectionManager
-): (() => any) => {
+): new () => any => {
     "use strict";
 
     function getTextTrackUrl(subtitleStream, serverId) {
@@ -106,14 +106,17 @@ define([
 
             files.push({
                 lang: "cs",
-                path: pluginManager.mapPath(this, "mpvplayer/strings/cs.json")
+                path: pluginManager.mapPath(
+                    this,
+                    "theater/plugins/mpvplayer/strings/cs.json"
+                )
             });
 
             files.push({
                 lang: "en-us",
                 path: pluginManager.mapPath(
                     this,
-                    "mpvplayer/strings/en-US.json"
+                    "theater/plugins/mpvplayer/strings/en-US.json"
                 )
             });
 
@@ -121,61 +124,79 @@ define([
                 lang: "en-GB",
                 path: pluginManager.mapPath(
                     this,
-                    "mpvplayer/strings/en-GB.json"
+                    "theater/plugins/mpvplayer/strings/en-GB.json"
                 )
             });
 
             files.push({
                 lang: "fr",
-                path: pluginManager.mapPath(this, "mpvplayer/strings/fr.json")
+                path: pluginManager.mapPath(
+                    this,
+                    "theater/plugins/mpvplayer/strings/fr.json"
+                )
             });
 
             files.push({
                 lang: "hr",
-                path: pluginManager.mapPath(this, "mpvplayer/strings/hr.json")
+                path: pluginManager.mapPath(
+                    this,
+                    "theater/plugins/mpvplayer/strings/hr.json"
+                )
             });
 
             files.push({
                 lang: "it",
-                path: pluginManager.mapPath(this, "mpvplayer/strings/it.json")
+                path: pluginManager.mapPath(
+                    this,
+                    "theater/plugins/mpvplayer/strings/it.json"
+                )
             });
 
             files.push({
                 lang: "lt-LT",
                 path: pluginManager.mapPath(
                     this,
-                    "mpvplayer/strings/lt-LT.json"
+                    "theater/plugins/mpvplayer/strings/lt-LT.json"
                 )
             });
 
             files.push({
                 lang: "pl",
-                path: pluginManager.mapPath(this, "mpvplayer/strings/pl.json")
+                path: pluginManager.mapPath(
+                    this,
+                    "theater/plugins/mpvplayer/strings/pl.json"
+                )
             });
 
             files.push({
                 lang: "pt-PT",
                 path: pluginManager.mapPath(
                     this,
-                    "mpvplayer/strings/pt-PT.json"
+                    "theater/plugins/mpvplayer/strings/pt-PT.json"
                 )
             });
 
             files.push({
                 lang: "ru",
-                path: pluginManager.mapPath(this, "mpvplayer/strings/ru.json")
+                path: pluginManager.mapPath(
+                    this,
+                    "theater/plugins/mpvplayer/strings/ru.json"
+                )
             });
 
             files.push({
                 lang: "sv",
-                path: pluginManager.mapPath(this, "mpvplayer/strings/sv.json")
+                path: pluginManager.mapPath(
+                    this,
+                    "theater/plugins/mpvplayer/strings/sv.json"
+                )
             });
 
             files.push({
                 lang: "zh-CN",
                 path: pluginManager.mapPath(
                     this,
-                    "mpvplayer/strings/zh-CN.json"
+                    "theater/plugins/mpvplayer/strings/zh-CN.json"
                 )
             });
 
@@ -740,5 +761,5 @@ define([
         }
     }
 
-    return () => new MpvPlayer();
+    return MpvPlayer;
 });

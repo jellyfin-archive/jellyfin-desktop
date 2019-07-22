@@ -22,17 +22,6 @@ export class RendererApi {
 
     public setStartInfo(startInfo: IAppStartInfo) {
         self["appStartInfo"] = startInfo;
-        function startWhenReady() {
-            if (self["Emby"] && self["Emby"].App) {
-                self["Emby"].App.start(startInfo);
-                console.info("Started Jellyfin");
-            } else {
-                setTimeout(startWhenReady, 50);
-            }
-        }
-        startWhenReady();
-
-        window["require"] = { paths: startInfo.paths };
     }
 
     public async executeCommand(cmd: string) {

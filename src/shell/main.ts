@@ -115,8 +115,7 @@ export async function main() {
         const mainWindowOptions = merge<BrowserWindowConstructorOptions>(
             {
                 webPreferences: {
-                    preload: join(__dirname, "../renderer/preload.js"),
-                    nodeIntegration: true
+                    preload: join(__dirname, "../renderer/preload.js")
                 }
             } as BrowserWindowConstructorOptions,
             windowOptions
@@ -621,13 +620,7 @@ export async function main() {
             (await readdirAsync(scriptsDirectory)) || [];
         return {
             paths: {
-                shell: `${customFileProtocol}://shell`,
-                wakeonlan: `${customFileProtocol}://wakeonlan/wakeonlan`,
-                serverdiscovery: `${customFileProtocol}://serverdiscovery/serverdiscovery`,
-                fullscreenmanager: `${customFileProtocol}://fullscreenmanager`,
-                filesystem: `${customFileProtocol}://filesystem`,
-                theater: `${customFileProtocol}://`,
-                mpvplayer: `${customFileProtocol}://plugins/mpvplayer`
+                theater: `${customFileProtocol}://`
             },
             name: app.getName(),
             version: app.getVersion(),

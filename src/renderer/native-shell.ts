@@ -21,6 +21,9 @@ export class NativeShell {
     }
 
     public getPlugins() {
+        requirejs.config({
+            paths: self["appStartInfo"].paths
+        });
         console.info("Loading theater plugins");
         return ["theater/plugins/mpvplayer"];
     }
