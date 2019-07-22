@@ -41,7 +41,7 @@
     "DefaultAudioDelayHelp": "Zpo\u017ed\u011bn\u00ed zvuku v milisekund\u00e1ch.",
     "AudioDelay2325": "Zpo\u017ed\u011bn\u00ed zvuku (23 - 25 fps):",
     "AudioDelay2325Help": "Zpo\u017ed\u011bn\u00ed zvuku v milisekund\u00e1ch pro videa se sn\u00edmkovou frekvenc\u00ed 23-25 \u200b\u200bfps.",
-    "EnableExclusiveAudioModeHelp": "Povolit re\u017eim exkluzivn\u00edho v\u00fdstupu. V tomto re\u017eimu je syst\u00e9m obvykle uzam\u010den a pouze Emby bude schopen generovat v\u00fdstup zvuku.",
+    "EnableExclusiveAudioModeHelp": "Povolit re\u017eim exkluzivn\u00edho v\u00fdstupu. V tomto re\u017eimu je syst\u00e9m obvykle uzam\u010den a pouze Jellyfin bude schopen generovat v\u00fdstup zvuku.",
     "ThreeDMode": "Re\u017eim 3D konverze:",
     "MonoConvertTo2D": "Mono (konverze do 2D)"
 }

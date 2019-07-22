@@ -1,5 +1,5 @@
 /**
- * Command Map Module. Maps CEC event codes to Emby commands.
+ * Command Map Module. Maps CEC event codes to Jellyfin commands.
  */
 
 let cecEmitter;
@@ -9,7 +9,7 @@ function emitCmd(cmd) {
 }
 
 /**
- * Parses CEC event code and converts it into an Emby command.
+ * Parses CEC event code and converts it into an Jellyfin command.
  * @param {String} code - 2 character code.
  * @param {Event.Emitter} emitter - Event emitter.
  */

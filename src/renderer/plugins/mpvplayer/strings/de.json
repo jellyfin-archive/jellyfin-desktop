@@ -41,7 +41,7 @@
     "DefaultAudioDelayHelp": "Audioverz\u00f6gerung in Millisekunden:",
     "AudioDelay2325": "Audioverz\u00f6gerung (23-25 Bilder\/Sekunde)",
     "AudioDelay2325Help": "Audioverz\u00f6gerung f\u00fcr Videos mit Bildraten von 23-25 Bilder\/Sekunde.",
-    "EnableExclusiveAudioModeHelp": "Verwende Exklusiven Audio Ausgabe Modus. In diesem Modus ist das System f\u00fcr weitere Audioausgaben gesperrt und nur Emby kann Audio wiedergeben.",
+    "EnableExclusiveAudioModeHelp": "Verwende Exklusiven Audio Ausgabe Modus. In diesem Modus ist das System f\u00fcr weitere Audioausgaben gesperrt und nur Jellyfin kann Audio wiedergeben.",
     "ThreeDMode": "3D Konversion Modus",
     "MonoConvertTo2D": "Mono (Konvertiere zu 2D)"
 }

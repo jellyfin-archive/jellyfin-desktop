@@ -912,10 +912,10 @@ function createMpv(options, mediaType, mediaSource) {
     }
 
     if (isWindows()) {
-        mpvInitOptions.socket = "\\\\.\\pipe\\emby-pipe";
+        mpvInitOptions.socket = "\\\\.\\pipe\\jellyfin-pipe";
         mpvInitOptions.ipc_command = "--input-ipc-server";
     } else {
-        mpvInitOptions.socket = "/tmp/emby.sock";
+        mpvInitOptions.socket = "/tmp/jellyfin.sock";
         mpvInitOptions.ipc_command = "--input-unix-socket";
     }
 

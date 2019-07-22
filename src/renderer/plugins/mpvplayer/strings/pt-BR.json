@@ -41,7 +41,7 @@
     "DefaultAudioDelayHelp": "Atraso do \u00e1udio em milissegundos.",
     "AudioDelay2325": "Atraso do \u00e1udio (23-25 fps):",
     "AudioDelay2325Help": "Atraso do \u00e1udio em milissegundos para v\u00eddeos com taxa de 23-35 fps.",
-    "EnableExclusiveAudioModeHelp": "Ativar modo de sa\u00edda exclusivo. Neste modo, o sistema \u00e9 normalmente bloqueado e somente o Emby poder\u00e1 fazer a sa\u00edda do \u00e1udio.",
+    "EnableExclusiveAudioModeHelp": "Ativar modo de sa\u00edda exclusivo. Neste modo, o sistema \u00e9 normalmente bloqueado e somente o Jellyfin poder\u00e1 fazer a sa\u00edda do \u00e1udio.",
     "ThreeDMode": "Modo de convers\u00e3o 3D:",
     "MonoConvertTo2D": "mono (converter para 2D)"
 }

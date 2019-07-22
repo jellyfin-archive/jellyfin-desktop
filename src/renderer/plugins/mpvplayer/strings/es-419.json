@@ -41,7 +41,7 @@
     "DefaultAudioDelayHelp": "Retraso de audio en milisegundos.",
     "AudioDelay2325": "Retraso de audio (23-25 fps):",
     "AudioDelay2325Help": "Retraso de audio en milisegundos para videos de 23-25 fps (cuadros por segundo).",
-    "EnableExclusiveAudioModeHelp": "Habilita el modo de salida exclusivo. En este modo, el sistema esta usualmente bloqueado, y solo Emby podr\u00e1 reproducir audio.",
+    "EnableExclusiveAudioModeHelp": "Habilita el modo de salida exclusivo. En este modo, el sistema esta usualmente bloqueado, y solo Jellyfin podr\u00e1 reproducir audio.",
     "ThreeDMode": "Modo de conversi\u00f3n 3D:",
     "MonoConvertTo2D": "mono (convertir a 2D)"
 }
