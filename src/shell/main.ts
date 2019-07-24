@@ -19,7 +19,7 @@ import {
 } from "electron";
 import * as settings from "electron-settings";
 import { EventEmitter } from "events";
-import { readdir, readFileSync, writeFileSync } from "fs";
+import { promises, readdir, readFileSync, writeFileSync } from "fs";
 import * as isLinux from "is-linux";
 import * as isWindows from "is-windows";
 import * as Long from "long";
@@ -40,10 +40,7 @@ import { TheaterApi } from "./api";
 import * as cec from "./features/cec";
 import * as playbackhandler from "./features/mpv";
 import { findServers } from "./features/serverdiscovery";
-import { wake } from "./features/wakeonlan";
 import { assertStringOrNull } from "./utils";
-
-const readdirAsync = promisify(readdir);
 
 export async function main() {
     // Keep a global reference of the window object, if you don't, the window will
@@ -135,7 +132,6 @@ export async function main() {
         windowStateOnLoad = previousWindowInfo.state;
 
         addPathIntercepts();
-        registerWakeOnLan();
 
         if (appUrl) {
             mainWindow.loadURL(appUrl);
@@ -562,28 +558,6 @@ export async function main() {
         callback("");
     }
 
-    function registerWakeOnLan() {
-        const customProtocol = "electronwakeonlan";
-        protocol.registerStringProtocol(customProtocol, (request, callback) => {
-            // Add 3 to account for ://
-            const url = request.url
-                .substr(customProtocol.length + 3)
-                .split("?")[0];
-
-            // noinspection JSRedundantSwitchStatement
-            switch (url) {
-                case "wakeserver":
-                    const mac = request.url.split("=")[1].split("&")[0];
-                    const options = { port: request.url.split("=")[2] };
-                    wake(mac, options, callback);
-                    break;
-                default:
-                    callback("");
-                    break;
-            }
-        });
-    }
-
     function alert(text: string) {
         dialog.showMessageBox(mainWindow, {
             message: text.toString(),
@@ -615,9 +589,9 @@ export async function main() {
         const scriptsDirectory = normalize(`${__dirname}/../renderer/scripts`);
 
         const pluginFiles: string[] =
-            (await readdirAsync(pluginDirectory)) || [];
+            (await promises.readdir(pluginDirectory)) || [];
         const scriptFiles: string[] =
-            (await readdirAsync(scriptsDirectory)) || [];
+            (await promises.readdir(scriptsDirectory)) || [];
         return {
             paths: {
                 theater: `${customFileProtocol}://`
