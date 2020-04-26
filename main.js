@@ -40,14 +40,14 @@ function onWindowMoved() {
 
     mainWindow.webContents.executeJavaScript('window.dispatchEvent(new CustomEvent("move", {}));');
     var winPosition = mainWindow.getPosition();
-    playerWindow.setPosition(winPosition[0], winPosition[1]);
+    //playerWindow.setPosition(winPosition[0], winPosition[1]);
 }
 
 function onWindowResize() {
 
-    if (!useTrueFullScreen || currentWindowState === 'Normal') {
+    if (currentWindowState === 'Normal') {
         var bounds = mainWindow.getBounds();
-        playerWindow.setBounds(bounds);
+        //playerWindow.setBounds(bounds);
     }
 }
 
@@ -127,7 +127,7 @@ function onWindowStateChanged(state) {
 }
 
 function onMinimize() {
-    playerWindow.minimize();
+    //playerWindow.minimize();
     onWindowStateChanged('Minimized');
 }
 
@@ -141,7 +141,7 @@ function onRestore() {
         onWindowStateChanged('Normal');
     }
 
-    playerWindow.restore();
+    //playerWindow.restore();
 }
 
 function onMaximize() {
@@ -313,7 +313,7 @@ function onLoaded() {
     //globalShortcut.register('mediaplaypause', function () {
     //});
 
-    sendJavascript('window.PlayerWindowId="' + getWindowId(playerWindow) + '";');
+    //sendJavascript('window.PlayerWindowId="' + getWindowId(playerWindow) + '";');
 }
 
 var processes = {};
@@ -897,7 +897,7 @@ function createWindow () {
         windowOptions.y = previousWindowInfo.y;
     }
 
-    playerWindow = new BrowserWindow(windowOptions);
+    //playerWindow = new BrowserWindow(windowOptions);
 
     windowOptions.backgroundColor = '#00000000';
     windowOptions.parent = playerWindow;
@@ -945,12 +945,12 @@ function createWindow () {
         mainWindow.on("unmaximize", onUnMaximize);
         mainWindow.on("resize", onWindowResize);
 
-        playerWindow.on("restore", onPlayerWindowRestore);
-        playerWindow.on("enter-full-screen", onPlayerWindowRestore);
-        playerWindow.on("maximize", onPlayerWindowRestore);
-        playerWindow.on("focus", onPlayerWindowRestore);
+        //playerWindow.on("restore", onPlayerWindowRestore);
+        //playerWindow.on("enter-full-screen", onPlayerWindowRestore);
+        //playerWindow.on("maximize", onPlayerWindowRestore);
+        //playerWindow.on("focus", onPlayerWindowRestore);
 
-        playerWindow.on("show", onWindowShow);
+        //playerWindow.on("show", onWindowShow);
         mainWindow.on("show", onWindowShow);
 
         // Only the main window should be set to full screen.
@@ -960,12 +960,12 @@ function createWindow () {
             fullscreenOnShow = true;
         }
 
-        playerWindow.show();
-        mainWindow.show();
+        //playerWindow.show();
+        //mainWindow.show();
 
         initCec();
 
-        initPlaybackHandler(commandLineOptions.mpvPath);
+        //initPlaybackHandler(commandLineOptions.mpvPath);
 
         var isRpi = require('detect-rpi');
         if (isRpi()) {
