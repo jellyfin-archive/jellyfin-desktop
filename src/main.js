@@ -15,7 +15,7 @@
     var hasAppLoaded = false;
 
     var enableDevTools = true;
-    var enableDevToolsOnStartup = true;
+    var enableDevToolsOnStartup = false;
     var initialShowEventsComplete = false;
     var previousBounds;
     var cecProcess;
