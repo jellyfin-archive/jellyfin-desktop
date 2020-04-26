@@ -5,13 +5,11 @@
   "main": "build/main.js",
   "scripts": {
     "start": "run-s build:ts start:electron",
-    "build": "run-s build:ts package",
     "build:mac": "run-s build:ts package:mac",
     "build:win": "run-s build:ts package:win",
     "build:linux": "run-s build:ts package:linux",
     "build:ts": "tsc -b",
     "start:electron": "electron build/main.js",
-    "package": "run-p --aggregate-output package:*",
     "package:mac": "electron-builder -m",
     "package:win": "electron-builder -w",
     "package:linux": "electron-builder -l"
