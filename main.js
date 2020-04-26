@@ -40,15 +40,6 @@ function onWindowMoved() {
 
     mainWindow.webContents.executeJavaScript('window.dispatchEvent(new CustomEvent("move", {}));');
     var winPosition = mainWindow.getPosition();
-    //playerWindow.setPosition(winPosition[0], winPosition[1]);
-}
-
-function onWindowResize() {
-
-    if (currentWindowState === 'Normal') {
-        var bounds = mainWindow.getBounds();
-        //playerWindow.setBounds(bounds);
-    }
 }
 
 var currentWindowState = 'Normal';
@@ -127,12 +118,10 @@ function onWindowStateChanged(state) {
 }
 
 function onMinimize() {
-    //playerWindow.minimize();
     onWindowStateChanged('Minimized');
 }
 
 function onRestore() {
-
     var restoreState = restoreWindowState;
     restoreWindowState = null;
     if (restoreState && restoreState != 'Normal' && restoreState != 'Minimized') {
@@ -140,8 +129,6 @@ function onRestore() {
     } else {
         onWindowStateChanged('Normal');
     }
-
-    //playerWindow.restore();
 }
 
 function onMaximize() {
@@ -152,17 +139,14 @@ function onEnterFullscreen() {
     onWindowStateChanged('Fullscreen');
 
     if (initialShowEventsComplete) {
-        playerWindow.setFullScreen(true);
         mainWindow.movable = false;
     }
 }
 
 function onLeaveFullscreen() {
-
     onWindowStateChanged('Normal');
 
     if (initialShowEventsComplete) {
-        playerWindow.setFullScreen(false);
         mainWindow.movable = true;
     }
 }
@@ -295,25 +279,10 @@ function registerAppHost() {
                 }
                 mainWindow.focus();
                 hasAppLoaded = true;
-                onLoaded();
                 break;
         }
         callback("");
     });
-}
-
-function onLoaded() {
-
-    //var globalShortcut = electron.globalShortcut;
-
-    //globalShortcut.register('mediastop', function () {
-    //    sendCommand('stop');
-    //});
-
-    //globalShortcut.register('mediaplaypause', function () {
-    //});
-
-    //sendJavascript('window.PlayerWindowId="' + getWindowId(playerWindow) + '";');
 }
 
 var processes = {};
@@ -739,7 +708,6 @@ function onWindowClose() {
 
     // Unregister all shortcuts.
     electron.globalShortcut.unregisterAll();
-    closeWindow(playerWindow);
 
     if (cecProcess) {
         cecProcess.kill();
@@ -826,13 +794,6 @@ function getWindowId(win) {
     return longVal.toString();
 }
 
-function initPlaybackHandler(mpvPath) {
-
-    var playbackhandler = require('./playbackhandler/playbackhandler');
-    playbackhandler.initialize(getWindowId(playerWindow), mpvPath);
-    playbackhandler.registerMediaPlayerProtocol(electron.protocol, mainWindow);
-}
-
 setCommandLineSwitches();
 
 var fullscreenOnShow = false;
@@ -851,10 +812,6 @@ function onWindowShow() {
 app.on('quit', function () {
     closeWindow(mainWindow);
 });
-
-function onPlayerWindowRestore() {
-    mainWindow.focus();
-}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -897,14 +854,10 @@ function createWindow () {
         windowOptions.y = previousWindowInfo.y;
     }
 
-    //playerWindow = new BrowserWindow(windowOptions);
-
     windowOptions.backgroundColor = '#00000000';
-    windowOptions.parent = playerWindow;
     windowOptions.transparent = true;
     windowOptions.resizable = true;
     windowOptions.skipTaskbar = false;
-    // Create the browser window.
 
     loadStartInfo().then(function () {
 
@@ -943,14 +896,7 @@ function createWindow () {
         mainWindow.on("leave-full-screen", onLeaveFullscreen);
         mainWindow.on("restore", onRestore);
         mainWindow.on("unmaximize", onUnMaximize);
-        mainWindow.on("resize", onWindowResize);
 
-        //playerWindow.on("restore", onPlayerWindowRestore);
-        //playerWindow.on("enter-full-screen", onPlayerWindowRestore);
-        //playerWindow.on("maximize", onPlayerWindowRestore);
-        //playerWindow.on("focus", onPlayerWindowRestore);
-
-        //playerWindow.on("show", onWindowShow);
         mainWindow.on("show", onWindowShow);
 
         // Only the main window should be set to full screen.
@@ -960,12 +906,7 @@ function createWindow () {
             fullscreenOnShow = true;
         }
 
-        //playerWindow.show();
-        //mainWindow.show();
-
         initCec();
-
-        //initPlaybackHandler(commandLineOptions.mpvPath);
 
         var isRpi = require('detect-rpi');
         if (isRpi()) {
