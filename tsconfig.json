@@ -1,12 +1,16 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es2018",
-    "sourceMap": true,
-    "rootDir": "src",
-    "outDir": "dist"
-  },
-  "exclude": [
-    "node_modules"
-  ]
+    "compilerOptions": {
+        "moduleResolution": "Node",
+        "module": "commonjs",
+        "target": "es2018",
+        "sourceMap": true,
+        "rootDir": "src",
+        "outDir": "build",
+        "allowJs": true
+    },
+    "include": [
+      "src/**/*.js",
+      "src/**/*.ts"
+    ],
+    "exclude": ["node_modules"]
 }

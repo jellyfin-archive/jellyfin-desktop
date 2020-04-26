@@ -1,5 +1,9 @@
 appId: "org.jellyfin.desktop"
 productName: "Jellyfin Desktop"
+files:
+  - "build/**/*.js"
+  - "res/**/*"
+  - "icons/icon.ico"
 mac:
   target:
     - "dmg"
@@ -19,7 +23,17 @@ linux:
   target:
     - "AppImage"
     - "snap"
-    - "deb"
+    - target: "deb"
+      arch:
+        - "x64"
+        - "arm64"
+        - "armv7l"
     - "rpm"
-    - "tar.gz"
+    - target: "tar.gz"
+      arch:
+        - "x64"
+        - "ia32"
+        - "arm64"
+        - "armv7l"
   category: "AudioVideo"
+  maintainer: "Jellyfin Packaging <packaging@jellyfin.org>"
