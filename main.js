@@ -844,7 +844,7 @@ function createWindow () {
             devTools: enableDevTools
         },
 
-        icon: __dirname + '/icon.ico'
+        icon: path.join(__dirname, 'icon.png')
     };
 
     windowOptions.width = previousWindowInfo.width || 1280;
