@@ -1,0 +1,25 @@
+appId: "org.jellyfin.desktop"
+productName: "Jellyfin Desktop"
+mac:
+  target:
+    - "dmg"
+    - "mas"
+    - "pkg"
+    - "tar.gz"
+  category: "public.app-category.video"
+  icon: "icons/icon.icns"
+win:
+  target:
+    - "nsis"
+    - "portable"
+    - "msi"
+    - "zip"
+  icon: "icons/icon.ico"
+linux:
+  target:
+    - "AppImage"
+    - "snap"
+    - "deb"
+    - "rpm"
+    - "tar.gz"
+  category: "AudioVideo"
