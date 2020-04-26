@@ -6,6 +6,7 @@
     const {ipcMain} = require('electron')
 
     var app = electron.app;  // Module to control application life.
+    app.allowRendererProcessReuse = true; // Disable warning by opting into Electron v9 default
     var BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
 
     // Keep a global reference of the window object, if you don't, the window will
@@ -160,7 +161,7 @@
             if (useTrueFullScreen) {
                 playerWindow.setFullScreen(true);
             }
-            mainWindow.setMovable(false);
+            mainWindow.movable = false;
         }
     }
 
@@ -170,7 +171,7 @@
 
         if (initialShowEventsComplete) {
             playerWindow.setFullScreen(false);
-            mainWindow.setMovable(true);
+            mainWindow.movable = true;
         }
     }
 
@@ -500,7 +501,7 @@
                             fullscreenmanager: 'file://' + replaceAll(path.normalize(topDirectory + '/fullscreenmanager.js'), '\\', '/'),
                             filesystem: customFileProtocol + '://filesystem'
                         },
-                        name: app.getName(),
+                        name: app.name,
                         version: app.getVersion(),
                         deviceName: os.hostname(),
                         deviceId: os.hostname(),

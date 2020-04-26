@@ -39,7 +39,7 @@
     "@types/node": "^12.12.37",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
-    "electron": "^3.0.0",
+    "electron": "^8.2.3",
     "electron-builder": "^22.5.1",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
@@ -49,12 +49,12 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "detect-rpi": "^1.3.0",
+    "detect-rpi": "^1.4.0",
     "electron-settings": "^3.2.0",
-    "is-windows": "^1.0.0",
-    "long": "^3.2.0",
-    "node-mpv": "^1.0.3",
-    "power-off": "^1.0.1",
+    "is-windows": "^1.0.2",
+    "long": "^4.0.0",
+    "node-mpv": "^1.5.0",
+    "power-off": "^1.1.2",
     "sleep-mode": "^1.1.0"
   }
 }
