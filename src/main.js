@@ -14,7 +14,7 @@
     var playerWindow = null;
     var hasAppLoaded = false;
 
-    var enableDevTools = false;
+    var enableDevTools = true;
     var enableDevToolsOnStartup = false;
     var initialShowEventsComplete = false;
     var previousBounds;
@@ -881,7 +881,7 @@
             transparent: false, //supportsTransparency,
             frame: false,
             resizable: false,
-            title: 'Jellyfin Theater',
+            title: 'Jellyfin Desktop',
             minWidth: 1280,
             minHeight: 720,
             //alwaysOnTop: true,
@@ -906,7 +906,7 @@
                 devTools: enableDevTools
             },
 
-            icon: __dirname + '/icon.ico'
+            icon: __dirname + '../icons/icon.ico'
         };
 
         windowOptions.width = previousWindowInfo.width || 1280;
@@ -948,7 +948,7 @@
             if (url) {
                 mainWindow.loadURL(url);
             } else {
-                var localPath = path.join(`file://${__dirname}/firstrun/Jellyfin.html`);
+                var localPath = path.join(`file://${__dirname}/../res/firstrun/Jellyfin.html`);
                 mainWindow.loadURL(localPath);                        
             }
             
