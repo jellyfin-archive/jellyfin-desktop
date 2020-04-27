@@ -19,7 +19,7 @@
     var enableDevToolsOnStartup = false;
     var initialShowEventsComplete = false;
     var previousBounds;
-    var cecProcess;
+    var cec;
 
     var useTrueFullScreen = require('is-linux')();
 
@@ -749,8 +749,8 @@
         electron.globalShortcut.unregisterAll();
         closeWindow(playerWindow);
 
-        if (cecProcess) {
-            cecProcess.kill();
+        if (cec) {
+            cec.kill();
         }
 
         app.quit();
@@ -793,20 +793,17 @@
 
     /* CEC Module */
     function initCec() {
+        var cecExePath = commandLineOptions.cecExePath;
+        if (!cecExePath) {
+            console.log("ERROR: cec-client not installed, running without cec functionality.\n");
+            return;
+        }
 
         try {
-            const cec = require('./cec/cec');
-            var cecExePath = commandLineOptions.cecExePath;
-            // create the cec event
-            const EventEmitter = require("events").EventEmitter;
-            var cecEmitter = new EventEmitter();
-            var cecOpts = {
-                cecExePath: cecExePath,
-                cecEmitter: cecEmitter
-            };
-            cecProcess = cec.init(cecOpts);
+            const { CEC } = require('./cec/cec');
+            cec = new CEC(cecExePath);
 
-            cecEmitter.on("receive-cmd", onCecCommand);
+            cec.onReceive(onCecCommand);
 
         } catch (err) {
             console.log('error initializing cec: ' + err);

@@ -6,7 +6,11 @@
         "sourceMap": true,
         "rootDir": "src",
         "outDir": "build",
-        "allowJs": true
+        "allowJs": true,
+        "lib": [
+          "es2018",
+          "dom"
+        ]
     },
     "include": [
       "src/**/*.js",

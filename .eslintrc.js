@@ -11,5 +11,6 @@ module.exports = {
     ],
     rules: {
         "prettier/prettier": "error",
+        "@typescript-eslint/no-use-before-define": "off"
     },
 };
