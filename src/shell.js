@@ -1,4 +1,4 @@
-﻿define(['events', 'src/apphost'], function (events, apphost) {
+﻿define(['events', 'apphost'], function (events, apphost) {
 
     function sendCommand(name) {
 
