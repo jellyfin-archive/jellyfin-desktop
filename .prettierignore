@@ -1,4 +1,4 @@
 /build
-*.json
+package.json
 /dist
 *.yml
