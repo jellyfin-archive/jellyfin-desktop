@@ -34,6 +34,7 @@
   },
   "homepage": "https://github.com/jellyfin/jellyfin-desktop#readme",
   "devDependencies": {
+    "@chbrown/bind": "^1.0.0",
     "@types/node": "^12.12.37",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
