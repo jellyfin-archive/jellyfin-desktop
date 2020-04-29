@@ -70,13 +70,13 @@ export class CEC {
             const stats = statSync(logPath);
             // if not a directory, then we need to create the appropriate directory
             if (!stats.isDirectory()) {
-                console.log("created directory " + logPath);
+                console.log(`created directory ${logPath}`);
                 mkdirSync(logPath);
             }
         } catch (err) {
             // create the directory
             if (err.code === "ENOENT") {
-                console.log("created directory " + logPath);
+                console.log(`created directory ${logPath}`);
                 mkdirSync(logPath);
             }
         }
@@ -102,7 +102,7 @@ export class CEC {
                     const cecAdapterVals = adapterRegExp.exec(dataAsString);
                     this.CEC_ADAPTER.device = cecAdapterVals[1];
                     this.CEC_ADAPTER.lAddr = cecAdapterVals[2];
-                    console.log("CEC Adapter Device:\t" + JSON.stringify(this.CEC_ADAPTER));
+                    console.log(`CEC Adapter Device:\t${JSON.stringify(this.CEC_ADAPTER)}`);
                     this.initialized = true;
                     // run after-init functions here:
                     this.testTVOn(this.process);
@@ -135,16 +135,16 @@ export class CEC {
         });
 
         this.process.stderr.on("data", function (data) {
-            console.log("cec-client error:\n" + data);
+            console.log(`cec-client error:\n${data}`);
             logStream = createWriteStream(logFile, { flags: "a" });
             logStream.write(data);
             logStream.end();
         });
 
         this.process.on("close", function (code) {
-            console.log("cec-client exited with code " + code);
+            console.log(`cec-client exited with code ${code}`);
             logStream = createWriteStream(logFile, { flags: "a" });
-            logStream.write("child process exited with code " + code);
+            logStream.write(`child process exited with code ${code}`);
             logStream.end();
         });
     }

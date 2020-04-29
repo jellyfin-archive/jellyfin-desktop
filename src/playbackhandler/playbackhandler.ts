@@ -61,7 +61,7 @@ export class PlaybackHandler {
 
     private play(player, path): Promise<void> {
         return new Promise((resolve, reject) => {
-            console.log("Play URL : " + path);
+            console.log(`Play URL : ${path}`);
             this.currentPlayResolve = resolve;
             this.currentPlayReject = reject;
 
@@ -209,16 +209,16 @@ export class PlaybackHandler {
             list.push("--fs");
         }
 
-        list.push("--hwdec=" + (options.hwdec || "no"));
+        list.push(`--hwdec=${options.hwdec || "no"}`);
 
         if (options.deinterlace == "yes") {
-            list.push("--deinterlace=" + (options.deinterlace || "auto"));
+            list.push(`--deinterlace=${options.deinterlace || "auto"}`);
         }
 
-        list.push("--video-output-levels=" + (options.videoOutputLevels || "auto"));
+        list.push(`--video-output-levels=${options.videoOutputLevels || "auto"}`);
 
         if (options.videoSync) {
-            list.push("--video-sync=" + options.videoSync);
+            list.push(`--video-sync=${options.videoSync}`);
         }
 
         //limitation that until we can pass the Windows monitor# (not the display name that MPV returns), is limited to Primary monitor
@@ -236,32 +236,30 @@ export class PlaybackHandler {
                 displayParamsActive.size.height == winBounds.height
             ) {
                 const rfRate =
-                    options.displaySync_Override != ""
-                        ? ',refreshrate-rates="' + options.displaySync_Override + '"'
-                        : "";
+                    options.displaySync_Override != "" ? `,refreshrate-rates="${options.displaySync_Override}"` : "";
                 const rfTheme = options.fullscreen ? "" : ",refreshrate-theme=true";
 
-                list.push("--script-opts=refreshrate-enabled=true" + rfRate + rfTheme);
+                list.push(`--script-opts=refreshrate-enabled=true${rfRate}${rfTheme}`);
             }
         }
 
         if (options.scale) {
-            list.push("--scale=" + options.scale);
+            list.push(`--scale=${options.scale}`);
         }
 
         if (options.cscale) {
-            list.push("--cscale=" + options.cscale);
+            list.push(`--cscale=${options.cscale}`);
         }
 
         if (options.dscale) {
-            list.push("--dscale=" + options.dscale);
+            list.push(`--dscale=${options.dscale}`);
         }
 
         if (options.interpolation) {
             list.push("--interpolation");
 
             if (options.tscale) {
-                list.push("--tscale=" + options.tscale);
+                list.push(`--tscale=${options.tscale}`);
             }
         }
 
@@ -278,19 +276,19 @@ export class PlaybackHandler {
         }
 
         if (options.ditherdepth) {
-            list.push("--dither-depth=" + options.ditherdepth);
+            list.push(`--dither-depth=${options.ditherdepth}`);
         }
 
         if (options.videoStereoMode) {
-            list.push("--video-stereo-mode=" + options.videoStereoMode);
+            list.push(`--video-stereo-mode=${options.videoStereoMode}`);
         }
 
         if (options.subtitleFontFamily) {
-            list.push("--sub-font=" + options.subtitleFontFamily);
+            list.push(`--sub-font=${options.subtitleFontFamily}`);
         }
 
         if (options.subtitleFontSize) {
-            list.push("--sub-font-size=" + options.subtitleFontSize);
+            list.push(`--sub-font-size=${options.subtitleFontSize}`);
         }
 
         const audioOptions = this.getMpvAudioOptions(options, mediaType);
@@ -306,7 +304,7 @@ export class PlaybackHandler {
 
         const audioDelay = framerate >= 23 && framerate <= 25 ? options.audioDelay2325 : options.audioDelay;
         if (audioDelay) {
-            list.push("--audio-delay=" + audioDelay / 1000);
+            list.push(`--audio-delay=${audioDelay / 1000}`);
         }
 
         if (options.genPts) {
@@ -319,8 +317,8 @@ export class PlaybackHandler {
 
             const cacheSize = 2097152;
             const backBuffer = Math.round(cacheSize * 0.8);
-            list.push("--cache=" + cacheSize.toString());
-            list.push("--cache-backbuffer=" + backBuffer.toString());
+            list.push(`--cache=${cacheSize.toString()}`);
+            list.push(`--cache-backbuffer=${backBuffer.toString()}`);
             list.push("--force-seekable=yes");
             list.push("--hr-seek=yes");
             //list.push('--demuxer-lavf-hacks=no');
@@ -350,16 +348,16 @@ export class PlaybackHandler {
         }
 
         if (audioFilters.length) {
-            list.push("--af=lavfi=[" + audioFilters.join(",") + "]");
+            list.push(`--af=lavfi=[${audioFilters.join(",")}]`);
         }
 
-        list.push("--audio-channels=" + audioChannels);
+        list.push(`--audio-channels=${audioChannels}`);
 
         if (options.audioSpdif) {
-            list.push("--audio-spdif=" + options.audioSpdif);
+            list.push(`--audio-spdif=${options.audioSpdif}`);
         }
 
-        list.push("--ad-lavc-ac3drc=" + (options.dynamicRangeCompression || 0));
+        list.push(`--ad-lavc-ac3drc=${options.dynamicRangeCompression || 0}`);
 
         if (options.exclusiveAudio && mediaType === "Video") {
             list.push("--audio-exclusive=yes");
@@ -441,7 +439,7 @@ export class PlaybackHandler {
         try {
             player.quit();
         } catch (err) {
-            console.log("Error quitting mpv: " + err);
+            console.log(`Error quitting mpv: ${err}`);
         }
 
         delete this.mpvPlayer;
@@ -549,9 +547,9 @@ export class PlaybackHandler {
 
     private getDisplayBitrate(bitrate): string {
         if (bitrate > 1000000) {
-            return (bitrate / 1000000).toFixed(1) + " Mbps";
+            return `${(bitrate / 1000000).toFixed(1)} Mbps`;
         } else {
-            return Math.floor(bitrate / 1000) + " kbps";
+            return `${Math.floor(bitrate / 1000)} kbps`;
         }
     }
 
@@ -561,11 +559,11 @@ export class PlaybackHandler {
 
         html += responses[responses.length - 4] || "0";
 
-        html += ", Decoder dropped: " + (responses[responses.length - 3] || "0");
+        html += `, Decoder dropped: ${responses[responses.length - 3] || "0"}`;
 
-        html += ", Mistimed: " + (responses[responses.length - 2] || "0");
+        html += `, Mistimed: ${responses[responses.length - 2] || "0"}`;
 
-        html += ", Delayed: " + (responses[responses.length - 1] || "0");
+        html += `, Delayed: ${responses[responses.length - 1] || "0"}`;
 
         return html;
     }
@@ -634,13 +632,13 @@ export class PlaybackHandler {
 
             stats.push({
                 label: "Display Fullscreen Resolution:",
-                value: displayParams.size.width + " x " + displayParams.size.height,
+                value: `${displayParams.size.width} x ${displayParams.size.height}`,
             });
 
             if (videoParams.w && videoParams.h) {
                 stats.push({
                     label: "Video resolution:",
-                    value: videoParams.w + " x " + videoParams.h,
+                    value: `${videoParams.w} x ${videoParams.h}`,
                 });
             }
 
@@ -937,7 +935,7 @@ export class PlaybackHandler {
         console.info("Starting mpv...");
         const mpvOptions = this.getMpvOptions(options, mediaType, mediaSource);
 
-        mpvOptions.push("--wid=" + this.playerWindowId);
+        mpvOptions.push(`--wid=${this.playerWindowId}`);
         mpvOptions.push("--no-osc");
 
         const mpvInitOptions: JsonObject = {
