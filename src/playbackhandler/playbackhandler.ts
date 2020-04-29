@@ -5,9 +5,14 @@ import * as http from "http";
 import * as Mpv from "node-mpv";
 import { IncomingMessage, ServerResponse } from "http";
 import bind from "@chbrown/bind";
+import { Protocol } from "electron";
+import BrowserWindow = Electron.BrowserWindow;
+import { JsonObject } from "../utils/types";
+import { join } from "path";
+import { mkdirSync } from "fs";
 
 declare class Mpv {
-    constructor(initOptions: Record<string, string | boolean | number>, mpvOptions: string[]);
+    constructor(initOptions: JsonObject, mpvOptions: string[]);
 
     stop(): void;
     pause(): void;
@@ -31,27 +36,27 @@ interface Stat {
     value: string;
 }
 
-export class Playbackhandler {
+export class PlaybackHandler {
     private timeposition = 0;
-    private mainWindowRef;
+    private mainWindowRef: BrowserWindow;
     private mpvPlayer: Mpv;
-    private readonly playerWindowId;
-    private mpvPath;
-    private playMediaSource;
-    private playMediaType;
-    private playerStatus;
-    private fadeInterval;
-    private currentVolume;
+    private readonly playerWindowId: string;
+    private readonly mpvPath: string;
+    private playMediaSource: JsonObject;
+    private playMediaType: string;
+    private playerStatus: JsonObject;
+    private fadeInterval: NodeJS.Timeout;
+    private currentVolume?: number;
     private currentPlayResolve: () => void;
     private currentPlayReject: (err: any) => void;
 
-    public constructor(playerWindowIdString: string, mpvBinaryPath: string) {
+    public constructor(playerWindowIdString: string, mpvBinaryPath: string, mainWindow: BrowserWindow) {
         this.playerWindowId = playerWindowIdString;
         this.mpvPath = mpvBinaryPath;
+        this.mainWindowRef = mainWindow;
     }
 
-    public registerMediaPlayerProtocol(protocol, mainWindow): void {
-        this.mainWindowRef = mainWindow;
+    public registerMediaPlayerProtocol(protocol: Protocol): void {
         http.createServer(this.processNodeRequest).listen(8023, "127.0.0.1");
     }
 
@@ -139,7 +144,7 @@ export class Playbackhandler {
     private setAudiostream(player, index: number): void {
         let audioIndex = 0;
         let i, length, stream;
-        const streams = this.playMediaSource.MediaStreams || [];
+        const streams = (this.playMediaSource.MediaStreams as JsonObject[]) || [];
         for (i = 0, length = streams.length; i < length; i++) {
             stream = streams[i];
             if (stream.Type == "Audio") {
@@ -158,7 +163,7 @@ export class Playbackhandler {
         } else {
             let subIndex = 0;
             let i, length, stream;
-            const streams = this.playMediaSource.MediaStreams || [];
+            const streams = (this.playMediaSource.MediaStreams as JsonObject[]) || [];
             for (i = 0, length = streams.length; i < length; i++) {
                 stream = streams[i];
                 if (stream.Type == "Subtitle") {
@@ -464,7 +469,7 @@ export class Playbackhandler {
             playState = "idle";
         }
 
-        const state: Record<string, boolean | number | string> = {
+        const state: JsonObject = {
             isPaused: this.playerStatus.pause || false,
             isMuted: this.playerStatus.mute || false,
             volume: this.currentVolume || this.playerStatus.volume || 100,
@@ -474,9 +479,9 @@ export class Playbackhandler {
         };
 
         if (this.playerStatus.duration) {
-            state.durationTicks = this.playerStatus.duration * 10000000;
+            state.durationTicks = (this.playerStatus.duration as number) * 10000000;
         } else if (this.playerStatus["demuxer-cache-time"]) {
-            state.durationTicks = this.playerStatus["demuxer-cache-time"] * 10000000;
+            state.durationTicks = (this.playerStatus["demuxer-cache-time"] as number) * 10000000;
         }
 
         return Promise.resolve(JSON.stringify(state));
@@ -775,7 +780,10 @@ export class Playbackhandler {
                                 this.playMediaSource.DefaultAudioStreamIndex !== null &&
                                 data.playMethod != "Transcode"
                             ) {
-                                this.setAudiostream(this.mpvPlayer, this.playMediaSource.DefaultAudioStreamIndex);
+                                this.setAudiostream(
+                                    this.mpvPlayer,
+                                    this.playMediaSource.DefaultAudioStreamIndex as number
+                                );
                             }
 
                             if (this.playMediaSource.DefaultSubtitleStreamIndex !== null) {
@@ -807,7 +815,7 @@ export class Playbackhandler {
                 case "stopdestroy":
                     this.getReturnJson().then((returnJson) => {
                         if (this.playMediaType.toLowerCase() === "audio") {
-                            this.currentVolume = this.playerStatus.volume || 100;
+                            this.currentVolume = (this.playerStatus.volume as number) || 100;
                             this.fade(this.currentVolume)
                                 .then(() => {
                                     this.stop();
@@ -850,11 +858,15 @@ export class Playbackhandler {
                     this.getReturnJson().then(resolve);
                     break;
                 case "volumeup":
-                    this.setVolume(Math.min(100, (this.currentVolume || this.playerStatus.volume || 100) + 2));
+                    this.setVolume(
+                        Math.min(100, (this.currentVolume || (this.playerStatus.volume as number) || 100) + 2)
+                    );
                     this.getReturnJson().then(resolve);
                     break;
                 case "volumedown":
-                    this.setVolume(Math.max(1, (this.currentVolume || this.playerStatus.volume || 100) - 2));
+                    this.setVolume(
+                        Math.max(1, (this.currentVolume || (this.playerStatus.volume as number) || 100) - 2)
+                    );
                     this.getReturnJson().then(resolve);
                     break;
                 case "volume":
@@ -931,12 +943,13 @@ export class Playbackhandler {
 
     private createMpv(options: {}, mediaType, mediaSource): void {
         if (this.mpvPlayer) return;
+        console.info("Starting mpv...");
         const mpvOptions = this.getMpvOptions(options, mediaType, mediaSource);
 
         mpvOptions.push("--wid=" + this.playerWindowId);
         mpvOptions.push("--no-osc");
 
-        const mpvInitOptions: Record<string, string | boolean> = {
+        const mpvInitOptions: JsonObject = {
             debug: false,
         };
 
@@ -944,12 +957,15 @@ export class Playbackhandler {
             mpvInitOptions.binary = this.mpvPath;
         }
 
+        // Create private sockets
         if (isWindows()) {
-            mpvInitOptions.socket = "\\\\.\\pipe\\emby-pipe";
+            mpvInitOptions.socket = `\\\\.\\pipe\\jellyfin-pipe-${process.pid}`;
             // eslint-disable-next-line @typescript-eslint/camelcase
             mpvInitOptions.ipc_command = "--input-ipc-server";
         } else {
-            mpvInitOptions.socket = "/tmp/emby.sock";
+            const sockDir = `/run/jellyfin-desktop/${process.pid}`;
+            mkdirSync(sockDir, { recursive: true });
+            mpvInitOptions.socket = join(sockDir, "jellyfin.sock");
             // eslint-disable-next-line @typescript-eslint/camelcase
             mpvInitOptions.ipc_command = "--input-unix-socket";
         }
