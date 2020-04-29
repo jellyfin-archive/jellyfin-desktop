@@ -1,3 +1,38 @@
+import { JsonObject } from "../utils/types";
+import bind from "@chbrown/bind";
+
+declare function define(moduleDefinitions: string[], module: (...modules: any) => any): void;
+
+interface Route {
+    path: string;
+    transition: string;
+    controller: string;
+    type: string;
+    title: string;
+    category: string;
+    thumbImage: string;
+}
+
+interface TranslationFile {
+    lang: string;
+    path: string;
+}
+
+interface PlayerState {
+    playstate?: string;
+    demuxerCacheState?: any;
+    isMuted?: boolean;
+    isPaused?: boolean;
+    durationTicks?: number;
+    positionTicks?: number;
+    volume: number;
+}
+
+interface Range {
+    start: number;
+    end: number;
+}
+
 define([
     "globalize",
     "apphost",
@@ -25,40 +60,38 @@ define([
     require,
     connectionManager
 ) {
-    "use strict";
-
     function getTextTrackUrl(subtitleStream, serverId) {
         return playbackManager.getSubtitleUrl(subtitleStream, serverId);
     }
 
-    return function () {
-        var self = this;
+    class MpvPlayer {
+        name = "MPV";
+        type = "mediaplayer";
+        id = "mpvmediaplayer";
+        priority = -1;
 
-        self.name = "MPV";
-        self.type = "mediaplayer";
-        self.id = "mpvmediaplayer";
-        self.priority = -1;
-
-        var currentSrc;
-        var playerState = {
+        private currentInternalSrc: string;
+        private playerState: PlayerState = {
             volume: parseInt(appSettings.get("mpv-volume") || "100"),
         };
-        var ignoreEnded;
-        var videoDialog;
-        var currentAspectRatio = "bestfit";
+        private ignoreEnded;
+        private videoDialog: HTMLDivElement | null;
+        private currentAspectRatio = "bestfit";
 
-        document.addEventListener("video-osd-show", function () {
-            //alert("OSD Shown");
-            sendCommand("video_toggle");
-        });
+        constructor() {
+            document.addEventListener("video-osd-show", () => {
+                //alert("OSD Shown");
+                this.sendCommand("video_toggle");
+            });
 
-        document.addEventListener("video-osd-hide", function () {
-            //alert("OSD Hidden");
-            sendCommand("video_toggle");
-        });
+            document.addEventListener("video-osd-hide", () => {
+                //alert("OSD Hidden");
+                this.sendCommand("video_toggle");
+            });
+        }
 
-        self.getRoutes = function () {
-            var routes = [];
+        public getRoutes(): Route[] {
+            const routes: Route[] = [];
 
             routes.push({
                 path: "mpvplayer/audio.html",
@@ -83,10 +116,10 @@ define([
             }
 
             return routes;
-        };
+        }
 
-        self.getTranslations = function () {
-            var files = [];
+        public getTranslations(): TranslationFile[] {
+            const files: TranslationFile[] = [];
 
             files.push({
                 lang: "cs",
@@ -149,17 +182,17 @@ define([
             });
 
             return files;
-        };
+        }
 
-        self.canPlayMediaType = function (mediaType) {
-            if ((mediaType || "").toLowerCase() == "video") {
+        public canPlayMediaType(mediaType): boolean {
+            if ((mediaType || "").toLowerCase() === "video") {
                 return appHost.supports("windowtransparency");
             }
-            return (mediaType || "").toLowerCase() == "audio";
-        };
+            return (mediaType || "").toLowerCase() === "audio";
+        }
 
-        self.getDeviceProfile = function (item) {
-            var profile = {};
+        public getDeviceProfile(item): Promise<JsonObject> {
+            const profile: JsonObject = {};
 
             profile.MaxStreamingBitrate = 200000000;
             profile.MaxStaticBitrate = 200000000;
@@ -172,8 +205,8 @@ define([
                 Type: "Video",
             });
 
-            var apiClient = item && item.ServerId ? connectionManager.getApiClient(item.ServerId) : null;
-            var supportsEmptyContainer = apiClient ? apiClient.isMinServerVersion("3.2.60.1") : false;
+            const apiClient = item && item.ServerId ? connectionManager.getApiClient(item.ServerId) : null;
+            const supportsEmptyContainer = apiClient ? apiClient.isMinServerVersion("3.2.60.1") : false;
 
             if (supportsEmptyContainer) {
                 // leave container null for all
@@ -300,42 +333,43 @@ define([
             profile.ResponseProfiles = [];
 
             return Promise.resolve(profile);
-        };
+        }
 
-        self.getDirectPlayProtocols = function () {
+        public getDirectPlayProtocols(): string[] {
             return ["File", "Http", "Rtp", "Rtmp", "Rtsp", "Ftp"];
-        };
+        }
 
-        self.currentSrc = function () {
-            return currentSrc;
-        };
+        public currentSrc(): string {
+            return this.currentInternalSrc;
+        }
 
-        function onNavigatedToOsd() {
-            if (videoDialog) {
-                videoDialog.classList.remove("mpv-videoPlayerContainer-withBackdrop");
-                videoDialog.classList.remove("mpv-videoPlayerContainer-onTop");
+        @bind
+        private onNavigatedToOsd(): void {
+            if (this.videoDialog) {
+                this.videoDialog.classList.remove("mpv-videoPlayerContainer-withBackdrop");
+                this.videoDialog.classList.remove("mpv-videoPlayerContainer-onTop");
             }
         }
 
-        function createMediaElement(options) {
+        private createMediaElement(options): Promise<void> {
             if (options.mediaType !== "Video") {
                 return Promise.resolve();
             }
 
-            return new Promise(function (resolve, reject) {
-                var dlg = document.querySelector(".mpv-videoPlayerContainer");
+            return new Promise((resolve) => {
+                let dlg: HTMLDivElement = document.querySelector(".mpv-videoPlayerContainer");
 
                 if (!dlg) {
-                    require(["css!./mpvplayer"], function () {
+                    require(["css!./mpvplayer"], () => {
                         loading.show();
 
-                        var dlg = document.createElement("div");
+                        dlg = document.createElement("div");
 
                         dlg.classList.add("mpv-videoPlayerContainer");
 
                         if (options.backdropUrl) {
                             dlg.classList.add("mpv-videoPlayerContainer-withBackdrop");
-                            dlg.style.backgroundImage = "url('" + options.backdropUrl + "')";
+                            dlg.style.backgroundImage = `url('${options.backdropUrl}')`;
                         }
 
                         if (options.fullscreen) {
@@ -343,10 +377,10 @@ define([
                         }
 
                         document.body.insertBefore(dlg, document.body.firstChild);
-                        videoDialog = dlg;
+                        this.videoDialog = dlg;
 
                         if (options.fullscreen) {
-                            zoomIn(dlg).then(resolve);
+                            this.zoomIn(dlg).then(resolve);
                         } else {
                             resolve();
                         }
@@ -354,7 +388,7 @@ define([
                 } else {
                     if (options.backdropUrl) {
                         dlg.classList.add("mpv-videoPlayerContainer-withBackdrop");
-                        dlg.style.backgroundImage = "url('" + options.backdropUrl + "')";
+                        dlg.style.backgroundImage = `url('${options.backdropUrl}')`;
                     }
 
                     resolve();
@@ -362,27 +396,27 @@ define([
             });
         }
 
-        self.play = function (options) {
-            return createMediaElement(options).then(function () {
-                return playInternal(options);
-            });
-        };
+        public play(options): Promise<void> {
+            return this.createMediaElement(options).then(() => this.playInternal(options));
+        }
 
-        function playInternal(options) {
-            var item = options.item;
-            var mediaSource = JSON.parse(JSON.stringify(options.mediaSource));
+        private playInternal(options): Promise<void> {
+            const item = options.item;
+            const mediaSource = JSON.parse(JSON.stringify(options.mediaSource));
 
-            var url = options.url;
+            const url = options.url;
 
-            ignoreEnded = false;
-            currentSrc = url;
-            currentAspectRatio = "bestfit";
+            this.ignoreEnded = false;
+            this.currentInternalSrc = url;
+            this.currentAspectRatio = "bestfit";
 
             //var isVideo = options.mimeType.toLowerCase('video').indexOf() == 0;
-            var isVideo = options.item.MediaType == "Video";
+            const isVideo = options.item.MediaType == "Video";
 
-            for (var i = 0, length = mediaSource.MediaStreams.length; i < length; i++) {
-                var track = mediaSource.MediaStreams[i];
+            let i = 0;
+            const length = mediaSource.MediaStreams.length;
+            for (; i < length; i++) {
+                const track = mediaSource.MediaStreams[i];
 
                 if (track.Type === "Subtitle") {
                     if (track.DeliveryMethod === "External") {
@@ -391,10 +425,10 @@ define([
                 }
             }
 
-            var enableFullscreen = options.fullscreen !== false;
+            const enableFullscreen = options.fullscreen !== false;
 
-            var subtitleAppearanceSettings = userSettings.getSubtitleAppearanceSettings();
-            var fontSize;
+            const subtitleAppearanceSettings = userSettings.getSubtitleAppearanceSettings();
+            let fontSize;
             switch (subtitleAppearanceSettings.textSize || "") {
                 case "smaller":
                     fontSize = 35;
@@ -414,7 +448,7 @@ define([
                 default:
                     break;
             }
-            var fontFamily;
+            let fontFamily;
             switch (subtitleAppearanceSettings.font || "") {
                 case "smallcaps":
                 case "typewriter":
@@ -434,7 +468,7 @@ define([
                     break;
             }
 
-            var requestBody = {
+            const requestBody: JsonObject = {
                 path: url,
                 isVideo: isVideo,
                 playMethod: options.playMethod,
@@ -461,6 +495,7 @@ define([
                     exclusiveAudio: appSettings.get("mpv-exclusiveaudio") === "true",
                     videoSync: appSettings.get("mpv-videosync") === "true" ? "display-resample" : null,
                     displaySync: appSettings.get("mpv-displaysync") === "true",
+                    // eslint-disable-next-line @typescript-eslint/camelcase
                     displaySync_Override: appSettings.get("mpv-displaysync_override"),
                     interpolation: appSettings.get("mpv-interpolation") === "true",
                     correctdownscaling: appSettings.get("mpv-correctdownscaling") === "true",
@@ -470,181 +505,182 @@ define([
                     //genPts: mediaSource.RunTimeTicks ? false : true,
                     audioDelay: parseInt(appSettings.get("mpv-audiodelay") || "0"),
                     audioDelay2325: parseInt(appSettings.get("mpv-audiodelay2325") || 0),
-                    largeCache: mediaSource.RunTimeTicks == null || options.item.Type === "Recording" ? true : false,
+                    largeCache: mediaSource.RunTimeTicks == null || options.item.Type === "Recording",
                     subtitleFontSize: fontSize,
                     subtitleFontFamily: fontFamily,
-                    volume: playerState.volume || 100,
+                    volume: this.playerState.volume || 100,
                 },
             };
 
-            playerState.volume = requestBody.playerOptions.volume;
+            this.playerState.volume = this.playerState.volume || 100;
 
-            return sendCommand("play", requestBody).then(
-                function () {
+            return this.sendCommand("play", requestBody).then(
+                () => {
                     if (isVideo) {
                         if (enableFullscreen) {
-                            embyRouter.showVideoOsd().then(onNavigatedToOsd);
+                            embyRouter.showVideoOsd().then(this.onNavigatedToOsd);
                         } else {
                             embyRouter.setTransparency("backdrop");
 
-                            if (videoDialog) {
-                                videoDialog.classList.remove("mpv-videoPlayerContainer-withBackdrop");
-                                videoDialog.classList.remove("mpv-videoPlayerContainer-onTop");
+                            if (this.videoDialog) {
+                                this.videoDialog.classList.remove("mpv-videoPlayerContainer-withBackdrop");
+                                this.videoDialog.classList.remove("mpv-videoPlayerContainer-onTop");
                             }
                         }
                     }
 
-                    startTimeUpdateInterval();
+                    this.startTimeUpdateInterval();
 
                     return Promise.resolve();
                 },
-                function (err) {
-                    stopTimeUpdateInterval();
+                (err) => {
+                    this.stopTimeUpdateInterval();
                     throw err;
                 }
             );
         }
 
         // Save this for when playback stops, because querying the time at that point might return 0
-        self.currentTime = function (val) {
-            if (val != null) {
-                sendCommand("positionticks?val=" + val * 10000).then(function (state) {
-                    events.trigger(self, "seek");
-                    onTimeUpdate(state);
+        public currentTime(val: number): void;
+        public currentTime(): number;
+        public currentTime(val?: number): number | void {
+            if (typeof val === "number") {
+                this.sendCommand(`positionticks?val=${val * 10000}`).then(() => {
+                    events.trigger(this, "seek");
+                    this.onTimeUpdate();
                 });
                 return;
             }
 
-            return (playerState.positionTicks || 0) / 10000;
-        };
+            return (this.playerState.positionTicks || 0) / 10000;
+        }
 
-        function seekRelative(offsetMs) {
-            sendCommand("seekrelative?val=" + offsetMs * 10000).then(function (state) {
-                events.trigger(self, "seek");
-                onTimeUpdate(state);
+        private seekRelative(offsetMs: number): Promise<void> {
+            return this.sendCommand(`seekrelative?val=${offsetMs * 10000}`).then(() => {
+                events.trigger(this, "seek");
+                this.onTimeUpdate();
             });
         }
 
-        self.rewind = function (offsetMs) {
-            return seekRelative(0 - offsetMs);
-        };
+        public rewind(offsetMs: number): Promise<void> {
+            return this.seekRelative(-offsetMs);
+        }
 
-        self.fastForward = function (offsetMs) {
-            return seekRelative(offsetMs);
-        };
+        public fastForward(offsetMs: number): Promise<void> {
+            return this.seekRelative(offsetMs);
+        }
 
-        self.duration = function (val) {
-            if (playerState.durationTicks == null) {
+        public duration(val?: any): number | null {
+            if (this.playerState.durationTicks === null) {
                 return null;
             }
 
-            return playerState.durationTicks / 10000;
-        };
+            return this.playerState.durationTicks / 10000;
+        }
 
-        self.stop = function (destroyPlayer) {
-            var cmd = destroyPlayer ? "stopdestroy" : "stop";
+        public stop(destroyPlayer): Promise<void> {
+            const cmd = destroyPlayer ? "stopdestroy" : "stop";
 
-            return sendCommand(cmd).then(function () {
-                onEnded();
+            return this.sendCommand(cmd).then(() => {
+                this.onEnded();
 
                 if (destroyPlayer) {
-                    destroyInternal(false);
+                    this.destroyInternal(false);
                 }
             });
-        };
+        }
 
-        function destroyInternal(destroyCommand) {
+        private destroyInternal(destroyCommand): void {
             if (destroyCommand) {
-                sendCommand("stopdestroy");
+                this.sendCommand("stopdestroy");
             }
 
             embyRouter.setTransparency("none");
 
-            var dlg = videoDialog;
+            const dlg = this.videoDialog;
             if (dlg) {
-                videoDialog = null;
+                this.videoDialog = null;
 
-                dlg.parentNode.removeChild(dlg);
+                dlg.remove();
             }
         }
 
-        self.destroy = function () {
-            destroyInternal(true);
-        };
+        public destroy(): void {
+            this.destroyInternal(true);
+        }
 
-        self.playPause = function () {
-            sendCommand("playpause").then(function (state) {
+        public playPause(): Promise<void> {
+            return this.sendCommand("playpause").then((state) => {
                 if (state.isPaused) {
-                    onPause();
+                    this.onPause();
                 } else {
-                    onUnpause();
+                    this.onUnpause();
                 }
             });
-        };
+        }
 
-        self.pause = function () {
-            sendCommand("pause").then(onPause);
-        };
+        public pause(): Promise<void> {
+            return this.sendCommand("pause").then(this.onPause);
+        }
 
-        self.unpause = function () {
-            sendCommand("unpause").then(onUnpause);
-        };
+        public unpause(): Promise<void> {
+            return this.sendCommand("unpause").then(this.onUnpause);
+        }
 
-        self.paused = function () {
-            return playerState.isPaused || false;
-        };
+        public paused(): boolean {
+            return this.playerState.isPaused || false;
+        }
 
-        self.volumeUp = function (val) {
-            sendCommand("volumeUp").then(onVolumeChange);
-        };
+        public volumeUp(val?: any): Promise<void> {
+            return this.sendCommand("volumeUp").then(this.onVolumeChange);
+        }
 
-        self.volumeDown = function (val) {
-            sendCommand("volumeDown").then(onVolumeChange);
-        };
+        public volumeDown(val?: any): Promise<void> {
+            return this.sendCommand("volumeDown").then(this.onVolumeChange);
+        }
 
-        self.volume = function (val) {
-            if (val != null) {
-                sendCommand("volume?val=" + val).then(onVolumeChange);
-                return;
+        public volume(val: number): Promise<void>;
+        public volume(): number;
+        public volume(val?: number): number | Promise<void> {
+            if (typeof val === "number") {
+                return this.sendCommand(`volume?val=${val}`).then(this.onVolumeChange);
             }
 
-            return playerState.volume || 0;
-        };
+            return this.playerState.volume || 0;
+        }
 
-        self.setSubtitleStreamIndex = function (index) {
-            sendCommand("setSubtitleStreamIndex?index=" + index);
-        };
+        public setSubtitleStreamIndex(index: number): Promise<void> {
+            return this.sendCommand(`setSubtitleStreamIndex?index=${index}`);
+        }
 
-        self.setAudioStreamIndex = function (index) {
-            sendCommand("setAudioStreamIndex?index=" + index);
-        };
+        public setAudioStreamIndex(index: number): Promise<void> {
+            return this.sendCommand(`setAudioStreamIndex?index=${index}`);
+        }
 
-        self.canSetAudioStreamIndex = function () {
+        public canSetAudioStreamIndex(): boolean {
             return true;
-        };
+        }
 
-        self.setMute = function (mute) {
-            var cmd = mute ? "mute" : "unmute";
+        public setMute(mute: boolean): Promise<void> {
+            const cmd = mute ? "mute" : "unmute";
 
-            sendCommand(cmd).then(onVolumeChange);
-        };
+            return this.sendCommand(cmd).then(this.onVolumeChange);
+        }
 
-        self.isMuted = function () {
-            return playerState.isMuted || false;
-        };
+        public isMuted(): boolean {
+            return this.playerState.isMuted || false;
+        }
 
-        self.getStats = function () {
-            return sendCommand("stats");
-        };
+        public getStats(): any {
+            return this.sendCommand("stats");
+        }
 
-        function mapRange(range) {
-            var offset;
+        private static mapRange(range: Range): Range {
+            const offset = 0;
             //var currentPlayOptions = instance._currentPlayOptions;
             //if (currentPlayOptions) {
             //    offset = currentPlayOptions.transcodingOffsetTicks;
             //}
-
-            offset = offset || 0;
 
             return {
                 start: range.start * 10000000 + offset,
@@ -652,33 +688,30 @@ define([
             };
         }
 
-        var supportedFeatures;
-        function getSupportedFeatures() {
-            var list = [];
+        private supportedFeatures?: string[];
 
-            list.push("SetAspectRatio");
-
-            return list;
+        private getSupportedFeatures(): string[] {
+            return ["SetAspectRatio"];
         }
 
-        self.supports = function (feature) {
-            if (!supportedFeatures) {
-                supportedFeatures = getSupportedFeatures();
+        public supports(feature: string): boolean {
+            if (!this.supportedFeatures) {
+                this.supportedFeatures = this.getSupportedFeatures();
             }
 
-            return supportedFeatures.indexOf(feature) !== -1;
-        };
+            return this.supportedFeatures.includes(feature);
+        }
 
-        self.setAspectRatio = function (val) {
-            currentAspectRatio = val;
-            sendCommand("aspectratio?val=" + val);
-        };
+        public setAspectRatio(val: string): Promise<void> {
+            this.currentAspectRatio = val;
+            return this.sendCommand(`aspectratio?val=${val}`);
+        }
 
-        self.getAspectRatio = function () {
-            return currentAspectRatio;
-        };
+        public getAspectRatio(): string {
+            return this.currentAspectRatio;
+        }
 
-        self.getSupportedAspectRatios = function () {
+        public getSupportedAspectRatios(): Array<{ name: string; id: string }> {
             return [
                 { name: "4:3", id: "4_3" },
                 { name: "16:9", id: "16_9" },
@@ -686,141 +719,130 @@ define([
                 //{ name: globalize.translate('sharedcomponents#Fill'), id: 'fill' },
                 { name: globalize.translate("sharedcomponents#Original"), id: "original" },
             ];
-        };
+        }
 
-        self.getBufferedRanges = function () {
-            var cacheState = playerState.demuxerCacheState;
+        public getBufferedRanges(): Range[] {
+            const cacheState = this.playerState.demuxerCacheState;
             if (cacheState) {
-                var ranges = cacheState["seekable-ranges"];
+                const ranges: Range[] = cacheState["seekable-ranges"];
 
                 if (ranges) {
-                    return ranges.map(mapRange);
+                    return ranges.map(MpvPlayer.mapRange);
                 }
             }
             return [];
-        };
+        }
 
-        self.seekable = function () {
+        public seekable(): true {
             return true;
-        };
-
-        var timeUpdateInterval;
-        function startTimeUpdateInterval() {
-            stopTimeUpdateInterval();
-            timeUpdateInterval = setInterval(onTimeUpdate, 250);
         }
 
-        function stopTimeUpdateInterval() {
-            if (timeUpdateInterval) {
-                clearInterval(timeUpdateInterval);
-                timeUpdateInterval = null;
+        timeUpdateInterval?: NodeJS.Timeout;
+
+        private startTimeUpdateInterval(): void {
+            this.stopTimeUpdateInterval();
+            this.timeUpdateInterval = setInterval(this.onTimeUpdate, 250);
+        }
+
+        private stopTimeUpdateInterval(): void {
+            if (this.timeUpdateInterval) {
+                clearInterval(this.timeUpdateInterval);
+                this.timeUpdateInterval = undefined;
             }
         }
 
-        function onEnded() {
-            stopTimeUpdateInterval();
+        private onEnded(): void {
+            this.stopTimeUpdateInterval();
 
-            if (!ignoreEnded) {
-                ignoreEnded = true;
-                events.trigger(self, "stopped");
+            if (!this.ignoreEnded) {
+                this.ignoreEnded = true;
+                events.trigger(this, "stopped");
             }
         }
 
-        function onTimeUpdate() {
-            updatePlayerState();
-            events.trigger(self, "timeupdate");
+        @bind
+        private onTimeUpdate(): void {
+            this.updatePlayerState();
+            events.trigger(this, "timeupdate");
         }
 
-        function onVolumeChange() {
-            appSettings.set("mpv-volume", self.volume());
-            events.trigger(self, "volumechange");
+        @bind
+        private onVolumeChange(): void {
+            appSettings.set("mpv-volume", this.volume());
+            events.trigger(this, "volumechange");
         }
 
-        function onUnpause() {
-            events.trigger(self, "unpause");
+        @bind
+        private onUnpause(): void {
+            events.trigger(this, "unpause");
         }
 
-        function onPause() {
-            events.trigger(self, "pause");
+        @bind
+        private onPause(): void {
+            events.trigger(this, "pause");
         }
 
-        function onError() {
-            stopTimeUpdateInterval();
-            events.trigger(self, "error");
+        private onError(): void {
+            this.stopTimeUpdateInterval();
+            events.trigger(this, "error");
         }
 
-        function zoomIn(elem) {
-            return new Promise(function (resolve, reject) {
-                var duration = 240;
-                elem.style.animation = "mpvvideoplayer-zoomin " + duration + "ms ease-in normal";
+        private zoomIn(elem): Promise<void> {
+            return new Promise((resolve) => {
+                const duration = 240;
+                elem.style.animation = `mpvvideoplayer-zoomin ${duration}ms ease-in normal`;
                 dom.addEventListener(elem, dom.whichAnimationEvent(), resolve, {
                     once: true,
                 });
             });
         }
 
-        function sendCommand(name, body) {
-            return new Promise(function (resolve, reject) {
-                var xhr = new XMLHttpRequest();
+        private async sendCommand(name: string, body?: JsonObject): Promise<any> {
+            const headers = {};
 
-                xhr.open("POST", "http://127.0.0.1:8023/" + name, true);
+            if (body) {
+                headers["Content-Type"] = "application/json;charset=UTF-8";
+            }
 
-                xhr.onload = function () {
-                    if (this.responseText && this.status >= 200 && this.status <= 400) {
-                        if (name === "stats") {
-                            resolve(JSON.parse(this.responseText));
-                            return;
-                        }
-
-                        var state = JSON.parse(this.responseText);
-                        var previousPlayerState = playerState;
-
-                        if (
-                            state.playstate == "idle" &&
-                            previousPlayerState.playstate != "idle" &&
-                            previousPlayerState.playstate
-                        ) {
-                            onEnded();
-                            resolve(playerState);
-                            return;
-                        }
-
-                        playerState = state;
-
-                        if (
-                            previousPlayerState.isMuted !== state.isMuted ||
-                            previousPlayerState.volume !== state.volume
-                        ) {
-                            onVolumeChange();
-                        }
-
-                        if (previousPlayerState.isPaused !== state.isPaused) {
-                            if (state.isPaused) {
-                                onPause();
-                            } else if (previousPlayerState.isPaused) {
-                                onUnpause();
-                            }
-                        }
-
-                        resolve(state);
-                    } else {
-                        reject();
-                    }
-                };
-
-                xhr.onerror = reject;
-
-                if (body) {
-                    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                    xhr.send(JSON.stringify(body));
-                } else {
-                    xhr.send();
-                }
+            const response = await fetch(`http://127.0.0.1:8023/${name}`, {
+                method: "POST",
+                headers,
+                body: body ? JSON.stringify(body) : null,
             });
+
+            if (name === "stats") {
+                return await response.json();
+            }
+
+            const state = await response.json();
+            const previousPlayerState = this.playerState;
+
+            if (state.playstate == "idle" && previousPlayerState.playstate != "idle" && previousPlayerState.playstate) {
+                this.onEnded();
+                return this.playerState;
+            }
+
+            this.playerState = state;
+
+            if (previousPlayerState.isMuted !== state.isMuted || previousPlayerState.volume !== state.volume) {
+                this.onVolumeChange();
+            }
+
+            if (previousPlayerState.isPaused !== state.isPaused) {
+                if (state.isPaused) {
+                    this.onPause();
+                } else if (previousPlayerState.isPaused) {
+                    this.onUnpause();
+                }
+            }
+
+            return state;
         }
 
-        function updatePlayerState() {
-            return sendCommand("refresh");
+        private updatePlayerState(): Promise<void> {
+            return this.sendCommand("refresh");
         }
-    };
+    }
+
+    return MpvPlayer;
 });
