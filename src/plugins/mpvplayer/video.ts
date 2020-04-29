@@ -1,6 +1,4 @@
-﻿declare function define(moduleDefinitions: string[], module: (...modules: any) => any): void;
-
-define([
+﻿define([
     "loading",
     "pluginManager",
     "appSettings",
@@ -9,18 +7,18 @@ define([
     "emby-input",
     "emby-scroller",
 ], function (loading, pluginManager, appSettings) {
-    function onSubmit(e) {
+    function onSubmit(e): false {
         e.preventDefault();
         return false;
     }
 
-    return function (view, params) {
+    return function (view): void {
         view.querySelector("form").addEventListener("submit", onSubmit);
 
         view.addEventListener("viewbeforeshow", function (e) {
             const isRestored = e.detail.isRestored;
 
-            Emby.Page.setTitle("Video Settings");
+            window["Emby"].Page.setTitle("Video Settings");
 
             loading.hide();
 
@@ -31,7 +29,7 @@ define([
 
         view.addEventListener("viewbeforehide", saveSettings);
 
-        function saveSettings() {
+        function saveSettings(): void {
             appSettings.set("mpv-hwdec", view.querySelector(".selectHwaMode").value);
             appSettings.set("mpv-outputlevels", view.querySelector(".selectNominalRange").value);
             appSettings.set("mpv-displaysync", view.querySelector(".chkRefreshRateMode").checked);
@@ -55,7 +53,7 @@ define([
             appSettings.set("mpv-videostereomode", view.querySelector(".selectVideoStereoMode").value);
         }
 
-        function renderSettings() {
+        function renderSettings(): void {
             view.querySelector(".selectHwaMode").value = appSettings.get("mpv-hwdec") || "";
             view.querySelector(".selectNominalRange").value = appSettings.get("mpv-outputlevels") || "";
             view.querySelector(".chkRefreshRateMode").checked = appSettings.get("mpv-displaysync") === "true";

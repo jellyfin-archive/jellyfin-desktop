@@ -1,8 +1,6 @@
 import { JsonObject } from "../utils/types";
 import bind from "@chbrown/bind";
 
-declare function define(moduleDefinitions: string[], module: (...modules: any) => any): void;
-
 interface Route {
     path: string;
     transition: string;

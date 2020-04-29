@@ -1,8 +1,6 @@
-﻿declare function define(moduleDefinitions: string[], module: (...modules: any) => any): void;
-
-define(["loading", "appSettings", "emby-select", "emby-checkbox", "emby-scroller"], function (loading, appSettings) {
-    function getMultiCheckboxValues(view, className) {
-        const checkboxes = view.querySelectorAll(`.${className}`);
+﻿define(["loading", "appSettings", "emby-select", "emby-checkbox", "emby-scroller"], function (loading, appSettings) {
+    function getMultiCheckboxValues(view: HTMLElement, className: string): string[] {
+        const checkboxes: NodeListOf<HTMLInputElement> = view.querySelectorAll(`.${className}`);
         const values = [];
 
         for (let i = 0, length = checkboxes.length; i < length; i++) {
@@ -14,27 +12,27 @@ define(["loading", "appSettings", "emby-select", "emby-checkbox", "emby-scroller
         return values;
     }
 
-    function setMultiCheckboxValues(view, className, values) {
-        values = values.split(",");
-        const checkboxes = view.querySelectorAll(`.${className}`);
+    function setMultiCheckboxValues(view: HTMLElement, className: string, values: string): void {
+        const valList = values.split(",");
+        const checkboxes: NodeListOf<HTMLInputElement> = view.querySelectorAll(`.${className}`);
 
         for (let i = 0, length = checkboxes.length; i < length; i++) {
-            checkboxes[i].checked = values.indexOf(checkboxes[i].getAttribute("data-value")) !== -1;
+            checkboxes[i].checked = valList.includes(checkboxes[i].getAttribute("data-value"));
         }
     }
 
-    function onSubmit(e) {
+    function onSubmit(e): false {
         e.preventDefault();
         return false;
     }
 
-    return function (view, params) {
+    return function (view): void {
         view.querySelector("form").addEventListener("submit", onSubmit);
 
         view.addEventListener("viewbeforeshow", function (e) {
             const isRestored = e.detail.isRestored;
 
-            Emby.Page.setTitle("Audio Settings");
+            window["Emby"].Page.setTitle("Audio Settings");
 
             loading.hide();
 
@@ -45,7 +43,7 @@ define(["loading", "appSettings", "emby-select", "emby-checkbox", "emby-scroller
 
         view.addEventListener("viewbeforehide", saveSettings);
 
-        function saveSettings() {
+        function saveSettings(): void {
             appSettings.set("mpv-drc", view.querySelector(".selectDrc").value);
             appSettings.set("mpv-speakerlayout", view.querySelector(".selectSpeakerLayout").value);
             appSettings.set("mpv-exclusiveAudio", view.querySelector(".chkExclusiveMode").checked);
@@ -54,7 +52,7 @@ define(["loading", "appSettings", "emby-select", "emby-checkbox", "emby-scroller
             appSettings.set("mpv-upmixaudiofor", getMultiCheckboxValues(view, "chkUpmixAudioFor").join(","));
         }
 
-        function renderSettings() {
+        function renderSettings(): void {
             view.querySelector(".selectSpeakerLayout").value = appSettings.get("mpv-speakerlayout") || "";
             view.querySelector(".selectDrc").value = appSettings.get("mpv-drc") || "";
             view.querySelector(".chkExclusiveMode").checked = appSettings.get("mpv-exclusiveAudio") === "true";
