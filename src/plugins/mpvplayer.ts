@@ -60,7 +60,7 @@ define([
     require,
     connectionManager
 ) {
-    function getTextTrackUrl(subtitleStream, serverId) {
+    function getTextTrackUrl(subtitleStream: any, serverId: string): string {
         return playbackManager.getSubtitleUrl(subtitleStream, serverId);
     }
 
@@ -96,7 +96,7 @@ define([
             routes.push({
                 path: "mpvplayer/audio.html",
                 transition: "slide",
-                controller: pluginManager.mapPath(self, "mpvplayer/audio.js"),
+                controller: pluginManager.mapPath(this, "mpvplayer/audio.js"),
                 type: "settings",
                 title: "Audio",
                 category: "Playback",
@@ -107,7 +107,7 @@ define([
                 routes.push({
                     path: "mpvplayer/video.html",
                     transition: "slide",
-                    controller: pluginManager.mapPath(self, "mpvplayer/video.js"),
+                    controller: pluginManager.mapPath(this, "mpvplayer/video.js"),
                     type: "settings",
                     title: "Video",
                     category: "Playback",
@@ -123,62 +123,62 @@ define([
 
             files.push({
                 lang: "cs",
-                path: pluginManager.mapPath(self, "mpvplayer/strings/cs.json"),
+                path: this.mapResPath("mpvplayer/strings/cs.json"),
             });
 
             files.push({
                 lang: "en-us",
-                path: pluginManager.mapPath(self, "mpvplayer/strings/en-US.json"),
+                path: this.mapResPath("mpvplayer/strings/en-US.json"),
             });
 
             files.push({
                 lang: "en-GB",
-                path: pluginManager.mapPath(self, "mpvplayer/strings/en-GB.json"),
+                path: this.mapResPath("mpvplayer/strings/en-GB.json"),
             });
 
             files.push({
                 lang: "fr",
-                path: pluginManager.mapPath(self, "mpvplayer/strings/fr.json"),
+                path: this.mapResPath("mpvplayer/strings/fr.json"),
             });
 
             files.push({
                 lang: "hr",
-                path: pluginManager.mapPath(self, "mpvplayer/strings/hr.json"),
+                path: this.mapResPath("mpvplayer/strings/hr.json"),
             });
 
             files.push({
                 lang: "it",
-                path: pluginManager.mapPath(self, "mpvplayer/strings/it.json"),
+                path: this.mapResPath("mpvplayer/strings/it.json"),
             });
 
             files.push({
                 lang: "lt-LT",
-                path: pluginManager.mapPath(self, "mpvplayer/strings/lt-LT.json"),
+                path: this.mapResPath("mpvplayer/strings/lt-LT.json"),
             });
 
             files.push({
                 lang: "pl",
-                path: pluginManager.mapPath(self, "mpvplayer/strings/pl.json"),
+                path: this.mapResPath("mpvplayer/strings/pl.json"),
             });
 
             files.push({
                 lang: "pt-PT",
-                path: pluginManager.mapPath(self, "mpvplayer/strings/pt-PT.json"),
+                path: this.mapResPath("mpvplayer/strings/pt-PT.json"),
             });
 
             files.push({
                 lang: "ru",
-                path: pluginManager.mapPath(self, "mpvplayer/strings/ru.json"),
+                path: this.mapResPath("mpvplayer/strings/ru.json"),
             });
 
             files.push({
                 lang: "sv",
-                path: pluginManager.mapPath(self, "mpvplayer/strings/sv.json"),
+                path: this.mapResPath("mpvplayer/strings/sv.json"),
             });
 
             files.push({
                 lang: "zh-CN",
-                path: pluginManager.mapPath(self, "mpvplayer/strings/zh-CN.json"),
+                path: this.mapResPath("mpvplayer/strings/zh-CN.json"),
             });
 
             return files;
@@ -570,7 +570,7 @@ define([
             return this.seekRelative(offsetMs);
         }
 
-        public duration(val?: any): number | null {
+        public duration(): number | null {
             if (this.playerState.durationTicks === null) {
                 return null;
             }
@@ -631,11 +631,11 @@ define([
             return this.playerState.isPaused || false;
         }
 
-        public volumeUp(val?: any): Promise<void> {
+        public volumeUp(): Promise<void> {
             return this.sendCommand("volumeUp").then(this.onVolumeChange);
         }
 
-        public volumeDown(val?: any): Promise<void> {
+        public volumeDown(): Promise<void> {
             return this.sendCommand("volumeDown").then(this.onVolumeChange);
         }
 
@@ -841,6 +841,10 @@ define([
 
         private updatePlayerState(): Promise<void> {
             return this.sendCommand("refresh");
+        }
+
+        private mapResPath(path: string): string {
+            return pluginManager.mapPath(this, `../../res/plugins/${path}`);
         }
     }
 
