@@ -5,8 +5,7 @@ import * as http from "http";
 import * as Mpv from "node-mpv";
 import { IncomingMessage, ServerResponse } from "http";
 import bind from "@chbrown/bind";
-import { Protocol } from "electron";
-import BrowserWindow = Electron.BrowserWindow;
+import { Protocol, BrowserWindow, screen } from "electron";
 import { JsonObject } from "../utils/types";
 import { join } from "path";
 import { mkdirSync } from "fs";
@@ -628,7 +627,7 @@ export class PlaybackHandler {
             });
 
             const winPosition = this.mainWindowRef.getPosition();
-            const displayParams = require("electron").screen.getDisplayNearestPoint({
+            const displayParams = screen.getDisplayNearestPoint({
                 x: winPosition[0],
                 y: winPosition[1],
             });
