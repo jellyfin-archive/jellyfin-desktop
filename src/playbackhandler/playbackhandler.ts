@@ -143,10 +143,8 @@ export class PlaybackHandler {
 
     private setAudiostream(player, index: number): void {
         let audioIndex = 0;
-        let i, length, stream;
         const streams = (this.playMediaSource.MediaStreams as JsonObject[]) || [];
-        for (i = 0, length = streams.length; i < length; i++) {
-            stream = streams[i];
+        for (const stream of streams) {
             if (stream.Type == "Audio") {
                 audioIndex++;
                 if (stream.Index == index) {
@@ -162,10 +160,8 @@ export class PlaybackHandler {
             player.setProperty("sid", "no");
         } else {
             let subIndex = 0;
-            let i, length, stream;
             const streams = (this.playMediaSource.MediaStreams as JsonObject[]) || [];
-            for (i = 0, length = streams.length; i < length; i++) {
-                stream = streams[i];
+            for (const stream of streams) {
                 if (stream.Type == "Subtitle") {
                     subIndex++;
 
@@ -299,10 +295,8 @@ export class PlaybackHandler {
         }
 
         const audioOptions = this.getMpvAudioOptions(options, mediaType);
-        let i = 0;
-        const length = audioOptions.length;
-        for (; i < length; i++) {
-            list.push(audioOptions[i]);
+        for (const audioOption of audioOptions) {
+            list.push(audioOption);
         }
 
         const videoStream = (mediaSource.MediaStreams || []).filter(function (v) {
@@ -742,10 +736,8 @@ export class PlaybackHandler {
             (responses) => {
                 const categories = [];
 
-                let i = 0;
-                const length = responses.length;
-                for (; i < length; i++) {
-                    categories.push(responses[i]);
+                for (const response of responses) {
+                    categories.push(response);
                 }
 
                 return JSON.stringify({
