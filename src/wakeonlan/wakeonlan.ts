@@ -1,30 +1,20 @@
 ﻿define([], function () {
-    'use strict';
-
-    function send(info) {
-
-        return new Promise(function (resolve, reject) {
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST', 'electronwakeonlan://wakeserver?macaddress=' + info.MacAddress + '&port=' + info.Port, true);
-                xhr.onload = function () {
-                    if (this.response) {
-                        resolve();
-                    } else{ 
-                        reject();
-                    }
-                };
-                xhr.onerror = reject;
-                xhr.send();
-            });
+    function send(info): Promise<void> {
+        return fetch(`electronwakeonlan://wakeserver?macaddress=${info.MacAddress}&port=${info.Port}`, {
+            method: "POST",
+        }).then((response) => {
+            if (!response.ok) {
+                throw response;
+            }
+        });
     }
 
-    function isSupported() {
+    function isSupported(): boolean {
         return true;
     }
 
     return {
-        send: send,
-        isSupported: isSupported
+        send,
+        isSupported,
     };
-
 });

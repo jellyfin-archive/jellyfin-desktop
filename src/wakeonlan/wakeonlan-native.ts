@@ -1,56 +1,50 @@
-const net   = require('net');
-const dgram = require('dgram');
+import * as net from "net";
+import * as dgram from "dgram";
 
-var createMagicPacket = exports.createMagicPacket = function(mac){
-    const MAC_LENGTH    = 0x06;
-    const MAC_REPEAT    = 0x16;
+export function createMagicPacket(mac): Buffer {
+    const MAC_LENGTH = 0x06;
+    const MAC_REPEAT = 0x16;
     const PACKET_HEADER = 0x06;
-    var parts  = mac.match(/[0-9a-fA-F]{2}/g);
-    if(!parts || parts.length != MAC_LENGTH)
-        throw new Error("malformed MAC address '" + mac + "'");
-    var buffer = new Buffer(PACKET_HEADER);
-    var bufMac = new Buffer(parts.map(function(p){
-        return parseInt(p, 16);
-    }));
+    const parts = mac.match(/[0-9a-fA-F]{2}/g);
+    if (!parts || parts.length != MAC_LENGTH) throw new Error(`malformed MAC address '${mac}'`);
+    let buffer = new Buffer(PACKET_HEADER);
+    const bufMac = new Buffer(
+        parts.map(function (p) {
+            return parseInt(p, 16);
+        })
+    );
     buffer.fill(0xff);
-    for(var i = 0; i < MAC_REPEAT; i++){
-        buffer = Buffer.concat([ buffer, bufMac ]);
+    for (let i = 0; i < MAC_REPEAT; i++) {
+        buffer = Buffer.concat([buffer, bufMac]);
     }
     return buffer;
-};
+}
 
-exports.wake = function wake(mac, options, callback){
-    options = options || {};
-    if(typeof options == 'function'){
-        callback = options;
-    }
-    var defaults = {
-        address : '255.255.255.255',
-        port    : 9
-    };
-    for(var k in options){
-        defaults[ k ] = options[ k ];
-    }
-    options = defaults;
+export function wake(mac: string, port = 9, address = "255.255.255.255"): Promise<boolean> {
     // create magic packet
+    let magicPacket: Buffer;
     try {
-        var magicPacket = createMagicPacket(mac);
+        magicPacket = createMagicPacket(mac);
     } catch (err) {
-        callback(err);
-        return;
+        return Promise.reject(err);
     }
-    var socket = dgram.createSocket(
-        net.isIPv6(options.address) ? 'udp6' : 'udp4'
-    ).on('error', function(err){
-        socket.close();
-        callback && callback(err);
-    }).once('listening', function(){
-        socket.setBroadcast(true);
-    });
-    socket.send(
-        magicPacket, 0, magicPacket.length,
-        options.port, options.address, function(err, res){
-            callback && callback(err, res == magicPacket.length);
+    return new Promise<boolean>((resolve, reject) => {
+        const socket = dgram
+            .createSocket(net.isIPv6(address) ? "udp6" : "udp4")
+            .on("error", (err) => {
+                socket.close();
+                reject(err);
+            })
+            .once("listening", () => {
+                socket.setBroadcast(true);
+            });
+        socket.send(magicPacket, 0, magicPacket.length, port, address, function (err, res) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res == magicPacket.length);
+            }
             socket.close();
+        });
     });
-};
+}

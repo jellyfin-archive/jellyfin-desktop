@@ -434,8 +434,10 @@
 
                 case 'wakeserver':
                     var mac = request.url.split('=')[1].split('&')[0];
-                    var options = { port: request.url.split('=')[2] };
-                    wakeonlan.wake(mac, options, callback);
+                    wakeonlan
+                        .wake(mac, request.url.split("=")[2])
+                        .then((res) => callback(null, res))
+                        .catch((error) => callback(error));
                     break;
                 default:
                     callback("");
