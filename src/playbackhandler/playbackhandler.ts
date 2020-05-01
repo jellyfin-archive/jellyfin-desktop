@@ -225,7 +225,7 @@ export class PlaybackHandler {
         if (options.displaySync) {
             const winPosition = this.mainWindowRef.getPosition();
             const winBounds = this.mainWindowRef.getBounds();
-            const displayParamsActive = require("electron").screen.getDisplayNearestPoint({
+            const displayParamsActive = screen.getDisplayNearestPoint({
                 x: winPosition[0],
                 y: winPosition[1],
             });
