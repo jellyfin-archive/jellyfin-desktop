@@ -32,7 +32,7 @@
         }
     });
 
-    // receive message from index.html 
+    // receive message from index.html
     ipcMain.on('asynchronous-message', (event, arg) => {
         settings.set('server', {
             url: arg
@@ -410,7 +410,7 @@
 
                 case 'findservers':
                     var timeoutMs = request.url.split('=')[1];
-                    serverdiscovery.findServers(timeoutMs, callback);
+                    serverdiscovery.findServers(timeoutMs).then(callback).catch(console.error);
                     break;
                 default:
                     callback("");
@@ -942,12 +942,12 @@
             registerFileSystem();
             registerServerdiscovery();
             registerWakeOnLan();
- 
+
             if (url) {
                 mainWindow.loadURL(url);
             } else {
                 var localPath = path.join(`file://${__dirname}/../res/firstrun/Jellyfin.html`);
-                mainWindow.loadURL(localPath);                        
+                mainWindow.loadURL(localPath);
             }
             
             mainWindow.setMenu(null);
