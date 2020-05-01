@@ -1,33 +1,30 @@
-require(['playbackManager', 'events'], function (playbackManager, events) {
-    'use strict';
+((require as unknown) as typeof define)(["playbackManager", "events"], function (playbackManager, events) {
+    let videoOn;
 
-    var videoOn;
-
-    events.on(playbackManager, "playbackstart", function (e, player) {
+    events.on(playbackManager, "playbackstart", () => {
         if (playbackManager.isPlayingVideo()) {
             videoOn = true;
-            var xhr = new XMLHttpRequest();
+            const xhr = new XMLHttpRequest();
             xhr.open("POST", "electronapphost://video-on", true);
             xhr.send();
         }
     });
-    events.on(playbackManager, "playbackstop", function (e, stopInfo) {
-        var player = stopInfo.player;
+
+    events.on(playbackManager, "playbackstop", () => {
         if (videoOn) {
             videoOn = false;
-            var xhr = new XMLHttpRequest();
+            const xhr = new XMLHttpRequest();
             xhr.open("POST", "electronapphost://video-off", true);
             xhr.send();
         }
     });
 
-    function sendCommand(name) {
-
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'electronapphost://' + name, true);
+    function sendCommand(name): void {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", `electronapphost://${name}`, true);
 
         xhr.send();
     }
 
-    sendCommand('loaded');
+    sendCommand("loaded");
 });
