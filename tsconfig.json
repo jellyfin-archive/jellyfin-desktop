@@ -1,11 +1,13 @@
 {
     "compilerOptions": {
+        "experimentalDecorators": true,
         "moduleResolution": "Node",
         "module": "commonjs",
         "target": "es2018",
         "sourceMap": true,
         "rootDir": "src",
         "outDir": "build",
+        "importHelpers": true,
         "allowJs": true,
         "lib": [
           "es2018",

@@ -833,9 +833,9 @@
 
     function initPlaybackHandler(mpvPath) {
 
-        var playbackhandler = require('./playbackhandler/playbackhandler');
-        playbackhandler.initialize(getWindowId(playerWindow), mpvPath);
-        playbackhandler.registerMediaPlayerProtocol(electron.protocol, mainWindow);
+        const { PlaybackHandler } = require('./playbackhandler/playbackhandler');
+        const pbHandler = new PlaybackHandler(getWindowId(playerWindow), mpvPath, mainWindow);
+        pbHandler.registerMediaPlayerProtocol(electron.protocol);
     }
 
     setCommandLineSwitches();

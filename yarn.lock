@@ -28,6 +28,11 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
+"@chbrown/bind@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@chbrown/bind/-/bind-1.0.0.tgz#5bcb9fd875643426ec86ab3544718915fa337d74"
+  integrity sha512-fOSHX/DJE0i1xijEqH5SI1v0iLwubtdrWjuKAHIRQAc656JrZbecpaJnKXMNjrY+xMnB1lDn0u05pBfJlpyyZA==
+
 "@develar/schema-utils@~2.6.5":
   version "2.6.5"
   resolved "https://registry.yarnpkg.com/@develar/schema-utils/-/schema-utils-2.6.5.tgz#3ece22c5838402419a6e0425f85742b961d9b6c6"
@@ -2628,7 +2633,7 @@ truncate-utf8-bytes@^1.0.0:
   dependencies:
     utf8-byte-length "^1.0.1"
 
-tslib@^1.8.1, tslib@^1.9.0:
+tslib@^1.11.1, tslib@^1.8.1, tslib@^1.9.0:
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.11.1.tgz#eb15d128827fbee2841549e171f45ed338ac7e35"
   integrity sha512-aZW88SY8kQbU7gpV19lN24LtXh/yD4ZZg6qieAJDDg+YBsJcSmLGK9QpnUjAKVG/xefmvJGd1WUmfpT/g6AJGA==
