@@ -1,12 +1,10 @@
 ﻿define([], function () {
-
     function exits(endpoint, path) {
         return new Promise(function (resolve, reject) {
-
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'electronfs://' + endpoint + '?path=' + path, true);
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", `electronfs://${endpoint}?path=${path}`, true);
             xhr.onload = function () {
-                if (this.response == 'true') {
+                if (this.response == "true") {
                     resolve();
                 } else {
                     reject();
@@ -19,10 +17,10 @@
 
     return {
         fileExists: function (path) {
-            return exits('fileexists', path);
+            return exits("fileexists", path);
         },
         directoryExists: function (path) {
-            return exits('directoryexists', path);
-        }
+            return exits("directoryexists", path);
+        },
     };
 });
