@@ -1,4 +1,4 @@
-﻿import { JsonObject, WindowState } from "../common/types";
+import { JsonObject, WindowState } from "../common/types";
 
 define([], function () {
     "use strict";
