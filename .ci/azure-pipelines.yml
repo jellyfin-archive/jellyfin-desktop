@@ -1,0 +1,78 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - "*"
+  tags:
+    include:
+      - "*"
+pr:
+  branches:
+    include:
+      - "*"
+
+jobs:
+  - job: Build
+    displayName: "Build"
+
+    pool:
+      vmImage: "ubuntu-latest"
+
+    steps:
+      - task: NodeTool@0
+        displayName: "Install node"
+        inputs:
+          versionSpec: "12.x"
+
+      - task: Cache@2
+        displayName: "Check cache"
+        inputs:
+          key: "yarn | yarn.lock"
+          path: "node_modules"
+          cacheHitVar: CACHE_RESTORED
+
+      - script: "apt-get install -y rpmbuild"
+        displayName: "Install apt dependencies"
+
+      - script: "yarn install --frozen-lockfile --non-interactive"
+        displayName: "Install node dependencies"
+
+      - script: "yarn build:linux"
+        displayName: "Build linux packages"
+
+      - script: "mkdir jellyfin-desktop"
+        displayName: "Make output directory"
+
+      - script: "mv dist/*.{AppImage,tar.xz,snap,deb,rpm} jellyfin-desktop"
+        displayName: "Move binaries to output"
+
+      - task: PublishPipelineArtifact@1
+        displayName: "Publish artifacts"
+        inputs:
+          targetPath: "jellyfin-desktop"
+          artifactName: "jellyfin-desktop"
+
+  - job: Lint
+    displayName: "Lint"
+
+    pool:
+      vmImage: "ubuntu-latest"
+
+    steps:
+      - task: NodeTool@0
+        displayName: "Install node"
+        inputs:
+          versionSpec: "12.x"
+
+      - task: Cache@2
+        displayName: "Check cache"
+        inputs:
+          key: "yarn | yarn.lock"
+          path: "node_modules"
+          cacheHitVar: CACHE_RESTORED
+
+      - script: "yarn install --frozen-lockfile --non-interactive"
+        displayName: "Install dependencies"
+
+      - script: "yarn lint"
+        displayName: "Run ESLint"
