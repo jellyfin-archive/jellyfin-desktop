@@ -1,22 +1,20 @@
 ﻿define(["apphost", "events"], function (appHost, events) {
-    "use strict";
+    class FullscreenManager {
+        public requestFullscreen(): void {
+            appHost.setWindowState("Maximized");
+            events.trigger(this, "fullscreenchange");
+        }
 
-    function fullscreenManager() {}
+        public exitFullscreen(): void {
+            appHost.setWindowState("Normal");
+            events.trigger(this, "fullscreenchange");
+        }
 
-    fullscreenManager.prototype.requestFullscreen = function (element) {
-        appHost.setWindowState("Maximized");
-        events.trigger(this, "fullscreenchange");
-    };
+        public isFullScreen(): boolean {
+            const windowState = appHost.getWindowState();
+            return windowState == "Maximized" || windowState == "Fullscreen";
+        }
+    }
 
-    fullscreenManager.prototype.exitFullscreen = function () {
-        appHost.setWindowState("Normal");
-        events.trigger(this, "fullscreenchange");
-    };
-
-    fullscreenManager.prototype.isFullScreen = function () {
-        const windowState = appHost.getWindowState();
-        return windowState == "Maximized" || windowState == "Fullscreen";
-    };
-
-    return new fullscreenManager();
+    return new FullscreenManager();
 });
