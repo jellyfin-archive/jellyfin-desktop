@@ -1,25 +1,24 @@
 ﻿define([], function () {
-    function exits(endpoint, path) {
-        return new Promise(function (resolve, reject) {
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", `electronfs://${endpoint}?path=${path}`, true);
-            xhr.onload = function () {
-                if (this.response == "true") {
-                    resolve();
-                } else {
-                    reject();
+    function exits(endpoint, path): Promise<boolean> {
+        return fetch(`electronfs://${endpoint}?path=${path}`, { method: "POST" })
+            .then((response) => {
+                if (!response.ok) {
+                    console.error("Error checking fs: ", response);
+                    throw response;
                 }
-            };
-            xhr.onerror = reject;
-            xhr.send();
-        });
+                return response;
+            })
+            .then(async (response) => {
+                const text = await response.text();
+                return text === "true";
+            });
     }
 
     return {
-        fileExists: function (path) {
+        fileExists: function (path: string): Promise<boolean> {
             return exits("fileexists", path);
         },
-        directoryExists: function (path) {
+        directoryExists: function (path: string): Promise<boolean> {
             return exits("directoryexists", path);
         },
     };
