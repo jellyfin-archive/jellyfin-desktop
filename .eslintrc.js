@@ -26,6 +26,6 @@ module.exports = {
         "no-dupe-keys": "off",
         "no-redeclare": "off",
         "no-undef": "off",
-        "prefer-template": "off"
+        "@typescript-eslint/explicit-module-boundary-types": "error",
     },
 };

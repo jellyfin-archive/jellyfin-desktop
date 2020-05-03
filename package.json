@@ -51,6 +51,8 @@
   },
   "devDependencies": {
     "@chbrown/bind": "^1.0.0",
+    "@types/electron-settings": "^3.1.1",
+    "@types/long": "^4.0.1",
     "@types/node": "^12.12.37",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
