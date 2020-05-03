@@ -1,23 +1,21 @@
-﻿define(['apphost', 'events'], function (appHost, events) {
-    'use strict';
+﻿define(["apphost", "events"], function (appHost, events) {
+    "use strict";
 
-    function fullscreenManager() {
-
-    }
+    function fullscreenManager() {}
 
     fullscreenManager.prototype.requestFullscreen = function (element) {
-        appHost.setWindowState('Maximized');
-        events.trigger(this, 'fullscreenchange');
+        appHost.setWindowState("Maximized");
+        events.trigger(this, "fullscreenchange");
     };
 
     fullscreenManager.prototype.exitFullscreen = function () {
-        appHost.setWindowState('Normal');
-        events.trigger(this, 'fullscreenchange');
+        appHost.setWindowState("Normal");
+        events.trigger(this, "fullscreenchange");
     };
 
     fullscreenManager.prototype.isFullScreen = function () {
-        var windowState = appHost.getWindowState();
-        return windowState == 'Maximized' || windowState == 'Fullscreen';
+        const windowState = appHost.getWindowState();
+        return windowState == "Maximized" || windowState == "Fullscreen";
     };
 
     return new fullscreenManager();
