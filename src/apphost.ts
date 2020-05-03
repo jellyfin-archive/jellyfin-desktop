@@ -1,7 +1,11 @@
-﻿define([], function () {
+﻿import { JsonObject } from "./utils/types";
+
+type WindowState = "Normal" | "Minimized" | "Maximized";
+
+define([], function () {
     "use strict";
 
-    function getCapabilities() {
+    function getCapabilities(): Promise<JsonObject> {
         const caps = {
             PlayableMediaTypes: ["Audio", "Video"],
 
@@ -11,36 +15,40 @@
         return Promise.resolve(caps);
     }
 
-    function getWindowState() {
-        return document.windowState || "Normal";
+    function getWindowState(): WindowState {
+        return document["windowState"] || "Normal";
     }
 
-    function setWindowState(state) {
+    function setWindowState(state: WindowState): Promise<void> {
         // Normal
         // Minimized
         // Maximized
 
-        sendCommand(`windowstate-${state}`);
+        return sendCommand(`windowstate-${state}`);
     }
 
-    function sendCommand(name) {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", `electronapphost://${name}`, true);
-
-        xhr.send();
+    function sendCommand(name): Promise<void> {
+        return fetch(`electronapphost://${name}`)
+            .then((response) => {
+                if (!response.ok) {
+                    console.error("Error sending command: ", response);
+                    throw response;
+                }
+            })
+            .catch(console.error);
     }
 
-    function supportsVoiceInput() {
+    function supportsVoiceInput(): boolean {
         return (
             window.SpeechRecognition ||
-            window.webkitSpeechRecognition ||
-            window.mozSpeechRecognition ||
-            window.oSpeechRecognition ||
-            window.msSpeechRecognition
+            window["webkitSpeechRecognition"] ||
+            window["mozSpeechRecognition"] ||
+            window["oSpeechRecognition"] ||
+            !!window["msSpeechRecognition"]
         );
     }
 
-    const supportedFeatures = (function () {
+    const supportedFeatures = (function (): string[] {
         const features = [
             "windowstate",
             "exit",
@@ -52,11 +60,11 @@
             "shutdown",
         ];
 
-        if (navigator.share) {
+        if (navigator["share"]) {
             features.push("sharing");
         }
 
-        if (appStartInfo.supportsTransparentWindow) {
+        if (window["appStartInfo"].supportsTransparentWindow) {
             features.push("windowtransparency");
         }
 
@@ -64,7 +72,7 @@
             features.push("voiceinput");
         }
 
-        if (self.ServiceWorkerSyncRegistered) {
+        if (self["ServiceWorkerSyncRegistered"]) {
             features.push("sync");
         }
 
@@ -106,10 +114,10 @@
     return {
         getWindowState: getWindowState,
         setWindowState: setWindowState,
-        supports: function (command) {
-            return supportedFeatures.indexOf(command.toLowerCase()) !== -1;
+        supports: function (command: string): boolean {
+            return supportedFeatures.includes(command.toLowerCase());
         },
-        capabilities: function () {
+        capabilities: function (): JsonObject {
             return {
                 PlayableMediaTypes: ["Audio", "Video"],
 
@@ -117,36 +125,36 @@
             };
         },
         getCapabilities: getCapabilities,
-        exit: function () {
-            sendCommand("exit");
+        exit: function (): Promise<void> {
+            return sendCommand("exit");
         },
-        sleep: function () {
-            sendCommand("sleep");
+        sleep: function (): Promise<void> {
+            return sendCommand("sleep");
         },
-        restart: function () {
-            sendCommand("restart");
+        restart: function (): Promise<void> {
+            return sendCommand("restart");
         },
-        shutdown: function () {
-            sendCommand("shutdown");
+        shutdown: function (): Promise<void> {
+            return sendCommand("shutdown");
         },
-        init: function () {
+        init: function (): Promise<void> {
             return Promise.resolve();
         },
-        appName: function () {
-            return appStartInfo.name;
+        appName: function (): string {
+            return window["appStartInfo"].name;
         },
-        appVersion: function () {
-            return appStartInfo.version;
+        appVersion: function (): string {
+            return window["appStartInfo"].version;
         },
-        deviceName: function () {
-            return appStartInfo.deviceName;
+        deviceName: function (): string {
+            return window["appStartInfo"].deviceName;
         },
-        deviceId: function () {
-            return appStartInfo.deviceId;
+        deviceId: function (): string {
+            return window["appStartInfo"].deviceId;
         },
 
         moreIcon: "dots-vert",
-        getKeyOptions: function () {
+        getKeyOptions: function (): JsonObject {
             return {
                 // chromium doesn't automatically handle these
                 handleAltLeftBack: true,
@@ -161,14 +169,14 @@
             };
         },
 
-        setTheme: function (themeSettings) {
+        setTheme: function (themeSettings: { themeColor: string }): void {
             const metaThemeColor = document.querySelector("meta[name=theme-color]");
             if (metaThemeColor) {
                 metaThemeColor.setAttribute("content", themeSettings.themeColor);
             }
         },
 
-        setUserScalable: function (scalable) {
+        setUserScalable: function (scalable): void {
             const att = scalable
                 ? "viewport-fit=cover, width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes"
                 : "viewport-fit=cover, width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no";
@@ -176,7 +184,7 @@
             document.querySelector("meta[name=viewport]").setAttribute("content", att);
         },
 
-        deviceIconUrl: function () {
+        deviceIconUrl: function (): string | null {
             return null;
         },
     };
