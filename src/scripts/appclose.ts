@@ -2,8 +2,9 @@
     window["AppCloseHelper"] = {
         onClosing: function (): void {
             // Prevent backwards navigation from stopping video
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
-            history.back = (): void => {};
+            history.back = (): void => {
+                return;
+            };
 
             playbackManager.onAppClose();
         },
