@@ -9,6 +9,7 @@
     "build:win": "run-s build:ts package:win",
     "build:linux": "run-s build:ts package:linux",
     "build:ts": "tsc -b",
+    "lint": "eslint src",
     "start:electron": "electron build/main.js",
     "package:mac": "electron-builder -m",
     "package:win": "electron-builder -w",
