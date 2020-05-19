@@ -2,9 +2,9 @@ import * as net from "net";
 import * as dgram from "dgram";
 
 export function createMagicPacket(mac): Buffer {
-    const MAC_LENGTH = 0x06;
-    const MAC_REPEAT = 0x16;
-    const PACKET_HEADER = 0x06;
+    const MAC_LENGTH = 6;
+    const MAC_REPEAT = 16;
+    const PACKET_HEADER = 6;
     const parts = mac.match(/[0-9a-fA-F]{2}/g);
     if (!parts || parts.length != MAC_LENGTH) throw new Error(`malformed MAC address '${mac}'`);
     let buffer = new Buffer(PACKET_HEADER);
