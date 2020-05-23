@@ -47,7 +47,7 @@ jobs:
           includeRootFolder: false
           archiveType: tar
           tarCompression: gz
-          archiveFile: "jellyfin-desktop"
+          archiveFile: "jellyfin-desktop.tar.gz"
 
       - task: PublishPipelineArtifact@1
         displayName: "Publish Artifacts"
