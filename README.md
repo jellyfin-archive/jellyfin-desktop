@@ -80,15 +80,15 @@ If you are on ubuntu you may need to install additional dependencies
 
 #### Releasing For Windows
 
-```$ npm run package-win```
+```$ npm run package:win```
 
 #### Releasing For Linux
 
-```$ npm run package-linux```
+```$ npm run package:linux```
 
 #### Releasing For Macintosh
 
-```$ npm run package-mac```
+```$ npm run package:mac```
 
 ## Screenshots
 
