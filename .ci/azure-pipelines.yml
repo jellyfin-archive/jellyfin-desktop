@@ -52,6 +52,40 @@ jobs:
         displayName: "Publish Artifacts"
         inputs:
           targetPath: "$(Build.SourcesDirectory)/jellyfin-desktop.tar.gz"
+          artifactName: "linux"
+
+  - job: Mac
+    displayName: "Mac"
+
+    pool:
+      vmImage: "macos-10.14"
+
+    steps:
+      - task: NodeTool@0
+        displayName: "Install Node"
+        inputs:
+          versionSpec: "12.x"
+
+      - task: Cache@2
+        displayName: "Check Cache"
+        inputs:
+          key: "yarn | yarn.lock"
+          path: "node_modules"
+
+      - script: "yarn install --frozen-lockfile --non-interactive"
+        displayName: "Install Node Dependencies"
+
+      - script: "yarn build:ts"
+        displayName: "Build TypeScript Project"
+
+      - script: "yarn package:mac dmg"
+        displayName: "Pack for Mac"
+
+      - task: PublishPipelineArtifact@1
+        displayName: "Publish Artifacts"
+        inputs:
+          targetPath: "dist/*.dmg"
+          artifactName: "mac"
 
   - job: Windows
     displayName: "Windows"
@@ -92,6 +126,7 @@ jobs:
         displayName: "Publish Artifacts"
         inputs:
           targetPath: "$(Build.SourcesDirectory)/jellyfin-desktop.zip"
+          artifactName: "win"
 
   - job: Lint
     displayName: "Lint"
