@@ -88,7 +88,7 @@ If you are on ubuntu you may need to install additional dependencies
 
 #### Releasing For Macintosh
 
-```$ npm run package:mac```
+```$ npm run build:mac```
 
 ## Screenshots
 
@@ -96,4 +96,3 @@ If you are on ubuntu you may need to install additional dependencies
 ![image](screenshots/Movies.PNG)
 ![image](screenshots/TV_Shows.PNG)
 ![image](screenshots/Music.png)
-
