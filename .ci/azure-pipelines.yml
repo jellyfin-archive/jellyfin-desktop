@@ -10,6 +10,7 @@ pr:
   branches:
     include:
       - "*"
+
 stages:
   - stage: build
     displayName: "Build"
@@ -203,7 +204,7 @@ stages:
       - test
     condition: startsWith(variables['Build.SourceBranch'], 'refs/tags')
     jobs:
-      - job: publish-linux
+      - job: publish_linux
         displayName: "Publish Linux"
 
         variables:
@@ -265,7 +266,7 @@ stages:
               assetUploadMode: "replace"
               tag: "$(TAG)"
 
-      - job: publish-mac
+      - job: publish_mac
         displayName: "Publish Mac"
 
         variables:
@@ -324,7 +325,7 @@ stages:
               assetUploadMode: "replace"
               tag: "$(TAG)"
 
-      - job: publish-win
+      - job: publish_win
         displayName: "Publish Windows"
 
         variables:
