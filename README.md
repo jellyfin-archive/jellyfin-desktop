@@ -80,7 +80,7 @@ If you are on ubuntu you may need to install additional dependencies
 
 #### Releasing For Windows
 
-```$ npm run package:win```
+```$ npm run build:win```
 
 #### Releasing For Linux
 
@@ -96,6 +96,5 @@ If you are on ubuntu you may need to install additional dependencies
 ![image](screenshots/Movies.PNG)
 ![image](screenshots/TV_Shows.PNG)
 ![image](screenshots/Music.png)
-
 
 
