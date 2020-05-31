@@ -10,7 +10,7 @@ pr:
   branches:
     include:
       - "*"
-stage:
+stages:
   - stage: build
     displayName: "Build"
     jobs:
