@@ -87,10 +87,13 @@ jobs:
       - script: "yarn package:mac dmg"
         displayName: "Pack for Mac"
 
+      - script: "mv dist/*.dmg $(Build.SourcesDirectory)/jellyfin-desktop.dmg"
+        displayName: "Move dmg"
+
       - task: PublishPipelineArtifact@1
         displayName: "Publish Artifacts"
         inputs:
-          targetPath: "dist/*.dmg"
+          targetPath: "$(Build.SourcesDirectory)/jellyfin-desktop.dmg"
           artifactName: "mac"
 
   - job: Windows
