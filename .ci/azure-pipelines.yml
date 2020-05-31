@@ -168,7 +168,8 @@ stages:
               artifactName: "win"
 
   - stage: test
-    displayName: test
+    displayName: "Test"
+    dependsOn: []
     jobs:
       - job: lint
         displayName: "Lint"
