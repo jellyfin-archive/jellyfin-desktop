@@ -67,7 +67,6 @@ jobs:
 
   - job: Mac
     displayName: "Mac"
-    continueOnError: true
 
     variables:
       ELECTRON_CACHE: "$(Pipeline.Workspace)/.cache/electron"
@@ -115,7 +114,6 @@ jobs:
 
   - job: Windows
     displayName: "Windows"
-    continueOnError: true
 
     variables:
       ELECTRON_CACHE: "$(Pipeline.Workspace)/.cache/electron"
