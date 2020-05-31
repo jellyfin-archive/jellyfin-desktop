@@ -29,16 +29,15 @@ jobs:
         inputs:
           key: "yarn | yarn.lock"
           path: "node_modules"
-          cacheHitVar: CACHE_RESTORED
 
       - script: "yarn install --frozen-lockfile --non-interactive"
         displayName: "Install Node Dependencies"
 
       - script: "yarn build:ts"
-        displayName: "Build Linux Project"
+        displayName: "Build TypeScript Project"
 
       - script: "yarn package:linux dir"
-        displayName: "Pack Release"
+        displayName: "Pack for Linux"
 
       - task: ArchiveFiles@2
         displayName: "Archive Directory"
@@ -53,7 +52,46 @@ jobs:
         displayName: "Publish Artifacts"
         inputs:
           targetPath: "$(Build.SourcesDirectory)/jellyfin-desktop.tar.gz"
-          artifactName: "jellyfin-desktop"
+
+  - job: Windows
+    displayName: "Windows"
+
+    pool:
+      vmImage: "vs2017-win2016"
+
+    steps:
+      - task: NodeTool@0
+        displayName: "Install Node"
+        inputs:
+          versionSpec: "12.x"
+
+      - task: Cache@2
+        displayName: "Check Cache"
+        inputs:
+          key: "yarn | yarn.lock"
+          path: "node_modules"
+
+      - script: "yarn install --frozen-lockfile --non-interactive"
+        displayName: "Install Node Dependencies"
+
+      - script: "yarn build:ts"
+        displayName: "Build TypeScript Project"
+
+      - script: "yarn package:win dir"
+        displayName: "Pack for Windows"
+
+      - task: ArchiveFiles@2
+        displayName: "Archive Directory"
+        inputs:
+          rootFolderOrFile: "dist/win-unpacked"
+          includeRootFolder: false
+          archiveType: zip
+          archiveFile: "jellyfin-desktop.zip"
+
+      - task: PublishPipelineArtifact@1
+        displayName: "Publish Artifacts"
+        inputs:
+          targetPath: "$(Build.SourcesDirectory)/jellyfin-desktop.zip"
 
   - job: Lint
     displayName: "Lint"
