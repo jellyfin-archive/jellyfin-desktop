@@ -33,7 +33,6 @@ jobs:
         displayName: "Yarn Cache"
         inputs:
           key: 'yarn | "$(Agent.OS)" | yarn.lock'
-          resolveKey: 'yarn | "$(Agent.OS)"'
           path: "$(YARN_CACHE_FOLDER)"
 
       - task: Cache@2
@@ -87,7 +86,6 @@ jobs:
         displayName: "Yarn Cache"
         inputs:
           key: 'yarn | "$(Agent.OS)" | yarn.lock'
-          resolveKey: 'yarn | "$(Agent.OS)"'
           path: "$(YARN_CACHE_FOLDER)"
 
       - task: Cache@2
@@ -135,7 +133,6 @@ jobs:
         displayName: "Yarn Cache"
         inputs:
           key: 'yarn | "$(Agent.OS)" | yarn.lock'
-          resolveKey: 'yarn | "$(Agent.OS)"'
           path: "$(YARN_CACHE_FOLDER)"
 
       - task: Cache@2
@@ -186,7 +183,6 @@ jobs:
         displayName: "Yarn Cache"
         inputs:
           key: 'yarn | "$(Agent.OS)" | yarn.lock'
-          resolveKey: 'yarn | "$(Agent.OS)"'
           path: "$(YARN_CACHE_FOLDER)"
 
       - script: "yarn install --frozen-lockfile --non-interactive"
@@ -222,7 +218,6 @@ jobs:
         displayName: "Yarn Cache"
         inputs:
           key: 'yarn | "$(Agent.OS)" | yarn.lock'
-          resolveKey: 'yarn | "$(Agent.OS)"'
           path: "$(YARN_CACHE_FOLDER)"
 
       - task: Cache@2
