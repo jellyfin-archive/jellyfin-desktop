@@ -15,6 +15,11 @@ jobs:
   - job: Build
     displayName: "Build"
 
+    variables:
+      ELECTRON_CACHE: "$(Pipeline.Workspace)/.cache/electron"
+      ELECTRON_BUILDER_CACHE: "$(Pipeline.Workspace)/.cache/electron-builder"
+      YARN_CACHE_FOLDER: "$(Pipeline.Workspace)/.yarn"
+
     pool:
       vmImage: "ubuntu-latest"
 
@@ -25,13 +30,16 @@ jobs:
           versionSpec: "12.x"
 
       - task: Cache@2
-        displayName: "Check Cache"
+        displayName: "Yarn Cache"
         inputs:
           key: 'yarn | "$(Agent.OS)" | yarn.lock'
-          restoreKeys: |
-            yarn | "$(Agent.OS)"
-            yarn
-          path: "node_modules"
+          path: "$(YARN_CACHE_FOLDER)"
+
+      - task: Cache@2
+        displayName: "Cache"
+        inputs:
+          key: 'cache | "$(Agent.OS)"'
+          path: "$(Pipeline.Workspace)/.cache"
 
       - script: "yarn install --frozen-lockfile --non-interactive"
         displayName: "Install Node Dependencies"
@@ -61,6 +69,11 @@ jobs:
     displayName: "Mac"
     continueOnError: true
 
+    variables:
+      ELECTRON_CACHE: "$(Pipeline.Workspace)/.cache/electron"
+      ELECTRON_BUILDER_CACHE: "$(Pipeline.Workspace)/.cache/electron-builder"
+      YARN_CACHE_FOLDER: "$(Pipeline.Workspace)/.yarn"
+
     pool:
       vmImage: "macos-10.14"
 
@@ -71,13 +84,16 @@ jobs:
           versionSpec: "12.x"
 
       - task: Cache@2
-        displayName: "Check Cache"
+        displayName: "Yarn Cache"
         inputs:
           key: 'yarn | "$(Agent.OS)" | yarn.lock'
-          restoreKeys: |
-            yarn | "$(Agent.OS)"
-            yarn
-          path: "node_modules"
+          path: "$(YARN_CACHE_FOLDER)"
+
+      - task: Cache@2
+        displayName: "Cache"
+        inputs:
+          key: 'cache | "$(Agent.OS)"'
+          path: "$(Pipeline.Workspace)/.cache"
 
       - script: "yarn install --frozen-lockfile --non-interactive"
         displayName: "Install Node Dependencies"
@@ -101,6 +117,11 @@ jobs:
     displayName: "Windows"
     continueOnError: true
 
+    variables:
+      ELECTRON_CACHE: "$(Pipeline.Workspace)/.cache/electron"
+      ELECTRON_BUILDER_CACHE: "$(Pipeline.Workspace)/.cache/electron-builder"
+      YARN_CACHE_FOLDER: "$(Pipeline.Workspace)/.yarn"
+
     pool:
       vmImage: "vs2017-win2016"
 
@@ -111,13 +132,16 @@ jobs:
           versionSpec: "12.x"
 
       - task: Cache@2
-        displayName: "Check Cache"
+        displayName: "Yarn Cache"
         inputs:
           key: 'yarn | "$(Agent.OS)" | yarn.lock'
-          restoreKeys: |
-            yarn | "$(Agent.OS)"
-            yarn
-          path: "node_modules"
+          path: "$(YARN_CACHE_FOLDER)"
+
+      - task: Cache@2
+        displayName: "Cache"
+        inputs:
+          key: 'cache | "$(Agent.OS)"'
+          path: "$(Pipeline.Workspace)/.cache"
 
       - script: "yarn install --frozen-lockfile --non-interactive"
         displayName: "Install Node Dependencies"
@@ -145,6 +169,9 @@ jobs:
   - job: Lint
     displayName: "Lint"
 
+    variables:
+      YARN_CACHE_FOLDER: "$(Pipeline.Workspace)/.yarn"
+
     pool:
       vmImage: "ubuntu-latest"
 
@@ -155,13 +182,10 @@ jobs:
           versionSpec: "12.x"
 
       - task: Cache@2
-        displayName: "Check Cache"
+        displayName: "Yarn Cache"
         inputs:
           key: 'yarn | "$(Agent.OS)" | yarn.lock'
-          restoreKeys: |
-            yarn | "$(Agent.OS)"
-            yarn
-          path: "node_modules"
+          path: "$(YARN_CACHE_FOLDER)"
 
       - script: "yarn install --frozen-lockfile --non-interactive"
         displayName: "Install Dependencies"
@@ -171,6 +195,11 @@ jobs:
 
   - job: Publish
     displayName: "Publish"
+
+    variables:
+      ELECTRON_CACHE: "$(Pipeline.Workspace)/.cache/electron"
+      ELECTRON_BUILDER_CACHE: "$(Pipeline.Workspace)/.cache/electron-builder"
+      YARN_CACHE_FOLDER: "$(Pipeline.Workspace)/.yarn"
 
     dependsOn: Build
     condition: startsWith(variables['Build.SourceBranch'], 'refs/tags')
@@ -188,11 +217,16 @@ jobs:
           versionSpec: "12.x"
 
       - task: Cache@2
-        displayName: "Check Cache"
+        displayName: "Yarn Cache"
         inputs:
-          key: "yarn | yarn.lock"
-          path: "node_modules"
-          cacheHitVar: CACHE_RESTORED
+          key: 'yarn | "$(Agent.OS)" | yarn.lock'
+          path: "$(YARN_CACHE_FOLDER)"
+
+      - task: Cache@2
+        displayName: "Cache"
+        inputs:
+          key: 'cache | "$(Agent.OS)"'
+          path: "$(Pipeline.Workspace)/.cache"
 
       - script: "apt-get install -y rpmbuild"
         displayName: "Install Apt Dependencies"
