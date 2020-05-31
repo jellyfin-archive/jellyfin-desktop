@@ -27,7 +27,10 @@ jobs:
       - task: Cache@2
         displayName: "Check Cache"
         inputs:
-          key: "yarn | yarn.lock"
+          key: 'yarn | "$(Agent.OS)" | yarn.lock'
+          restoreKeys: |
+            yarn | "$(Agent.OS)"
+            yarn
           path: "node_modules"
 
       - script: "yarn install --frozen-lockfile --non-interactive"
@@ -69,7 +72,10 @@ jobs:
       - task: Cache@2
         displayName: "Check Cache"
         inputs:
-          key: "yarn | yarn.lock"
+          key: 'yarn | "$(Agent.OS)" | yarn.lock'
+          restoreKeys: |
+            yarn | "$(Agent.OS)"
+            yarn
           path: "node_modules"
 
       - script: "yarn install --frozen-lockfile --non-interactive"
@@ -102,7 +108,10 @@ jobs:
       - task: Cache@2
         displayName: "Check Cache"
         inputs:
-          key: "yarn | yarn.lock"
+          key: 'yarn | "$(Agent.OS)" | yarn.lock'
+          restoreKeys: |
+            yarn | "$(Agent.OS)"
+            yarn
           path: "node_modules"
 
       - script: "yarn install --frozen-lockfile --non-interactive"
@@ -143,9 +152,11 @@ jobs:
       - task: Cache@2
         displayName: "Check Cache"
         inputs:
-          key: "yarn | yarn.lock"
+          key: 'yarn | "$(Agent.OS)" | yarn.lock'
+          restoreKeys: |
+            yarn | "$(Agent.OS)"
+            yarn
           path: "node_modules"
-          cacheHitVar: CACHE_RESTORED
 
       - script: "yarn install --frozen-lockfile --non-interactive"
         displayName: "Install Dependencies"
