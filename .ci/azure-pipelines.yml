@@ -59,6 +59,7 @@ jobs:
 
   - job: Mac
     displayName: "Mac"
+    continueOnError: true
 
     pool:
       vmImage: "macos-10.14"
@@ -98,6 +99,7 @@ jobs:
 
   - job: Windows
     displayName: "Windows"
+    continueOnError: true
 
     pool:
       vmImage: "vs2017-win2016"
