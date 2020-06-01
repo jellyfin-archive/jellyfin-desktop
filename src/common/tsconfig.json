@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "moduleResolution": "Node",
+        "module": "commonjs",
+        "target": "es2018",
+        "sourceMap": true,
+        "rootDir": ".",
+        "outDir": "../../build/common",
+        "importHelpers": true,
+        "lib": [
+          "es2018"
+        ],
+        "types": [],
+        "composite": true
+    },
+    "include": [
+      "./**/*.ts"
+    ],
+    "exclude": ["node_modules"]
+}

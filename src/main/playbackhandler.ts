@@ -6,7 +6,7 @@ import * as Mpv from "node-mpv";
 import { IncomingMessage, ServerResponse } from "http";
 import bind from "@chbrown/bind";
 import { Protocol, BrowserWindow, screen } from "electron";
-import { JsonObject } from "../utils/types";
+import { JsonObject } from "../common/types";
 import { join } from "path";
 import { mkdirSync } from "fs";
 

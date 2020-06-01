@@ -6,6 +6,8 @@
     }
 
     let videoOn: boolean | undefined;
+require(["playbackManager", "events"], function (playbackManager, events) {
+    let videoOn;
 
     events.on(playbackManager, "playbackstart", () => {
         if (playbackManager.isPlayingVideo()) {

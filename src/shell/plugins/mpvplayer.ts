@@ -1,4 +1,4 @@
-import { JsonObject } from "../utils/types";
+import { JsonObject } from "../../common/types";
 import bind from "@chbrown/bind";
 
 interface Route {
@@ -735,7 +735,7 @@ define([
             return true;
         }
 
-        timeUpdateInterval?: NodeJS.Timeout;
+        timeUpdateInterval?: number;
 
         private startTimeUpdateInterval(): void {
             this.stopTimeUpdateInterval();

@@ -1,4 +1,5 @@
 /**
+ * @packageDocumentation
  * Adds support for HDMI-CEC. Uses the application cec-client.
  */
 
@@ -36,7 +37,7 @@ export class CEC {
         ]);
         // if cec-client is not installed, then we run the app normally
         this.emitter.on("error", () => {
-            console.log("ERROR: cec-client not installed, running without cec functionality.");
+            console.info("ERROR: cec-client not installed, running without cec functionality.");
             // console.log(err);
         });
 
@@ -97,12 +98,12 @@ export class CEC {
                 const dataAsString = data.toString().replace(/\s+/g, "");
                 const indexOfAdapter = dataAsString.includes("CECclientregistered");
                 if (indexOfAdapter) {
-                    console.log("\nCEC Client successfully registered.\n");
+                    console.info("\nCEC Client successfully registered.\n");
                     const adapterRegExp = /logicaladdress\(es\)=(\w+)\((\d+)\)/g;
                     const cecAdapterVals = adapterRegExp.exec(dataAsString);
                     this.CEC_ADAPTER.device = cecAdapterVals[1];
                     this.CEC_ADAPTER.lAddr = cecAdapterVals[2];
-                    console.log(`CEC Adapter Device:\t${JSON.stringify(this.CEC_ADAPTER)}`);
+                    console.info(`CEC Adapter Device:\t${JSON.stringify(this.CEC_ADAPTER)}`);
                     this.initialized = true;
                     // run after-init functions here:
                     this.testTVOn(this.process);
@@ -118,13 +119,13 @@ export class CEC {
                     // device => adapter
                     if (cecCmd[1] == "44") {
                         // key pressed
-                        console.log("remote control button pressed");
+                        console.debug("remote control button pressed");
                         remoteButton.state = 1;
                         remoteButton.cmd = cecCmd[2];
                         this.emitter.emit("receive-cmd", parseCmd(remoteButton.cmd));
                     } else if (cecCmd[1] == "45") {
                         // key released
-                        console.log("remote control button released");
+                        console.debug("remote control button released");
                         remoteButton.state = 0;
                     }
                 }
@@ -135,14 +136,14 @@ export class CEC {
         });
 
         this.process.stderr.on("data", function (data) {
-            console.log(`cec-client error:\n${data}`);
+            console.warn(`cec-client error:\n${data}`);
             logStream = createWriteStream(logFile, { flags: "a" });
             logStream.write(data);
             logStream.end();
         });
 
         this.process.on("close", function (code) {
-            console.log(`cec-client exited with code ${code}`);
+            console.warn(`cec-client exited with code ${code}`);
             logStream = createWriteStream(logFile, { flags: "a" });
             logStream.write(`child process exited with code ${code}`);
             logStream.end();

@@ -1,4 +1,4 @@
-﻿import { JsonObject } from "../utils/types";
+﻿import { JsonObject } from "../common/types";
 
 define([], function () {
     return {
