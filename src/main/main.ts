@@ -851,7 +851,7 @@ app.on("ready", function () {
             devTools: enableDevTools,
         },
 
-        icon: `${iconsDir}/icon.ico`,
+        icon: `${iconsDir}/64x64.png`,
     };
 
     windowOptions.width = previousWindowInfo.width || 1280;
