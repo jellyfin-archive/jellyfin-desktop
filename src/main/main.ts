@@ -46,7 +46,10 @@ let initialShowEventsComplete = false;
 let previousBounds;
 let cec;
 
-const useTrueFullScreen = platform === "linux";
+const useTrueFullScreen = isLinux;
+const shellDir = normalize(`${__dirname}/../shell`);
+const iconsDir = normalize(`${__dirname}/../../icons`);
+const resDir = normalize(`${__dirname}/../../res`);
 
 // Quit when all windows are closed.
 app.on("window-all-closed", function () {
@@ -138,8 +141,21 @@ function setWindowState(state: WindowState): void {
 
 function onWindowStateChanged(state: WindowState): void {
     currentWindowState = state;
+    // language=JavaScript
     mainWindow.webContents.executeJavaScript(
-        `document.windowState="${state}";document.dispatchEvent(new CustomEvent("windowstatechanged", {detail:{windowState:"${state}"}}));`
+        `
+        document.windowState="${state}";
+        document.dispatchEvent(
+            new CustomEvent(
+                "windowstatechanged",
+                {
+                    detail: {
+                        windowState:"${state}"
+                    }
+                }
+            )
+        );
+        `
     );
 }
 
@@ -194,7 +210,7 @@ function addPathIntercepts(): void {
     protocol.registerFileProtocol(customFileProtocol, function (request, callback) {
         // Add 3 to account for ://
         let url = request.url.substr(customFileProtocol.length + 3);
-        url = `${__dirname}/${url}`;
+        url = `${shellDir}/${url}`;
         url = url.split("?")[0];
 
         callback({
@@ -310,6 +326,7 @@ function onLoaded(): void {
     //globalShortcut.register('mediaplaypause', function () {
     //});
 
+    // language=JavaScript
     sendJavascript(`window.PlayerWindowId="${getWindowId(playerWindow)}";`);
 }
 
@@ -325,6 +342,7 @@ function startProcess(options, callback): void {
                 console.log(`Process closed with error: ${error}`);
             }
             processes[pid] = null;
+            // language=JavaScript
             const script = `onChildProcessClosed("${pid}", ${error ? "true" : "false"});`;
 
             sendJavascript(script);
@@ -460,11 +478,7 @@ async function loadStartInfo(): Promise<void> {
             shell: `${customFileProtocol}://shell`,
             wakeonlan: `${customFileProtocol}://wakeonlan/wakeonlan`,
             serverdiscovery: `${customFileProtocol}://serverdiscovery/serverdiscovery`,
-            fullscreenmanager: `file://${replaceAll(
-                path.normalize(`${topDirectory}/fullscreenmanager.js`),
-                "\\",
-                "/"
-            )}`,
+            fullscreenmanager: `${customFileProtocol}://fullscreenmanager`,
             filesystem: `${customFileProtocol}://filesystem`,
         },
         name: app.name,
@@ -473,28 +487,38 @@ async function loadStartInfo(): Promise<void> {
         deviceId: hostname(),
         supportsTransparentWindow: supportsTransparentWindow(),
         plugins: pluginFiles
-            .filter(function (f) {
-                return f.includes(".js");
-            })
-            .map(function (f) {
-                return `file://${replaceAll(path.normalize(`${pluginDirectory}/${f}`), "\\", "/")}`;
-            }),
-        scripts: scriptFiles.map(function (f) {
-            return `file://${replaceAll(path.normalize(`${scriptsDirectory}/${f}`), "\\", "/")}`;
-        }),
+            .filter((f) => f.endsWith(".js"))
+            .map((f) => `file://${replaceAll(path.normalize(`${pluginDirectory}/${f}`), "\\", "/")}`),
+        scripts: scriptFiles.map((f) => `file://${replaceAll(path.normalize(`${scriptsDirectory}/${f}`), "\\", "/")}`),
     };
 
     startInfoJson = JSON.stringify(startInfo);
 }
 
 function setStartInfo(): void {
-    const script = `function startWhenReady(){if (self.Emby && self.Emby.App){self.appStartInfo=${startInfoJson};Emby.App.start(appStartInfo);} else {setTimeout(startWhenReady, 50);}} startWhenReady();`;
+    // language=JavaScript
+    const script = `
+        function startWhenReady(){
+            if (self.Emby && self.Emby.App){
+                self.appStartInfo=${startInfoJson};
+                Emby.App.start(appStartInfo);
+            } else {
+                setTimeout(startWhenReady, 50);
+            }
+        }
+        startWhenReady();
+    `;
     sendJavascript(script);
     //sendJavascript('var appStartInfo=' + startInfoJson + ';');
 }
 
-function sendCommand(cmd): void {
-    const script = `require(['inputmanager'], function(inputmanager){inputmanager.trigger('${cmd}');});`;
+function sendCommand(cmd: string): void {
+    // language=JavaScript
+    const script = `
+        require(["inputmanager"], (inputmanager) => {
+            inputmanager.trigger("${cmd}");
+        });
+    `;
     sendJavascript(script);
 }
 
@@ -688,6 +712,7 @@ function onWindowClose(): void {
         require("fs").writeFileSync(windowStatePath, JSON.stringify(data));
     }
 
+    // language=JavaScript
     mainWindow.webContents.executeJavaScript("AppCloseHelper.onClosing();");
 
     // Unregister all shortcuts.
@@ -737,7 +762,7 @@ function onCecCommand(cmd: string): void {
 function initCec(): void {
     const cecExePath = commandLineOptions.cecExePath;
     if (!cecExePath) {
-        console.log("ERROR: cec-client not installed, running without cec functionality.\n");
+        console.info("ERROR: cec-client not installed, running without cec functionality.");
         return;
     }
 
@@ -746,7 +771,7 @@ function initCec(): void {
 
         cec.onReceive(onCecCommand);
     } catch (err) {
-        console.log(`error initializing cec: ${err}`);
+        console.info(`error initializing cec: ${err}`);
     }
 }
 
@@ -759,7 +784,7 @@ function getWindowId(win): string {
         } else if (handle.length == 8) {
             handle.swap64();
         } else {
-            console.log("Unknown Native Window Handle Format.");
+            console.warn("Unknown Native Window Handle Format.");
         }
     }
     const longVal = Long.fromString(handle.toString("hex"), true, 16);
@@ -806,18 +831,15 @@ app.on("ready", function () {
     }
     const windowOptions: BrowserWindowConstructorOptions = {
         transparent: false, //supportsTransparency,
-        frame: false,
+        frame: true,
         title: "Jellyfin Desktop",
         minWidth: 1280,
         minHeight: 720,
         //alwaysOnTop: true,
-        skipTaskbar: isWindows,
-
-        //show: false,
         backgroundColor: "#00000000",
         center: true,
         show: false,
-        resizable: useTrueFullScreen,
+        resizable: true,
 
         webPreferences: {
             webSecurity: false,
@@ -829,7 +851,7 @@ app.on("ready", function () {
             devTools: enableDevTools,
         },
 
-        icon: `${__dirname}../icons/icon.ico`,
+        icon: `${iconsDir}/icon.ico`,
     };
 
     windowOptions.width = previousWindowInfo.width || 1280;
