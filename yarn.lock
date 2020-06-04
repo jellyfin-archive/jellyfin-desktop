@@ -33,6 +33,11 @@
   resolved "https://registry.yarnpkg.com/@chbrown/bind/-/bind-1.0.0.tgz#5bcb9fd875643426ec86ab3544718915fa337d74"
   integrity sha512-fOSHX/DJE0i1xijEqH5SI1v0iLwubtdrWjuKAHIRQAc656JrZbecpaJnKXMNjrY+xMnB1lDn0u05pBfJlpyyZA==
 
+"@cromefire_/nativeshell-api-definition@^1.0.0-nightly28":
+  version "1.0.0-nightly28"
+  resolved "https://gitlab.com/api/v4/projects/18148878/packages/npm/@cromefire_/nativeshell-api-definition/-/@cromefire_/nativeshell-api-definition-1.0.0-nightly28.tgz#7364cad0178343a62c0b34f47b021c4ee5b9facd"
+  integrity sha1-c2TK0BeDQ6YsCzT0ewIcTuW5+s0=
+
 "@develar/schema-utils@~2.6.5":
   version "2.6.5"
   resolved "https://registry.yarnpkg.com/@develar/schema-utils/-/schema-utils-2.6.5.tgz#3ece22c5838402419a6e0425f85742b961d9b6c6"

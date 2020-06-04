@@ -40,6 +40,7 @@
   },
   "homepage": "https://github.com/jellyfin/jellyfin-desktop#readme",
   "dependencies": {
+    "@cromefire_/nativeshell-api-definition": "^1.0.0-nightly28",
     "detect-rpi": "^1.4.0",
     "electron-settings": "^3.2.0",
     "is-windows": "^1.0.2",
