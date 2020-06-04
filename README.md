@@ -26,7 +26,7 @@ stored in the following folders:
 
 ## Contributing
 ### Prerequisites
-This application is implemented as an electron app and is built off of 
+This application is implemented as an Electron app and is built off of 
 a NodeJS code base. Because of this you will need the NodeJS runtime and
 the `yarn` package manager. The following versions have been tested: 
 
@@ -71,4 +71,3 @@ _Ubuntu: You need to install `rpmbuild` to build all linux packages_
 ![image](screenshots/Movies.PNG)
 ![image](screenshots/TV_Shows.PNG)
 ![image](screenshots/Music.png)
-
