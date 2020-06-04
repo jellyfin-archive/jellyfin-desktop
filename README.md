@@ -28,7 +28,7 @@ stored in the following folders:
 ### Prerequisites
 This application is implemented as an electron app and is built off of 
 a NodeJS code base. Because of this you will need the NodeJS runtime and
-thw `yarn` package manager. The following versions have been tested: 
+the `yarn` package manager. The following versions have been tested: 
 
 | Software Name | Version          |
 | ------------- | ---------------- |
