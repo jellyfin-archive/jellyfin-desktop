@@ -15,7 +15,7 @@ You can download the latest, shiniest (and probably buggiest) version built stra
 ## FAQ
 ### Jellyfin Desktop Settings Location
 
-Q: There can I find the settings of jellyfin desktop?
+Q: Where can I find the settings of Jellyfin Desktop?
 
 A: The settings for jellyfin desktop, including the server URL that is entered on the first launch, are
 stored in the following folders:
@@ -71,6 +71,5 @@ _Ubuntu: You need to install `rpmbuild` to build all linux packages_
 ![image](screenshots/Movies.PNG)
 ![image](screenshots/TV_Shows.PNG)
 ![image](screenshots/Music.png)
-
 
 
