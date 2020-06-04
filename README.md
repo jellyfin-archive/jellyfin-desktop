@@ -37,7 +37,7 @@ thw `yarn` package manager. The following versions have been tested:
 
 To contribute you will need to set up a fork. To learn more about how to use forks, you can read
 "[Fork a repo](https://help.github.com/en/github/getting-started-with-github/fork-a-repo)" and
-"[Working with forks](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/working-with-forks)"
+"[Working with forks](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/working-with-forks)".
 
 ### Building Jellyfin Desktop
 After setting up you fork, you will need to install the dependencies for the project. You can do so by
@@ -51,8 +51,6 @@ command:
 ```
 $ yarn start
 ```
-
-### Building Jellyfin
 
 #### Building Packages for Windows
 
