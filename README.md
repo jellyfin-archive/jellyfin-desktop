@@ -14,8 +14,8 @@ package manager. The following versions have been tested:
 
 | Software Name | Version          |
 | ------------- | ---------------- |
-| Node JS       | 11.4.0 >         |
-| npm           | 6.4.1            |
+| Node JS       | 12               |
+| yarn          | 1.22             |
 
 
 ## Getting Started Installing Jellyfin Theater
@@ -41,21 +41,21 @@ After downloading the source the source you will need to install the dependencie
 ```
 $ cd jellyfin-theater-electron
 
-$ npm install
+$ yarn install
 ```
 
 Once the installation has been finished you will need to run this command in the directory to activate the program.
 
 ```
-$ npm start
+$ yarn start
 ```
 ## Jellyfin Theater Settings Location
 
 At first launch, you will be asked to enter your server address. This parameter is kept in:
 
-- %APPDATA%/Jellyfin Theater on Windows
-- ~/.config/Jellyfin Theater on Linux
-- ~/Library/Application Support/Jellyfin Theater on macOS
+- ~~%APPDATA%/Jellyfin Theater on Windows~~ (outdated)
+- ~/.config/jellyfin-desktop on Linux
+- ~~\~/Library/Application Support/Jellyfin Theater on macOS~~ (outdated)
 
 ## Building And Releasing Jellyfin
 
@@ -80,15 +80,15 @@ If you are on ubuntu you may need to install additional dependencies
 
 #### Releasing For Windows
 
-```$ npm run build:win```
+```$ npm run package-win```
 
 #### Releasing For Linux
 
-```$ npm run build:linux```
+```$ npm run package-linux```
 
 #### Releasing For Macintosh
 
-```$ npm run build:mac```
+```$ npm run package-mac```
 
 ## Screenshots
 
@@ -96,3 +96,6 @@ If you are on ubuntu you may need to install additional dependencies
 ![image](screenshots/Movies.PNG)
 ![image](screenshots/TV_Shows.PNG)
 ![image](screenshots/Music.png)
+
+
+
