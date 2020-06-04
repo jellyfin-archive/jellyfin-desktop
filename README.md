@@ -1,94 +1,69 @@
-# Jellyfin Theater
+# Jellyfin Desktop
 
-Jellyfin Theater is a local client that connects to a Jellyfin server. 
-
-Currently the jellyfin-theater-electron connects using http protocol.
+Jellyfin Desktop is a desktop client that connects to a Jellyfin server.
 
 ![image](screenshots/Home.PNG)
 
-# Building
+## Installing
+You can download jellyfin desktop for your operating system from the
+[releases page](https://github.com/jellyfin/jellyfin-desktop/releases).
 
-This application is implemented as an electron app and is built off of 
-a NodeJS code base. Because of this you will need to NodeJS runtime and
-package manager. The following versions have been tested: 
+### Nightly Versions
+You can download the latest, shiniest (and probably buggiest) version built straight from master
+[from the build system](https://dev.azure.com/jellyfin-project/jellyfin/_build?definitionId=22&_a=summary&repositoryFilter=13&branchFilter=1835)
+
+## FAQ
+### Jellyfin Desktop Settings Location
+
+Q: Where can I find the settings of Jellyfin Desktop?
+
+A: The settings for Jellyfin Desktop, including the server URL, are
+stored in the following folders:
+
+- ~~%APPDATA%/Jellyfin Theater on Windows~~ (outdated)
+- ~/.config/jellyfin-desktop on Linux
+- ~~\~/Library/Application Support/Jellyfin Theater on macOS~~ (outdated)
+
+## Contributing
+### Prerequisites
+This application is implemented as an Electron app and is built off of 
+a NodeJS code base. Because of this you will need the NodeJS runtime and
+the `yarn` package manager. The following versions have been tested: 
 
 | Software Name | Version          |
 | ------------- | ---------------- |
-| Node JS       | 11.4.0 >         |
-| npm           | 6.4.1            |
+| Node JS       | 12               |
+| yarn          | 1.22             |
 
+To contribute you will need to set up a fork. To learn more about how to use forks, you can read
+"[Fork a repo](https://help.github.com/en/github/getting-started-with-github/fork-a-repo)" and
+"[Working with forks](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/working-with-forks)".
 
-## Getting Started Installing Jellyfin Theater
-
-If you are looking to use the Jellyfin Theater you will need to start by downloading this repository via the git command, or by downloading a zip. you can do so by either 
-
-SSH
-
+### Building Jellyfin Desktop
+After setting up you fork, you will need to install the dependencies for the project. You can do so by
+typing the following into your commandline:
 ```
-$ git clone git@github.com:jellyfin/jellyfin-theater-electron.git
-```
-
-HTTPS
-
-```
-$ git clone https://github.com/jellyfin/jellyfin-theater-electron.git
+$ yarn install
 ```
 
-Note : If you dont have git installed you can allways download a zip by clicking the green clone or download button on the right and then clicking Download Zip
-
-After downloading the source the source you will need to install the dependencies for the project. You can do so by typing into your terminal 
-
+Once the installation has been finished you can start a test version of the application by using this
+command:
 ```
-$ cd jellyfin-theater-electron
-
-$ npm install
+$ yarn start
 ```
 
-Once the installation has been finished you will need to run this command in the directory to activate the program.
+#### Building Packages for Windows
 
-```
-$ npm start
-```
-## Jellyfin Theater Settings Location
+```$ yarn run build:win```
 
-At first launch, you will be asked to enter your server address. This parameter is kept in:
+#### Building Packages for Linux
+_Ubuntu: You need to install `rpmbuild` to build all linux packages_
 
-- %APPDATA%/Jellyfin Theater on Windows
-- ~/.config/Jellyfin Theater on Linux
-- ~/Library/Application Support/Jellyfin Theater on macOS
+```$ yarn run build:linux```
 
-## Building And Releasing Jellyfin
+#### Building Packages for Macintosh
 
-Start of building and releasing by commiting as usual, then you want to run these commands for the select operating system when you begin to release a final package version of the app you will then need to install these deps using the following command
-
-```$ npm install -g electron-packager ```
-
-after installing this dependency you will want to create a directory called ```release/``` in the root directory.
-
-
-Note :
-If you are on ubuntu you may need to install additional dependencies
-
-```
-# apt-get -y install \
-	libgtkextra-dev libgconf2-dev \
-	libnss3 \
-	libxss1 \
-	libasound2 \
-	libxtst-dev
-```
-
-#### Releasing For Windows
-
-```$ npm run build:win```
-
-#### Releasing For Linux
-
-```$ npm run build:linux```
-
-#### Releasing For Macintosh
-
-```$ npm run build:mac```
+```$ yarn run build:mac```
 
 ## Screenshots
 
