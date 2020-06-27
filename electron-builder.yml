@@ -37,3 +37,4 @@ linux:
         - "armv7l"
   category: "AudioVideo"
   maintainer: "Jellyfin Packaging <packaging@jellyfin.org>"
+publish: null

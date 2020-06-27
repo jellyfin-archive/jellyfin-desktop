@@ -11,126 +11,376 @@ pr:
     include:
       - "*"
 
-jobs:
-  - job: Build
+stages:
+  - stage: build
     displayName: "Build"
+    jobs:
+      - job: linux
+        displayName: "Linux"
 
-    pool:
-      vmImage: "ubuntu-latest"
+        variables:
+          ELECTRON_CACHE: "$(Pipeline.Workspace)/.cache/electron"
+          ELECTRON_BUILDER_CACHE: "$(Pipeline.Workspace)/.cache/electron-builder"
+          YARN_CACHE_FOLDER: "$(Pipeline.Workspace)/.yarn"
 
-    steps:
-      - task: NodeTool@0
-        displayName: "Install Node"
-        inputs:
-          versionSpec: "12.x"
+        pool:
+          vmImage: "ubuntu-latest"
 
-      - task: Cache@2
-        displayName: "Check Cache"
-        inputs:
-          key: "yarn | yarn.lock"
-          path: "node_modules"
-          cacheHitVar: CACHE_RESTORED
+        steps:
+          - task: NodeTool@0
+            displayName: "Install Node"
+            inputs:
+              versionSpec: "12.x"
 
-      - script: "yarn install --frozen-lockfile --non-interactive"
-        displayName: "Install Node Dependencies"
+          - task: Cache@2
+            displayName: "Yarn Cache"
+            inputs:
+              key: 'yarn | "$(Agent.OS)" | yarn.lock'
+              path: "$(YARN_CACHE_FOLDER)"
 
-      - script: "yarn build:ts"
-        displayName: "Build Linux Project"
+          - task: Cache@2
+            displayName: "Cache"
+            inputs:
+              key: 'cache | "$(Agent.OS)"'
+              path: "$(Pipeline.Workspace)/.cache"
 
-      - script: "yarn package:linux dir"
-        displayName: "Pack Release"
+          - script: "yarn install --frozen-lockfile --non-interactive"
+            displayName: "Install Node Dependencies"
 
-      - task: ArchiveFiles@2
-        displayName: "Archive Directory"
-        inputs:
-          rootFolderOrFile: "dist/linux-unpacked"
-          includeRootFolder: false
-          archiveType: tar
-          tarCompression: gz
-          archiveFile: "jellyfin-desktop.tar.gz"
+          - script: "yarn build:ts"
+            displayName: "Build TypeScript Project"
 
-      - task: PublishPipelineArtifact@1
-        displayName: "Publish Artifacts"
-        inputs:
-          targetPath: "$(Build.SourcesDirectory)/jellyfin-desktop.tar.gz"
-          artifactName: "jellyfin-desktop"
+          - script: "yarn package:linux dir"
+            displayName: "Pack for Linux"
 
-  - job: Lint
-    displayName: "Lint"
+          - task: ArchiveFiles@2
+            displayName: "Archive Directory"
+            inputs:
+              rootFolderOrFile: "dist/linux-unpacked"
+              includeRootFolder: false
+              archiveType: tar
+              tarCompression: gz
+              archiveFile: "jellyfin-desktop.tar.gz"
 
-    pool:
-      vmImage: "ubuntu-latest"
+          - task: PublishPipelineArtifact@1
+            displayName: "Publish Artifacts"
+            inputs:
+              targetPath: "$(Build.SourcesDirectory)/jellyfin-desktop.tar.gz"
+              artifactName: "linux"
 
-    steps:
-      - task: NodeTool@0
-        displayName: "Install Node"
-        inputs:
-          versionSpec: "12.x"
+      - job: mac
+        displayName: "Mac"
 
-      - task: Cache@2
-        displayName: "Check Cache"
-        inputs:
-          key: "yarn | yarn.lock"
-          path: "node_modules"
-          cacheHitVar: CACHE_RESTORED
+        variables:
+          ELECTRON_CACHE: "$(Pipeline.Workspace)/.cache/electron"
+          ELECTRON_BUILDER_CACHE: "$(Pipeline.Workspace)/.cache/electron-builder"
+          YARN_CACHE_FOLDER: "$(Pipeline.Workspace)/.yarn"
 
-      - script: "yarn install --frozen-lockfile --non-interactive"
-        displayName: "Install Dependencies"
+        pool:
+          vmImage: "macos-10.14"
 
-      - script: "yarn lint"
-        displayName: "Run ESLint"
+        steps:
+          - task: NodeTool@0
+            displayName: "Install Node"
+            inputs:
+              versionSpec: "12.x"
 
-  - job: Publish
+          - task: Cache@2
+            displayName: "Yarn Cache"
+            inputs:
+              key: 'yarn | "$(Agent.OS)" | yarn.lock'
+              path: "$(YARN_CACHE_FOLDER)"
+
+          - task: Cache@2
+            displayName: "Cache"
+            inputs:
+              key: 'cache | "$(Agent.OS)"'
+              path: "$(Pipeline.Workspace)/.cache"
+
+          - script: "yarn install --frozen-lockfile --non-interactive"
+            displayName: "Install Node Dependencies"
+
+          - script: "yarn build:ts"
+            displayName: "Build TypeScript Project"
+
+          - script: "yarn package:mac dmg"
+            displayName: "Pack for Mac"
+
+          - script: "mv dist/*.dmg $(Build.SourcesDirectory)/jellyfin-desktop.dmg"
+            displayName: "Move dmg"
+
+          - task: PublishPipelineArtifact@1
+            displayName: "Publish Artifacts"
+            inputs:
+              targetPath: "$(Build.SourcesDirectory)/jellyfin-desktop.dmg"
+              artifactName: "mac"
+
+      - job: windows
+        displayName: "Windows"
+
+        variables:
+          ELECTRON_CACHE: "$(Pipeline.Workspace)/.cache/electron"
+          ELECTRON_BUILDER_CACHE: "$(Pipeline.Workspace)/.cache/electron-builder"
+          YARN_CACHE_FOLDER: "$(Pipeline.Workspace)/.yarn"
+
+        pool:
+          vmImage: "vs2017-win2016"
+
+        steps:
+          - task: NodeTool@0
+            displayName: "Install Node"
+            inputs:
+              versionSpec: "12.x"
+
+          - task: Cache@2
+            displayName: "Yarn Cache"
+            inputs:
+              key: 'yarn | "$(Agent.OS)" | yarn.lock'
+              path: "$(YARN_CACHE_FOLDER)"
+
+          - task: Cache@2
+            displayName: "Cache"
+            inputs:
+              key: 'cache | "$(Agent.OS)"'
+              path: "$(Pipeline.Workspace)/.cache"
+
+          - script: "yarn install --frozen-lockfile --non-interactive"
+            displayName: "Install Node Dependencies"
+
+          - script: "yarn build:ts"
+            displayName: "Build TypeScript Project"
+
+          - script: "yarn package:win dir"
+            displayName: "Pack for Windows"
+
+          - task: ArchiveFiles@2
+            displayName: "Archive Directory"
+            inputs:
+              rootFolderOrFile: "dist/win-unpacked"
+              includeRootFolder: false
+              archiveType: zip
+              archiveFile: "jellyfin-desktop.zip"
+
+          - task: PublishPipelineArtifact@1
+            displayName: "Publish Artifacts"
+            inputs:
+              targetPath: "$(Build.SourcesDirectory)/jellyfin-desktop.zip"
+              artifactName: "win"
+
+  - stage: test
+    displayName: "Test"
+    dependsOn: []
+    jobs:
+      - job: lint
+        displayName: "Lint"
+
+        variables:
+          YARN_CACHE_FOLDER: "$(Pipeline.Workspace)/.yarn"
+
+        pool:
+          vmImage: "ubuntu-latest"
+
+        steps:
+          - task: NodeTool@0
+            displayName: "Install Node"
+            inputs:
+              versionSpec: "12.x"
+
+          - task: Cache@2
+            displayName: "Yarn Cache"
+            inputs:
+              key: 'yarn | "$(Agent.OS)" | yarn.lock'
+              path: "$(YARN_CACHE_FOLDER)"
+
+          - script: "yarn install --frozen-lockfile --non-interactive"
+            displayName: "Install Dependencies"
+
+          - script: "yarn lint"
+            displayName: "Run ESLint"
+
+  - stage: publish
     displayName: "Publish"
-
-    dependsOn: Build
+    dependsOn:
+      - build
+      - test
     condition: startsWith(variables['Build.SourceBranch'], 'refs/tags')
+    jobs:
+      - job: publish_linux
+        displayName: "Publish Linux"
 
-    pool:
-      vmImage: "ubuntu-latest"
+        variables:
+          ELECTRON_CACHE: "$(Pipeline.Workspace)/.cache/electron"
+          ELECTRON_BUILDER_CACHE: "$(Pipeline.Workspace)/.cache/electron-builder"
+          YARN_CACHE_FOLDER: "$(Pipeline.Workspace)/.yarn"
 
-    steps:
-      - script: 'echo "##vso[task.setvariable variable=TAG]$(git describe --tags)"'
-        displayName: "Set Tag Variable"
+        pool:
+          vmImage: "ubuntu-latest"
 
-      - task: NodeTool@0
-        displayName: "Install Node"
-        inputs:
-          versionSpec: "12.x"
+        steps:
+          - script: 'echo "##vso[task.setvariable variable=TAG]$(git describe --tags)"'
+            displayName: "Set Tag Variable"
 
-      - task: Cache@2
-        displayName: "Check Cache"
-        inputs:
-          key: "yarn | yarn.lock"
-          path: "node_modules"
-          cacheHitVar: CACHE_RESTORED
+          - task: NodeTool@0
+            displayName: "Install Node"
+            inputs:
+              versionSpec: "12.x"
 
-      - script: "apt-get install -y rpmbuild"
-        displayName: "Install Apt Dependencies"
+          - task: Cache@2
+            displayName: "Yarn Cache"
+            inputs:
+              key: 'yarn | "$(Agent.OS)" | yarn.lock'
+              path: "$(YARN_CACHE_FOLDER)"
 
-      - script: "yarn install --frozen-lockfile --non-interactive"
-        displayName: "Install Node Dependencies"
+          - task: Cache@2
+            displayName: "Cache"
+            inputs:
+              key: 'cache | "$(Agent.OS)"'
+              path: "$(Pipeline.Workspace)/.cache"
 
-      - script: "yarn build:linux"
-        displayName: "Build Linux Packages"
+          - script: "apt-get install -y rpmbuild"
+            displayName: "Install Apt Dependencies"
 
-      - script: "mkdir jellyfin-desktop"
-        displayName: "Make Output Directory"
+          - script: "yarn install --frozen-lockfile --non-interactive"
+            displayName: "Install Node Dependencies"
 
-      - script: "cp dist/*.{AppImage,tar.xz,snap,deb,rpm} jellyfin-desktop"
-        displayName: "Move Binaries to Output"
+          - script: "yarn build:linux"
+            displayName: "Build Linux Packages"
 
-      - task: PublishPipelineArtifact@1
-        displayName: "Publish Artifacts"
-        inputs:
-          targetPath: "jellyfin-desktop"
-          artifactName: "jellyfin-desktop"
+          - script: "mkdir jellyfin-desktop"
+            displayName: "Make Output Directory"
 
-      - task: GithubRelease@0
-        displayName: "GitHub Upload"
-        inputs:
-          gitHubConnection: Jellyfin Release Download
-          assets: "jellyfin-desktop"
-          action: "edit"
-          assetUploadMode: "replace"
-          tag: "$(TAG)"
+          - script: "cp dist/*.{AppImage,tar.xz,snap,deb,rpm} jellyfin-desktop"
+            displayName: "Move Binaries to Output"
+
+          - task: PublishPipelineArtifact@1
+            displayName: "Publish Artifacts"
+            inputs:
+              targetPath: "jellyfin-desktop"
+              artifactName: "linux-release"
+
+          - task: GithubRelease@0
+            displayName: "GitHub Upload"
+            inputs:
+              gitHubConnection: Jellyfin Release Download
+              assets: "jellyfin-desktop"
+              action: "edit"
+              assetUploadMode: "replace"
+              tag: "$(TAG)"
+
+      - job: publish_mac
+        displayName: "Publish Mac"
+
+        variables:
+          ELECTRON_CACHE: "$(Pipeline.Workspace)/.cache/electron"
+          ELECTRON_BUILDER_CACHE: "$(Pipeline.Workspace)/.cache/electron-builder"
+          YARN_CACHE_FOLDER: "$(Pipeline.Workspace)/.yarn"
+
+        pool:
+          vmImage: "macos-10.14"
+
+        steps:
+          - script: 'echo "##vso[task.setvariable variable=TAG]$(git describe --tags)"'
+            displayName: "Set Tag Variable"
+
+          - task: NodeTool@0
+            displayName: "Install Node"
+            inputs:
+              versionSpec: "12.x"
+
+          - task: Cache@2
+            displayName: "Yarn Cache"
+            inputs:
+              key: 'yarn | "$(Agent.OS)" | yarn.lock'
+              path: "$(YARN_CACHE_FOLDER)"
+
+          - task: Cache@2
+            displayName: "Cache"
+            inputs:
+              key: 'cache | "$(Agent.OS)"'
+              path: "$(Pipeline.Workspace)/.cache"
+
+          - script: "yarn install --frozen-lockfile --non-interactive"
+            displayName: "Install Node Dependencies"
+
+          - script: "yarn build:mac"
+            displayName: "Build Mac Packages"
+
+          - script: "mkdir jellyfin-desktop"
+            displayName: "Make Output Directory"
+
+          - script: "cp dist/*.{dmg,mas,pkg,tar.gz} jellyfin-desktop"
+            displayName: "Move Binaries to Output"
+
+          - task: PublishPipelineArtifact@1
+            displayName: "Publish Artifacts"
+            inputs:
+              targetPath: "jellyfin-desktop"
+              artifactName: "mac-release"
+
+          - task: GithubRelease@0
+            displayName: "GitHub Upload"
+            inputs:
+              gitHubConnection: Jellyfin Release Download
+              assets: "jellyfin-desktop"
+              action: "edit"
+              assetUploadMode: "replace"
+              tag: "$(TAG)"
+
+      - job: publish_win
+        displayName: "Publish Windows"
+
+        variables:
+          ELECTRON_CACHE: "$(Pipeline.Workspace)/.cache/electron"
+          ELECTRON_BUILDER_CACHE: "$(Pipeline.Workspace)/.cache/electron-builder"
+          YARN_CACHE_FOLDER: "$(Pipeline.Workspace)/.yarn"
+
+        pool:
+          vmImage: "vs2017-win2016"
+
+        steps:
+          - script: 'echo "##vso[task.setvariable variable=TAG]$(git describe --tags)"'
+            displayName: "Set Tag Variable"
+
+          - task: NodeTool@0
+            displayName: "Install Node"
+            inputs:
+              versionSpec: "12.x"
+
+          - task: Cache@2
+            displayName: "Yarn Cache"
+            inputs:
+              key: 'yarn | "$(Agent.OS)" | yarn.lock'
+              path: "$(YARN_CACHE_FOLDER)"
+
+          - task: Cache@2
+            displayName: "Cache"
+            inputs:
+              key: 'cache | "$(Agent.OS)"'
+              path: "$(Pipeline.Workspace)/.cache"
+
+          - script: "yarn install --frozen-lockfile --non-interactive"
+            displayName: "Install Node Dependencies"
+
+          - script: "yarn build:win"
+            displayName: "Build Windows Packages"
+
+          - script: "mkdir jellyfin-desktop"
+            displayName: "Make Output Directory"
+
+          - script: "cp dist/*.{exe,msi,zip} jellyfin-desktop"
+            displayName: "Move Binaries to Output"
+
+          - task: PublishPipelineArtifact@1
+            displayName: "Publish Artifacts"
+            inputs:
+              targetPath: "jellyfin-desktop"
+              artifactName: "jellyfin-desktop"
+
+          - task: GithubRelease@0
+            displayName: "GitHub Upload"
+            inputs:
+              gitHubConnection: Jellyfin Release Download
+              assets: "jellyfin-desktop"
+              action: "edit"
+              assetUploadMode: "replace"
+              tag: "$(TAG)"
