@@ -8,7 +8,7 @@
     "build:mac": "run-s build:ts package:mac",
     "build:win": "run-s build:ts package:win",
     "build:linux": "run-s build:ts package:linux",
-    "build:ts": "tsc - src/main src/shell",
+    "build:ts": "tsc -b src/main src/shell",
     "lint": "run-p --aggregate-output -c lint:check:*",
     "lint:check:eslint": "eslint src/**/*.ts",
     "lint:check:prettier": "prettier --check **/*.{json,yaml,yml} .prettierrc",
