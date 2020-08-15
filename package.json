@@ -2,7 +2,7 @@
   "name": "jellyfin-desktop",
   "version": "1.0.0",
   "description": "Jellyfin Desktop made with Electron",
-  "main": "build/main.js",
+  "main": "build/main/main.js",
   "scripts": {
     "start": "run-s build:ts start:electron",
     "build:mac": "run-s build:ts package:mac",
