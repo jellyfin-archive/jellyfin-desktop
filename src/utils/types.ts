@@ -5,3 +5,5 @@ export type JsonValue = JsonSingleValue | JsonSingleValue[];
 export interface JsonObject {
     [key: string]: JsonValue;
 }
+
+export type WindowState = "Normal" | "Minimized" | "Maximized" | "Fullscreen";

@@ -1,6 +1,6 @@
 import * as dgram from "dgram";
 
-export function findServers(timeoutMs): Promise<string> {
+export function findServers(timeoutMs: number): Promise<string> {
     const PORT = 7359;
     const MULTICAST_ADDR = "255.255.255.255";
 
@@ -61,7 +61,7 @@ export function findServers(timeoutMs): Promise<string> {
             });
             console.info(`UDP Client listening on ${address.address}:${address.port}`);
             console.info(`starting udp receive timer with timeout ms: ${timeoutMs}`);
-            timeoutMs = setTimeout(onTimerExpired, timeoutMs);
+            setTimeout(onTimerExpired, timeoutMs);
         } catch (err) {
             onError(err);
         }

@@ -1,7 +1,7 @@
 import * as net from "net";
 import * as dgram from "dgram";
 
-export function createMagicPacket(mac): Buffer {
+export function createMagicPacket(mac: string): Buffer {
     const MAC_LENGTH = 6;
     const MAC_REPEAT = 16;
     const PACKET_HEADER = 6;

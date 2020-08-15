@@ -1,6 +1,4 @@
-﻿import { JsonObject } from "./utils/types";
-
-type WindowState = "Normal" | "Minimized" | "Maximized";
+﻿import { JsonObject, WindowState } from "./utils/types";
 
 define([], function () {
     "use strict";
