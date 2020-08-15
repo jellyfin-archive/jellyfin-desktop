@@ -359,7 +359,7 @@ function registerFileSystem(): void {
             case "directoryexists":
                 path = request.url.split("=")[1];
 
-                access(path, (err) => {
+                access(join(__dirname, "..", "shell", path), (err) => {
                     if (err) {
                         console.error(`fs access result for path: ${err}`);
 
@@ -448,9 +448,9 @@ function getAppUrl(): string {
 
 let startInfoJson;
 async function loadStartInfo(): Promise<void> {
-    const topDirectory = normalize(__dirname);
-    const pluginDirectory = normalize(`${__dirname}/plugins`);
-    const scriptsDirectory = normalize(`${__dirname}/scripts`);
+    const topDirectory = normalize(`${__dirname}/../shell`);
+    const pluginDirectory = normalize(`${topDirectory}/plugins`);
+    const scriptsDirectory = normalize(`${topDirectory}/scripts`);
 
     const pluginFiles = await readdir(pluginDirectory);
     const scriptFiles = await readdir(scriptsDirectory);
@@ -870,7 +870,7 @@ app.on("ready", function () {
         if (url) {
             mainWindow.loadURL(url);
         } else {
-            const localPath = path.join(`file://${__dirname}/../res/firstrun/Jellyfin.html`);
+            const localPath = path.join(`file://${__dirname}/../../res/firstrun/Jellyfin.html`);
             mainWindow.loadURL(localPath);
         }
 

@@ -1,4 +1,4 @@
-((require as unknown) as typeof define)(["playbackManager", "events"], function (playbackManager, events) {
+require(["playbackManager", "events"], function (playbackManager, events) {
     function sendCommand(name: string, method = "GET"): void {
         fetch(`electronapphost://${name}`, {
             method,
@@ -6,8 +6,6 @@
     }
 
     let videoOn: boolean | undefined;
-require(["playbackManager", "events"], function (playbackManager, events) {
-    let videoOn;
 
     events.on(playbackManager, "playbackstart", () => {
         if (playbackManager.isPlayingVideo()) {
