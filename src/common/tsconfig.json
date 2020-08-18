@@ -5,12 +5,13 @@
     "module": "commonjs",
     "target": "es2018",
     "sourceMap": true,
-    "rootDir": "src",
-    "outDir": "build",
+    "rootDir": ".",
+    "outDir": "../../build/common",
     "importHelpers": true,
-    "allowJs": true,
-    "lib": ["es2018", "dom"]
+    "lib": ["es2018"],
+    "types": [],
+    "composite": true
   },
-  "include": ["src/**/*.js", "src/**/*.ts"],
+  "include": ["./**/*.ts"],
   "exclude": ["node_modules"]
 }

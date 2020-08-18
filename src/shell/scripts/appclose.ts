@@ -1,4 +1,4 @@
-((require as unknown) as typeof define)(["playbackManager"], function (playbackManager) {
+require(["playbackManager"], function (playbackManager) {
     window["AppCloseHelper"] = {
         onClosing: function (): void {
             // Prevent backwards navigation from stopping video
