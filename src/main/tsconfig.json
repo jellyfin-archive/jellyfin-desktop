@@ -10,7 +10,8 @@
     "importHelpers": true,
     "lib": ["es2018"],
     "types": ["node"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "incremental": true
   },
   "include": ["./**/*.ts"],
   "exclude": ["node_modules"],

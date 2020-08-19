@@ -24,7 +24,6 @@ import * as isRpi from "detect-rpi";
 import { CEC } from "./cec";
 import { PlaybackHandler } from "./playbackhandler";
 import { findServers } from "./serverdiscovery";
-import { wake } from "./wakeonlan";
 
 const readdir = promisify(readdirCb);
 
@@ -36,12 +35,10 @@ const isWindows = platform === "win32";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow = null;
-let playerWindow = null;
+let mainWindow: BrowserWindow | null = null;
 let hasAppLoaded = false;
 
 const enableDevTools = true;
-const enableDevToolsOnStartup = false;
 let initialShowEventsComplete = false;
 let previousBounds;
 let cec;
@@ -72,7 +69,6 @@ ipcMain.on("asynchronous-message", (event, arg) => {
 function onWindowMoved(): void {
     mainWindow.webContents.executeJavaScript('window.dispatchEvent(new CustomEvent("move", {}));');
     const winPosition = mainWindow.getPosition();
-    playerWindow.setPosition(winPosition[0], winPosition[1]);
 }
 
 let currentWindowState: WindowState = "Normal";
@@ -80,7 +76,6 @@ let currentWindowState: WindowState = "Normal";
 function onWindowResize(): void {
     if (!useTrueFullScreen || currentWindowState === "Normal") {
         const bounds = mainWindow.getBounds();
-        playerWindow.setBounds(bounds);
     }
 }
 
@@ -160,7 +155,6 @@ function onWindowStateChanged(state: WindowState): void {
 }
 
 function onMinimize(): void {
-    playerWindow.minimize();
     onWindowStateChanged("Minimized");
 }
 
@@ -172,8 +166,6 @@ function onRestore(): void {
     } else {
         onWindowStateChanged("Normal");
     }
-
-    playerWindow.restore();
 }
 
 function onMaximize(): void {
@@ -184,9 +176,6 @@ function onEnterFullscreen(): void {
     onWindowStateChanged("Fullscreen");
 
     if (initialShowEventsComplete) {
-        if (useTrueFullScreen) {
-            playerWindow.setFullScreen(true);
-        }
         mainWindow.movable = false;
     }
 }
@@ -195,7 +184,6 @@ function onLeaveFullscreen(): void {
     onWindowStateChanged("Normal");
 
     if (initialShowEventsComplete) {
-        playerWindow.setFullScreen(false);
         mainWindow.movable = true;
     }
 }
@@ -245,6 +233,7 @@ function setMainWindowResizable(resizable): void {
 
 let isTransparencyRequired = false;
 let windowStateOnLoad;
+
 function registerAppHost(): void {
     const customProtocol = "electronapphost";
 
@@ -318,16 +307,11 @@ function registerAppHost(): void {
 
 function onLoaded(): void {
     //var globalShortcut = electron.globalShortcut;
-
     //globalShortcut.register('mediastop', function () {
     //    sendCommand('stop');
     //});
-
     //globalShortcut.register('mediaplaypause', function () {
     //});
-
-    // language=JavaScript
-    sendJavascript(`window.PlayerWindowId="${getWindowId(playerWindow)}";`);
 }
 
 const processes = {};
@@ -414,31 +398,6 @@ function registerServerdiscovery(): void {
     });
 }
 
-function registerWakeOnLan(): void {
-    const customProtocol = "electronwakeonlan";
-
-    protocol.registerStringProtocol(customProtocol, function (request, callback) {
-        // Add 3 to account for ://
-        const url = request.url.substr(customProtocol.length + 3).split("?")[0];
-        let mac: string;
-        let port: number;
-
-        switch (url) {
-            case "wakeserver":
-                mac = request.url.split("=")[1].split("&")[0];
-                port = parseInt(request.url.split("=")[2]);
-
-                wake(mac, port)
-                    .then((res) => callback(String(res)))
-                    .catch((error) => callback(error));
-                break;
-            default:
-                callback("");
-                break;
-        }
-    });
-}
-
 function alert(text): void {
     dialog.showMessageBox(mainWindow, {
         message: text.toString(),
@@ -465,6 +424,7 @@ function getAppUrl(): string {
 }
 
 let startInfoJson;
+
 async function loadStartInfo(): Promise<void> {
     const topDirectory = normalize(`${__dirname}/../shell`);
     const pluginDirectory = normalize(`${topDirectory}/plugins`);
@@ -706,7 +666,7 @@ function closeWindow(win): void {
 
 function onWindowClose(): void {
     if (hasAppLoaded) {
-        const data = mainWindow.getBounds();
+        const data: any = mainWindow.getBounds();
         data.state = currentWindowState;
         const windowStatePath = getWindowStateDataPath();
         require("fs").writeFileSync(windowStatePath, JSON.stringify(data));
@@ -717,7 +677,6 @@ function onWindowClose(): void {
 
     // Unregister all shortcuts.
     globalShortcut.unregisterAll();
-    closeWindow(playerWindow);
 
     if (cec) {
         cec.kill();
@@ -792,10 +751,7 @@ function getWindowId(win): string {
     return longVal.toString();
 }
 
-function initPlaybackHandler(mpvPath): void {
-    const pbHandler = new PlaybackHandler(getWindowId(playerWindow), mpvPath, mainWindow);
-    pbHandler.registerMediaPlayerProtocol(protocol);
-}
+function initPlaybackHandler(mpvPath): void {}
 
 setCommandLineSwitches();
 
@@ -861,10 +817,7 @@ app.on("ready", function () {
         windowOptions.y = previousWindowInfo.y;
     }
 
-    playerWindow = new BrowserWindow(windowOptions);
-
     windowOptions.backgroundColor = "#00000000";
-    windowOptions.parent = playerWindow;
     windowOptions.transparent = true;
     windowOptions.resizable = true;
     windowOptions.skipTaskbar = false;
@@ -872,10 +825,6 @@ app.on("ready", function () {
 
     loadStartInfo().then(function () {
         mainWindow = new BrowserWindow(windowOptions);
-
-        if (enableDevToolsOnStartup) {
-            mainWindow.openDevTools();
-        }
 
         mainWindow.webContents.on("dom-ready", setStartInfo);
 
@@ -887,7 +836,6 @@ app.on("ready", function () {
         registerAppHost();
         registerFileSystem();
         registerServerdiscovery();
-        registerWakeOnLan();
 
         if (url) {
             mainWindow.loadURL(url);
@@ -896,7 +844,8 @@ app.on("ready", function () {
             mainWindow.loadURL(localPath);
         }
 
-        mainWindow.setMenu(null);
+        mainWindow.autoHideMenuBar = true;
+        mainWindow.setMenuBarVisibility(false);
         mainWindow.on("move", onWindowMoved);
         mainWindow.on("app-command", onAppCommand);
         mainWindow.on("close", onWindowClose);
@@ -908,15 +857,8 @@ app.on("ready", function () {
         mainWindow.on("unmaximize", onUnMaximize);
         mainWindow.on("resize", onWindowResize);
 
-        playerWindow.on("restore", onPlayerWindowRestore);
-        playerWindow.on("enter-full-screen", onPlayerWindowRestore);
-        playerWindow.on("maximize", onPlayerWindowRestore);
-        playerWindow.on("focus", onPlayerWindowRestore);
-
-        playerWindow.on("show", onWindowShow);
         mainWindow.on("show", onWindowShow);
 
-        playerWindow.show();
         mainWindow.show();
 
         initCec();

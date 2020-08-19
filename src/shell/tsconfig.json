@@ -9,10 +9,13 @@
     "outDir": "../../build/shell",
     "importHelpers": true,
     "lib": ["es2018", "dom"],
-    "types": []
+    "types": [],
+    "strict": true,
+    "noImplicitAny": false,
+    "incremental": true
   },
   "include": ["./**/*.ts"],
-  "exclude": ["node_modules"],
+  "exclude": ["plugins"],
   "references": [
     {
       "path": "../common"

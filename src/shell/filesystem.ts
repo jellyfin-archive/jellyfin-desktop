@@ -1,5 +1,5 @@
 ﻿define([], function () {
-    function exits(endpoint, path): Promise<boolean> {
+    function exits(endpoint: string, path: string): Promise<boolean> {
         return fetch(`electronfs://${endpoint}?path=${path}`, { method: "POST" })
             .then((response) => {
                 if (!response.ok) {

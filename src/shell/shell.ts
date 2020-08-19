@@ -1,21 +1,21 @@
 ﻿define(["events", "apphost"], function (events, apphost) {
-    function sendCommand(name: string): Promise<Response> {
+    function sendCommand(name: string): Promise<any> {
         return fetch(`electronapphost://${name}`).then((response) => {
             if (!response.ok) {
                 console.error("Error sending command: ", response);
                 throw response;
             }
-            return response;
+            return response.json();
         });
     }
 
-    const shell = {};
-    let closingWindowState;
+    const shell: Record<string, any> = {};
+    let closingWindowState: string | null;
 
-    function getProcessClosePromise(pid): Promise<void> {
+    function getProcessClosePromise(pid: number): Promise<void> {
         // returns a promise that resolves or rejects when a process closes
         return new Promise(function (resolve, reject) {
-            events.on(shell, "closed", function (e, processId, error) {
+            events.on(shell, "closed", function (e: any, processId: number, error: any) {
                 if (processId === pid) {
                     if (closingWindowState) {
                         apphost.setWindowState(closingWindowState);
@@ -32,12 +32,14 @@
         });
     }
 
-    window["onChildProcessClosed"] = function (processId, error): void {
+    (window as any)["onChildProcessClosed"] = function (processId: number, error: any): void {
         events.trigger(shell, "closed", [processId, error]);
     };
 
-    function paramsToString(params): string {
-        const values = [];
+    type QueryParams = Record<string, string | number | boolean>;
+
+    function paramsToString(params: QueryParams): string {
+        const values: string[] = [];
 
         for (const key in params) {
             const value = params[key];
@@ -49,19 +51,19 @@
         return values.join("&");
     }
 
-    shell["openUrl"] = function (url): Promise<Response> {
+    shell["openUrl"] = function (url: string): Promise<Response> {
         return sendCommand(`openurl?url=${url}`);
     };
 
     shell["canExec"] = true;
 
-    shell["close"] = function (processId): Promise<Response> {
+    shell["close"] = function (processId: number): Promise<Response> {
         const url = `shellclose?id=${processId}`;
 
         return sendCommand(url);
     };
 
-    shell["exec"] = function (options): Promise<any> {
+    shell["exec"] = function (options: QueryParams): Promise<any> {
         const url = `shellstart?${paramsToString(options)}`;
 
         return sendCommand(url).then(function (response) {

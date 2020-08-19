@@ -2,7 +2,7 @@
 
 define([], function () {
     return {
-        findServers: async function (timeoutMs): Promise<JsonObject> {
+        findServers: async function (timeoutMs: number): Promise<JsonObject> {
             const response = await fetch(`electronserverdiscovery://findservers?timeout=${timeoutMs}`, {
                 method: "POST",
             });

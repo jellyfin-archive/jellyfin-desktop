@@ -143,7 +143,7 @@ export class CEC {
         });
 
         this.process.on("close", function (code) {
-            console.warn(`cec-client exited with code ${code}`);
+            console.info(`cec-client exited with code ${code}`);
             logStream = createWriteStream(logFile, { flags: "a" });
             logStream.write(`child process exited with code ${code}`);
             logStream.end();
