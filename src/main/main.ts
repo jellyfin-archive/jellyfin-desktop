@@ -17,13 +17,12 @@ import * as powerOff from "power-off";
 import { parse, ParsedUrlQuery } from "querystring";
 import { access, readdir as readdirCb } from "fs";
 import { promisify } from "util";
-import { endianness, hostname } from "os";
-import * as Long from "long";
+import { hostname } from "os";
 import * as isRpi from "detect-rpi";
 
 import { CEC } from "./cec";
-import { PlaybackHandler } from "./playbackhandler";
 import { findServers } from "./serverdiscovery";
+import { URL } from "url";
 
 const readdir = promisify(readdirCb);
 
@@ -43,7 +42,6 @@ let initialShowEventsComplete = false;
 let previousBounds;
 let cec;
 
-const useTrueFullScreen = isLinux;
 const shellDir = normalize(`${__dirname}/../shell`);
 const iconsDir = normalize(`${__dirname}/../../icons`);
 const resDir = normalize(`${__dirname}/../../res`);
@@ -68,15 +66,11 @@ ipcMain.on("asynchronous-message", (event, arg) => {
 
 function onWindowMoved(): void {
     mainWindow.webContents.executeJavaScript('window.dispatchEvent(new CustomEvent("move", {}));');
-    const winPosition = mainWindow.getPosition();
 }
 
 let currentWindowState: WindowState = "Normal";
 
 function onWindowResize(): void {
-    if (!useTrueFullScreen || currentWindowState === "Normal") {
-        const bounds = mainWindow.getBounds();
-    }
 }
 
 let restoreWindowState: WindowState | null;
@@ -361,7 +355,7 @@ function registerFileSystem(): void {
             case "directoryexists":
                 path = request.url.split("=")[1];
 
-                access(join(__dirname, "..", "shell", path), (err) => {
+                access(join(shellDir, path), (err) => {
                     if (err) {
                         console.error(`fs access result for path: ${err}`);
 
@@ -734,24 +728,7 @@ function initCec(): void {
     }
 }
 
-function getWindowId(win): string {
-    const handle = win.getNativeWindowHandle();
-
-    if (endianness() == "LE") {
-        if (handle.length == 4) {
-            handle.swap32();
-        } else if (handle.length == 8) {
-            handle.swap64();
-        } else {
-            console.warn("Unknown Native Window Handle Format.");
-        }
-    }
-    const longVal = Long.fromString(handle.toString("hex"), true, 16);
-
-    return longVal.toString();
-}
-
-function initPlaybackHandler(mpvPath): void {}
+function initPlaybackHandler(): void {}
 
 setCommandLineSwitches();
 
@@ -770,15 +747,10 @@ app.on("quit", function () {
     closeWindow(mainWindow);
 });
 
-function onPlayerWindowRestore(): void {
-    mainWindow.focus();
-}
-
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on("ready", function () {
     const windowStatePath = getWindowStateDataPath();
-    const enableNodeIntegration = !getAppUrl();
     let previousWindowInfo;
     try {
         previousWindowInfo = JSON.parse(require("fs").readFileSync(windowStatePath, "utf8"));
@@ -791,18 +763,18 @@ app.on("ready", function () {
         title: "Jellyfin Desktop",
         minWidth: 1280,
         minHeight: 720,
-        //alwaysOnTop: true,
         backgroundColor: "#00000000",
         center: true,
         show: false,
         resizable: true,
 
         webPreferences: {
-            webSecurity: false,
+            webSecurity: true,
             webgl: false,
-            nodeIntegration: enableNodeIntegration,
+            nodeIntegration: false,
+            enableRemoteModule: false,
             plugins: false,
-            allowRunningInsecureContent: true,
+            allowRunningInsecureContent: false,
             experimentalFeatures: false,
             devTools: enableDevTools,
         },
@@ -840,7 +812,7 @@ app.on("ready", function () {
         if (url) {
             mainWindow.loadURL(url);
         } else {
-            const localPath = path.join(`file://${__dirname}/../../res/firstrun/Jellyfin.html`);
+            const localPath = path.join(`file://${resDir}/firstrun/Jellyfin.html`);
             mainWindow.loadURL(localPath);
         }
 
@@ -863,10 +835,22 @@ app.on("ready", function () {
 
         initCec();
 
-        initPlaybackHandler(commandLineOptions.mpvPath);
+        initPlaybackHandler();
         if (isRpi()) {
             mainWindow.setFullScreen(true);
             mainWindow.setAlwaysOnTop(true);
+        }
+    });
+});
+
+app.on("web-contents-created", (event, contents) => {
+    contents.on("will-navigate", (event, navigationUrl) => {
+        const parsedUrl = new URL(navigationUrl);
+
+        const base = getAppBaseUrl();
+        if (!base || parsedUrl.origin !== base) {
+            event.preventDefault();
+            shell.openExternal(navigationUrl);
         }
     });
 });
