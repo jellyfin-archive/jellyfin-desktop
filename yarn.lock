@@ -33,6 +33,11 @@
   resolved "https://registry.yarnpkg.com/@chbrown/bind/-/bind-1.0.0.tgz#5bcb9fd875643426ec86ab3544718915fa337d74"
   integrity sha512-fOSHX/DJE0i1xijEqH5SI1v0iLwubtdrWjuKAHIRQAc656JrZbecpaJnKXMNjrY+xMnB1lDn0u05pBfJlpyyZA==
 
+"@cromefire_/nativeshell-api-definition@^1.0.0-nightly5":
+  version "1.0.0-nightly5"
+  resolved "https://gitlab.com/api/v4/projects/19188465/packages/npm/@cromefire_/nativeshell-api-definition/-/@cromefire_/nativeshell-api-definition-1.0.0-nightly5.tgz#da09006f53cdbf471d8bce27ba64ff8fcecdf572"
+  integrity sha1-2gkAb1PNv0cdi84numT/j87N9XI=
+
 "@develar/schema-utils@~2.6.5":
   version "2.6.5"
   resolved "https://registry.yarnpkg.com/@develar/schema-utils/-/schema-utils-2.6.5.tgz#3ece22c5838402419a6e0425f85742b961d9b6c6"
@@ -529,6 +534,16 @@ color-name@~1.1.4:
   resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.4.tgz#c2a09a87acbde69543de6f63fa3995c826c536a2"
   integrity sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==
 
+comlink-electron-adapter@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/comlink-electron-adapter/-/comlink-electron-adapter-0.0.1.tgz#eb5107e7f39b32f7c8487c90310af75a4f73b5c2"
+  integrity sha512-viYKRvfW/V5c5m0CiQHIzEIMLc3CNt0A+fchKxsWl6NluEi84C5tQNDARl2gPibReoy8leJevpqyJVzTlAi3rA==
+
+comlink@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/comlink/-/comlink-4.3.0.tgz#80b3366baccd87897dab3638ebfcfae28b2f87c7"
+  integrity sha512-mu4KKKNuW8TvkfpW/H88HBPeILubBS6T94BdD1VWBXNXfiyqVtwUCVNO1GeNOBTsIswzsMjWlycYr+77F5b84g==
+
 concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
@@ -759,10 +774,10 @@ electron-settings@^3.2.0:
     clone "^2.1.1"
     jsonfile "^4.0.0"
 
-electron@^8.2.4:
-  version "8.2.4"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-8.2.4.tgz#c4e51ca8e84b5a5beaaabdae1024bd52ba487ba4"
-  integrity sha512-Lle0InIgSAHZxD5KDY0wZ1A2Zlc6GHwMhAxoHMzn05mndyP1YBkCYHc0TDDofzUTrsLFofduPjlknO5Oj9fTPA==
+electron@^8.5.0:
+  version "8.5.0"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-8.5.0.tgz#a202738672214775fda27450b00ee516a66bffc4"
+  integrity sha512-ERqSTRlaQ4PqME5a1z9DWQbwQy2LbgSN1Jnau1MJCRRvHgq1FJlqbbb/ij/RGWuQuaxy4Djb2KnTs5rsemR5mQ==
   dependencies:
     "@electron/get" "^1.0.1"
     "@types/node" "^12.0.12"
@@ -1491,11 +1506,6 @@ is-windows@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/is-windows/-/is-windows-1.0.0.tgz#c61d61020c3ebe99261b781bd3d1622395f547f8"
   integrity sha1-xh1hAgw+vpkmG3gb09FiI5X1R/g=
-
-is-windows@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/is-windows/-/is-windows-1.0.2.tgz#d1850eb9791ecd18e6182ce12a30f396634bb19d"
-  integrity sha512-eXK1UInq2bPmjyX6e3VHIzMLobc4J94i4AWn+Hpq3OU5KkrRC96OAcR3PRJ/pGu6m8TRnBHP9dkXQVsT/COVIA==
 
 is-yarn-global@^0.3.0:
   version "0.3.0"

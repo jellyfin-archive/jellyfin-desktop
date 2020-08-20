@@ -25,7 +25,7 @@ define([], function () {
         return sendCommand(`windowstate-${state}`);
     }
 
-    function sendCommand(name): Promise<void> {
+    function sendCommand(name: string): Promise<void> {
         return fetch(`electronapphost://${name}`)
             .then((response) => {
                 if (!response.ok) {
@@ -38,11 +38,11 @@ define([], function () {
 
     function supportsVoiceInput(): boolean {
         return (
-            window.SpeechRecognition ||
-            window["webkitSpeechRecognition"] ||
-            window["mozSpeechRecognition"] ||
-            window["oSpeechRecognition"] ||
-            !!window["msSpeechRecognition"]
+            (window as any).SpeechRecognition ||
+            (window as any)["webkitSpeechRecognition"] ||
+            (window as any)["mozSpeechRecognition"] ||
+            (window as any)["oSpeechRecognition"] ||
+            !!(window as any)["msSpeechRecognition"]
         );
     }
 
@@ -70,7 +70,7 @@ define([], function () {
             features.push("voiceinput");
         }
 
-        if (self["ServiceWorkerSyncRegistered"]) {
+        if (window["ServiceWorkerSyncRegistered"]) {
             features.push("sync");
         }
 
@@ -174,12 +174,12 @@ define([], function () {
             }
         },
 
-        setUserScalable: function (scalable): void {
+        setUserScalable: function (scalable: boolean): void {
             const att = scalable
                 ? "viewport-fit=cover, width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes"
                 : "viewport-fit=cover, width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no";
 
-            document.querySelector("meta[name=viewport]").setAttribute("content", att);
+            document.querySelector("meta[name=viewport]")?.setAttribute("content", att);
         },
 
         deviceIconUrl: function (): string | null {

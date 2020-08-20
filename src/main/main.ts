@@ -15,18 +15,17 @@ import { WindowState } from "../common/types";
 import * as sleepMode from "sleep-mode";
 import * as powerOff from "power-off";
 import { parse, ParsedUrlQuery } from "querystring";
-import { access, readdir as readdirCb } from "fs";
-import { promisify } from "util";
-import { endianness, hostname } from "os";
-import * as Long from "long";
+import { access} from "fs";
+import { hostname } from "os";
 import * as isRpi from "detect-rpi";
 
 import { CEC } from "./cec";
-import { PlaybackHandler } from "./playbackhandler";
 import { findServers } from "./serverdiscovery";
-import { wake } from "./wakeonlan";
-
-const readdir = promisify(readdirCb);
+import { URL } from "url";
+import { MainApiService } from "./api";
+import { expose } from "comlink";
+import { mainProcObjectEndpoint } from "comlink-electron-adapter";
+import { MainApi } from "../common/ipc/api";
 
 app.allowRendererProcessReuse = true; // Disable warning by opting into Electron v9 default
 
@@ -36,17 +35,14 @@ const isWindows = platform === "win32";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow = null;
-let playerWindow = null;
+let mainWindow: BrowserWindow | null = null;
 let hasAppLoaded = false;
 
 const enableDevTools = true;
-const enableDevToolsOnStartup = false;
 let initialShowEventsComplete = false;
 let previousBounds;
 let cec;
 
-const useTrueFullScreen = isLinux;
 const shellDir = normalize(`${__dirname}/../shell`);
 const iconsDir = normalize(`${__dirname}/../../icons`);
 const resDir = normalize(`${__dirname}/../../res`);
@@ -71,18 +67,11 @@ ipcMain.on("asynchronous-message", (event, arg) => {
 
 function onWindowMoved(): void {
     mainWindow.webContents.executeJavaScript('window.dispatchEvent(new CustomEvent("move", {}));');
-    const winPosition = mainWindow.getPosition();
-    playerWindow.setPosition(winPosition[0], winPosition[1]);
 }
 
 let currentWindowState: WindowState = "Normal";
 
-function onWindowResize(): void {
-    if (!useTrueFullScreen || currentWindowState === "Normal") {
-        const bounds = mainWindow.getBounds();
-        playerWindow.setBounds(bounds);
-    }
-}
+function onWindowResize(): void {}
 
 let restoreWindowState: WindowState | null;
 
@@ -160,7 +149,6 @@ function onWindowStateChanged(state: WindowState): void {
 }
 
 function onMinimize(): void {
-    playerWindow.minimize();
     onWindowStateChanged("Minimized");
 }
 
@@ -172,8 +160,6 @@ function onRestore(): void {
     } else {
         onWindowStateChanged("Normal");
     }
-
-    playerWindow.restore();
 }
 
 function onMaximize(): void {
@@ -184,9 +170,6 @@ function onEnterFullscreen(): void {
     onWindowStateChanged("Fullscreen");
 
     if (initialShowEventsComplete) {
-        if (useTrueFullScreen) {
-            playerWindow.setFullScreen(true);
-        }
         mainWindow.movable = false;
     }
 }
@@ -195,7 +178,6 @@ function onLeaveFullscreen(): void {
     onWindowStateChanged("Normal");
 
     if (initialShowEventsComplete) {
-        playerWindow.setFullScreen(false);
         mainWindow.movable = true;
     }
 }
@@ -245,6 +227,7 @@ function setMainWindowResizable(resizable): void {
 
 let isTransparencyRequired = false;
 let windowStateOnLoad;
+
 function registerAppHost(): void {
     const customProtocol = "electronapphost";
 
@@ -318,16 +301,11 @@ function registerAppHost(): void {
 
 function onLoaded(): void {
     //var globalShortcut = electron.globalShortcut;
-
     //globalShortcut.register('mediastop', function () {
     //    sendCommand('stop');
     //});
-
     //globalShortcut.register('mediaplaypause', function () {
     //});
-
-    // language=JavaScript
-    sendJavascript(`window.PlayerWindowId="${getWindowId(playerWindow)}";`);
 }
 
 const processes = {};
@@ -377,7 +355,7 @@ function registerFileSystem(): void {
             case "directoryexists":
                 path = request.url.split("=")[1];
 
-                access(join(__dirname, "..", "shell", path), (err) => {
+                access(join(shellDir, path), (err) => {
                     if (err) {
                         console.error(`fs access result for path: ${err}`);
 
@@ -414,40 +392,11 @@ function registerServerdiscovery(): void {
     });
 }
 
-function registerWakeOnLan(): void {
-    const customProtocol = "electronwakeonlan";
-
-    protocol.registerStringProtocol(customProtocol, function (request, callback) {
-        // Add 3 to account for ://
-        const url = request.url.substr(customProtocol.length + 3).split("?")[0];
-        let mac: string;
-        let port: number;
-
-        switch (url) {
-            case "wakeserver":
-                mac = request.url.split("=")[1].split("&")[0];
-                port = parseInt(request.url.split("=")[2]);
-
-                wake(mac, port)
-                    .then((res) => callback(String(res)))
-                    .catch((error) => callback(error));
-                break;
-            default:
-                callback("");
-                break;
-        }
-    });
-}
-
 function alert(text): void {
     dialog.showMessageBox(mainWindow, {
         message: text.toString(),
         buttons: ["ok"],
     });
-}
-
-function replaceAll(str: string, find: string, replace: string): string {
-    return str.split(find).join(replace);
 }
 
 function getAppBaseUrl(): any | null {
@@ -465,13 +414,8 @@ function getAppUrl(): string {
 }
 
 let startInfoJson;
-async function loadStartInfo(): Promise<void> {
-    const topDirectory = normalize(`${__dirname}/../shell`);
-    const pluginDirectory = normalize(`${topDirectory}/plugins`);
-    const scriptsDirectory = normalize(`${topDirectory}/scripts`);
 
-    const pluginFiles = await readdir(pluginDirectory);
-    const scriptFiles = await readdir(scriptsDirectory);
+async function loadStartInfo(): Promise<void> {
     const startInfo = {
         paths: {
             apphost: `${customFileProtocol}://apphost`,
@@ -486,10 +430,6 @@ async function loadStartInfo(): Promise<void> {
         deviceName: hostname(),
         deviceId: hostname(),
         supportsTransparentWindow: supportsTransparentWindow(),
-        plugins: pluginFiles
-            .filter((f) => f.endsWith(".js"))
-            .map((f) => `file://${replaceAll(path.normalize(`${pluginDirectory}/${f}`), "\\", "/")}`),
-        scripts: scriptFiles.map((f) => `file://${replaceAll(path.normalize(`${scriptsDirectory}/${f}`), "\\", "/")}`),
     };
 
     startInfoJson = JSON.stringify(startInfo);
@@ -706,7 +646,7 @@ function closeWindow(win): void {
 
 function onWindowClose(): void {
     if (hasAppLoaded) {
-        const data = mainWindow.getBounds();
+        const data: any = mainWindow.getBounds();
         data.state = currentWindowState;
         const windowStatePath = getWindowStateDataPath();
         require("fs").writeFileSync(windowStatePath, JSON.stringify(data));
@@ -717,7 +657,6 @@ function onWindowClose(): void {
 
     // Unregister all shortcuts.
     globalShortcut.unregisterAll();
-    closeWindow(playerWindow);
 
     if (cec) {
         cec.kill();
@@ -775,27 +714,7 @@ function initCec(): void {
     }
 }
 
-function getWindowId(win): string {
-    const handle = win.getNativeWindowHandle();
-
-    if (endianness() == "LE") {
-        if (handle.length == 4) {
-            handle.swap32();
-        } else if (handle.length == 8) {
-            handle.swap64();
-        } else {
-            console.warn("Unknown Native Window Handle Format.");
-        }
-    }
-    const longVal = Long.fromString(handle.toString("hex"), true, 16);
-
-    return longVal.toString();
-}
-
-function initPlaybackHandler(mpvPath): void {
-    const pbHandler = new PlaybackHandler(getWindowId(playerWindow), mpvPath, mainWindow);
-    pbHandler.registerMediaPlayerProtocol(protocol);
-}
+function initPlaybackHandler(): void {}
 
 setCommandLineSwitches();
 
@@ -810,19 +729,22 @@ function onWindowShow(): void {
     }
 }
 
+function initializeApi() {
+    const api: MainApi = new MainApiService();
+
+    expose(api, mainProcObjectEndpoint(ipcMain));
+}
+
 app.on("quit", function () {
     closeWindow(mainWindow);
 });
 
-function onPlayerWindowRestore(): void {
-    mainWindow.focus();
-}
-
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on("ready", function () {
+    const url = getAppUrl();
+    initializeApi();
     const windowStatePath = getWindowStateDataPath();
-    const enableNodeIntegration = !getAppUrl();
     let previousWindowInfo;
     try {
         previousWindowInfo = JSON.parse(require("fs").readFileSync(windowStatePath, "utf8"));
@@ -835,18 +757,19 @@ app.on("ready", function () {
         title: "Jellyfin Desktop",
         minWidth: 1280,
         minHeight: 720,
-        //alwaysOnTop: true,
         backgroundColor: "#00000000",
         center: true,
         show: false,
         resizable: true,
 
         webPreferences: {
-            webSecurity: false,
+            preload: join(shellDir, "preload.js"),
+            webSecurity: true,
             webgl: false,
-            nodeIntegration: enableNodeIntegration,
+            nodeIntegration: !url,
+            enableRemoteModule: false,
             plugins: false,
-            allowRunningInsecureContent: true,
+            allowRunningInsecureContent: false,
             experimentalFeatures: false,
             devTools: enableDevTools,
         },
@@ -861,10 +784,7 @@ app.on("ready", function () {
         windowOptions.y = previousWindowInfo.y;
     }
 
-    playerWindow = new BrowserWindow(windowOptions);
-
     windowOptions.backgroundColor = "#00000000";
-    windowOptions.parent = playerWindow;
     windowOptions.transparent = true;
     windowOptions.resizable = true;
     windowOptions.skipTaskbar = false;
@@ -873,13 +793,8 @@ app.on("ready", function () {
     loadStartInfo().then(function () {
         mainWindow = new BrowserWindow(windowOptions);
 
-        if (enableDevToolsOnStartup) {
-            mainWindow.openDevTools();
-        }
-
         mainWindow.webContents.on("dom-ready", setStartInfo);
 
-        const url = getAppUrl();
         windowStateOnLoad = previousWindowInfo.state;
 
         addPathIntercepts();
@@ -887,16 +802,16 @@ app.on("ready", function () {
         registerAppHost();
         registerFileSystem();
         registerServerdiscovery();
-        registerWakeOnLan();
 
         if (url) {
             mainWindow.loadURL(url);
         } else {
-            const localPath = path.join(`file://${__dirname}/../../res/firstrun/Jellyfin.html`);
+            const localPath = path.join(`file://${resDir}/firstrun/Jellyfin.html`);
             mainWindow.loadURL(localPath);
         }
 
-        mainWindow.setMenu(null);
+        mainWindow.autoHideMenuBar = true;
+        mainWindow.setMenuBarVisibility(false);
         mainWindow.on("move", onWindowMoved);
         mainWindow.on("app-command", onAppCommand);
         mainWindow.on("close", onWindowClose);
@@ -908,23 +823,30 @@ app.on("ready", function () {
         mainWindow.on("unmaximize", onUnMaximize);
         mainWindow.on("resize", onWindowResize);
 
-        playerWindow.on("restore", onPlayerWindowRestore);
-        playerWindow.on("enter-full-screen", onPlayerWindowRestore);
-        playerWindow.on("maximize", onPlayerWindowRestore);
-        playerWindow.on("focus", onPlayerWindowRestore);
-
-        playerWindow.on("show", onWindowShow);
         mainWindow.on("show", onWindowShow);
 
-        playerWindow.show();
-        mainWindow.show();
+        mainWindow.on("ready-to-show", () => {
+            mainWindow.show();
+        });
 
         initCec();
 
-        initPlaybackHandler(commandLineOptions.mpvPath);
+        initPlaybackHandler();
         if (isRpi()) {
             mainWindow.setFullScreen(true);
             mainWindow.setAlwaysOnTop(true);
+        }
+    });
+});
+
+app.on("web-contents-created", (event, contents) => {
+    contents.on("will-navigate", (event, navigationUrl) => {
+        const parsedUrl = new URL(navigationUrl);
+
+        const base = getAppBaseUrl();
+        if (!base || parsedUrl.origin !== base) {
+            event.preventDefault();
+            shell.openExternal(navigationUrl);
         }
     });
 });
