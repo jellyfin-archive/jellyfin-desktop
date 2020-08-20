@@ -1,6 +1,6 @@
 {
   "name": "jellyfin-desktop",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha0",
   "description": "Jellyfin Desktop made with Electron",
   "main": "build/main/main.js",
   "scripts": {
@@ -41,9 +41,10 @@
   "homepage": "https://github.com/jellyfin/jellyfin-desktop#readme",
   "dependencies": {
     "@cromefire_/nativeshell-api-definition": "^1.0.0-nightly5",
+    "comlink": "^4.3.0",
+    "comlink-electron-adapter": "^0.0.1",
     "detect-rpi": "^1.4.0",
     "electron-settings": "^3.2.0",
-    "is-windows": "^1.0.2",
     "long": "^4.0.0",
     "node-mpv": "^1.5.0",
     "power-off": "^1.1.2",
@@ -57,7 +58,7 @@
     "@types/node": "^12.12.37",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
-    "electron": "^8.2.4",
+    "electron": "^8.5.0",
     "electron-builder": "^22.5.1",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",

@@ -1,35 +1,61 @@
-import { Command, IAppHost, IAppInfo, IDownloadInfo, IMediaInfo, Layout } from "@cromefire_/nativeshell-api-definition";
+import {
+    Command,
+    IAppHost,
+    IAppInfo,
+    IDownloadInfo,
+    IMediaInfo,
+    Layout,
+    INativeShell,
+} from "@cromefire_/nativeshell-api-definition";
+import { Remote, wrap } from "comlink";
+import { MainApi } from "../common/ipc/api";
+import { mainProcObjectEndpoint } from "comlink-electron-adapter";
+import { ipcRenderer } from "electron";
 
-const appHost: IAppHost = {
+const mainApi: Remote<MainApi> = wrap<MainApi>(mainProcObjectEndpoint(ipcRenderer));
+
+const appName = "Jellyfin Desktop";
+// TODO: Remove once jf-web#1826 is stable
+let appVersion = "";
+let deviceId = "";
+let deviceName = "";
+
+const appHost: any = {
     appName(): string {
-        return "";
+        return appName;
     },
     appVersion(): string {
-        return "";
+        return appVersion;
     },
-    deviceID(): string {
-        return "";
+    deviceId(): string {
+        return deviceId;
     },
     deviceName(): string {
-        return "";
+        return deviceName;
     },
     exit(): void {},
     getDefaultLayout(): Layout {
         return Layout.DESKTOP;
     },
     async getDeviceProfile(profileBuilder: unknown): Promise<unknown> {
-        return Promise.resolve({});
+        return {};
     },
     getSyncProfile(profileBuilder: unknown, appSettings: unknown): Promise<unknown> {
         return Promise.resolve(undefined);
     },
-    init(): IAppInfo {
+    async init(): Promise<IAppInfo> {
+        const appVersion$ = mainApi.appVersion();
+        const deviceId$ = mainApi.deviceId();
+        const deviceName$ = mainApi.deviceName();
+        appVersion = await appVersion$;
+        deviceId = await deviceId$;
+        deviceName = await deviceName$;
         // TODO: Add proper values
         return {
-            appName: "Jellyfin Desktop",
-            appVersion: "1.0.0-alpha0",
-            deviceId: "not so random",
-            deviceName: "Desktop test",
+            appName,
+            appVersion,
+            deviceId,
+            deviceName,
         };
     },
     supports(command: Command): boolean {
@@ -37,7 +63,7 @@ const appHost: IAppHost = {
     },
 };
 
-window.NativeShell = {
+const nativeShell: INativeShell = {
     AppHost: appHost,
     disableFullscreen(): void {},
     downloadFile(downloadInfo: IDownloadInfo): void {},
@@ -49,3 +75,5 @@ window.NativeShell = {
     openUrl(url: string, target?: string): void {},
     updateMediaSession(mediaInfo: IMediaInfo): void {},
 };
+
+window.NativeShell = nativeShell;

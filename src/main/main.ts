@@ -15,16 +15,17 @@ import { WindowState } from "../common/types";
 import * as sleepMode from "sleep-mode";
 import * as powerOff from "power-off";
 import { parse, ParsedUrlQuery } from "querystring";
-import { access, readdir as readdirCb } from "fs";
-import { promisify } from "util";
+import { access} from "fs";
 import { hostname } from "os";
 import * as isRpi from "detect-rpi";
 
 import { CEC } from "./cec";
 import { findServers } from "./serverdiscovery";
 import { URL } from "url";
-
-const readdir = promisify(readdirCb);
+import { MainApiService } from "./api";
+import { expose } from "comlink";
+import { mainProcObjectEndpoint } from "comlink-electron-adapter";
+import { MainApi } from "../common/ipc/api";
 
 app.allowRendererProcessReuse = true; // Disable warning by opting into Electron v9 default
 
@@ -70,8 +71,7 @@ function onWindowMoved(): void {
 
 let currentWindowState: WindowState = "Normal";
 
-function onWindowResize(): void {
-}
+function onWindowResize(): void {}
 
 let restoreWindowState: WindowState | null;
 
@@ -399,10 +399,6 @@ function alert(text): void {
     });
 }
 
-function replaceAll(str: string, find: string, replace: string): string {
-    return str.split(find).join(replace);
-}
-
 function getAppBaseUrl(): any | null {
     return settings.get("server.url", null);
 }
@@ -420,12 +416,6 @@ function getAppUrl(): string {
 let startInfoJson;
 
 async function loadStartInfo(): Promise<void> {
-    const topDirectory = normalize(`${__dirname}/../shell`);
-    const pluginDirectory = normalize(`${topDirectory}/plugins`);
-    const scriptsDirectory = normalize(`${topDirectory}/scripts`);
-
-    const pluginFiles = await readdir(pluginDirectory);
-    const scriptFiles = await readdir(scriptsDirectory);
     const startInfo = {
         paths: {
             apphost: `${customFileProtocol}://apphost`,
@@ -440,10 +430,6 @@ async function loadStartInfo(): Promise<void> {
         deviceName: hostname(),
         deviceId: hostname(),
         supportsTransparentWindow: supportsTransparentWindow(),
-        plugins: pluginFiles
-            .filter((f) => f.endsWith(".js"))
-            .map((f) => `file://${replaceAll(path.normalize(`${pluginDirectory}/${f}`), "\\", "/")}`),
-        scripts: scriptFiles.map((f) => `file://${replaceAll(path.normalize(`${scriptsDirectory}/${f}`), "\\", "/")}`),
     };
 
     startInfoJson = JSON.stringify(startInfo);
@@ -743,6 +729,12 @@ function onWindowShow(): void {
     }
 }
 
+function initializeApi() {
+    const api: MainApi = new MainApiService();
+
+    expose(api, mainProcObjectEndpoint(ipcMain));
+}
+
 app.on("quit", function () {
     closeWindow(mainWindow);
 });
@@ -750,6 +742,8 @@ app.on("quit", function () {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on("ready", function () {
+    const url = getAppUrl();
+    initializeApi();
     const windowStatePath = getWindowStateDataPath();
     let previousWindowInfo;
     try {
@@ -769,9 +763,10 @@ app.on("ready", function () {
         resizable: true,
 
         webPreferences: {
+            preload: join(shellDir, "preload.js"),
             webSecurity: true,
             webgl: false,
-            nodeIntegration: false,
+            nodeIntegration: !url,
             enableRemoteModule: false,
             plugins: false,
             allowRunningInsecureContent: false,
@@ -800,7 +795,6 @@ app.on("ready", function () {
 
         mainWindow.webContents.on("dom-ready", setStartInfo);
 
-        const url = getAppUrl();
         windowStateOnLoad = previousWindowInfo.state;
 
         addPathIntercepts();
@@ -831,7 +825,9 @@ app.on("ready", function () {
 
         mainWindow.on("show", onWindowShow);
 
-        mainWindow.show();
+        mainWindow.on("ready-to-show", () => {
+            mainWindow.show();
+        });
 
         initCec();
 
